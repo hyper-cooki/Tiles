@@ -4,12 +4,13 @@
     <title>Tiles Editor</title>
   </head>
   <body>
-    <canvas id="mainCanvas" width="200" height="100">
+    <canvas id="mainCanvas" width="1080" height="920">
       Sorry, your current browser can not run Tiles. Try using/updating to a new browser.
     </canvas>
     <script>
       var canvas = document.getElementById("mainCanvas")
       var c = canvas.getContext('2d')
+      c.fillStyle("orange")
       c.fillRect(0, 0, 200, 100)
     </script>
   </body>
