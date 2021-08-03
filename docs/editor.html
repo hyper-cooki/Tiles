@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html>
-  <title>
-    Tiles Editor
-  </title>
+  <head>
+    <title>Tiles Editor</title>
+  </head>
   <body>
-    <a href="tiles/preview">Preview</a>
+    <canvas id="mainCanvas" width="200" height="100">
+      Sorry, your current browser can not run Tiles. Try using/updating to a new browser.
+    </canvas>
+    <script>
+      var canvas = document.getElementById("mainCanvas")
+      var c = canvas.getContext('2d')
+      c.fillRect(0, 0, 200, 100)
+    </script>
   </body>
 </html>
