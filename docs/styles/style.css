@@ -1,1 +1,4 @@
-
+canvas#mainCanvas {
+  border-radius: 25px;
+  border: 2px solid #000000
+}
