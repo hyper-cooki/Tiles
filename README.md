@@ -1,2 +1,2 @@
 # Tiles
-~ A tile map &amp; pixel art editor ~
+~ A tilemap &amp; pixel art editor ~
