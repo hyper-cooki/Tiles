@@ -5,12 +5,17 @@
     <title>Tiles Editor</title>
   </head>
   <body>
-    <canvas id="mainCanvas" width="1345" height="640">
+    <canvas id="mainCanvas">
       Sorry, your current browser can not run Tiles. Please use a supported browser.
     </canvas>
     <script>
+      var CANVAS_WIDTH = $(document).width;
+      var CANVAS_HEIGHT = $(document).height;
+      
       var canvas = document.getElementById("mainCanvas")
       var c = canvas.getContext('2d')
+      canvas.width = CANVAS_WIDTH;
+      canvas.height = CANVAS_HEIGHT;
       c.fillStyle = "orange"
       c.fillRect(0, 0, 1345, 640)
     </script>
