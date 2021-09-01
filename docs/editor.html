@@ -9,8 +9,8 @@
       Sorry, your current browser can not run Tiles. Please use a supported browser.
     </canvas>
     <script>
-      var CANVAS_WIDTH = $(window).width;
-      var CANVAS_HEIGHT = $(window).height;
+      var CANVAS_WIDTH = window.innerWidth;
+      var CANVAS_HEIGHT = window.innerHeight;
       
       var canvas = document.getElementById("mainCanvas")
       var c = canvas.getContext('2d')
