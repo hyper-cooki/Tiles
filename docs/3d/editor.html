@@ -34,7 +34,15 @@
 
 				renderer.render( scene, camera );
 			};
+			
+			
+			const exporter = new GLTFExporter();
 
+			exporter.parse( scene, function ( gltf ) {
+				console.log( gltf );
+				downloadJSON( gltf );
+			}, options );
+			
 			animate();
 		</script>
 	</body>
