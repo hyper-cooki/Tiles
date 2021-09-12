@@ -1,28 +1,41 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <link rel="stylesheet" href="styles/style.css">
-    <title>Tiles Editor</title>
-  </head>
-  <style>
-    body {
-      margin: 0;
-    }
-  </style>
-  <body>
-    <canvas id="mainCanvas">
-      Sorry, your current browser can not run Tiles. Please use a supported browser.
-    </canvas>
-    <script>
-      var CANVAS_WIDTH = window.innerWidth;
-      var CANVAS_HEIGHT = window.innerHeight;
-      
-      var canvas = document.getElementById("mainCanvas")
-      var c = canvas.getContext('2d')
-      canvas.width = CANVAS_WIDTH;
-      canvas.height = CANVAS_HEIGHT;
-      c.fillStyle = "orange"
-      c.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-    </script>
-  </body>
+	<head>
+		<meta charset="utf-8">
+		<title>Tiles 3D Editor</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script type="module">
+            import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+
+			const scene = new THREE.Scene();
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			const geometry = new THREE.BoxGeometry();
+			const material = new THREE.MeshBasicMaterial( { color: 0xffa500 } );
+			const cube = new THREE.Mesh( geometry, material );
+			scene.add( cube );
+
+			camera.position.z = 5;
+
+			const animate = function () {
+				requestAnimationFrame( animate );
+
+				cube.rotation.x += 0.01;
+				cube.rotation.y += 0.01;
+
+				renderer.render( scene, camera );
+			};
+
+			animate();
+		</script>
+	</body>
 </html>
