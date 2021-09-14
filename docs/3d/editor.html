@@ -25,20 +25,23 @@
 			scene.add( cube );
 
 			camera.position.z = 5;
-
+			
+			const resize = function () {
+				canvas.innerWidth = (window.innerWidth);
+				canvas.innerHeight = (window.innerHeight);
+			}
+			
 			const animate = function () {
 				requestAnimationFrame( animate );
 
 				cube.rotation.x += 0.01;
 				cube.rotation.y += 0.01;
 				
-				canvas.innerWidth = (window.innerWidth)
-				canvas.innerHeight = (window.innerHeight)
-				
 				renderer.render( scene, camera );
 			};
 
 			animate();
+			resize();
 		</script>
 	</body>
 </html>
