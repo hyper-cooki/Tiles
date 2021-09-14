@@ -10,7 +10,7 @@
 	<body>
 		<script src="js/three.js"></script>
 		<script type="module">
-            import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+           		import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
 
 			const scene = new THREE.Scene();
 			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -32,8 +32,8 @@
 				cube.rotation.x += 0.01;
 				cube.rotation.y += 0.01;
 				
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				document.body.appendChild( renderer.domElement );
+				canvas.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( canvas.domElement );
 
 				renderer.render( scene, camera );
 			};
