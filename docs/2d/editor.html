@@ -13,20 +13,21 @@
     <canvas id="mainCanvas">
       Sorry, your current browser can not run Tiles. Please use a supported browser.
     </canvas>
-    <script>
-      const resize = function () {
-				canvas.innerWidth = (window.innerWidth);
-				canvas.innerHeight = (window.innerHeight);
-			}
-      
+    <script>      
       var canvas = document.getElementById("mainCanvas")
       var c = canvas.getContext('2d')
       canvas.width = CANVAS_WIDTH;
       canvas.height = CANVAS_HEIGHT;
       c.fillStyle = "orange"
       c.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-      
-      resize();
+    </script>
+    <script>
+	const resize = function () {
+		canvas.innerWidth = (window.innerWidth);
+		canvas.innerHeight = (window.innerHeight);
+	}
+	
+	resize()
     </script>
   </body>
 </html>
