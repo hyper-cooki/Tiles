@@ -20,13 +20,12 @@
       canvas.height = CANVAS_HEIGHT;
       c.fillStyle = "orange"
       c.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-    </script>
-    <script>
-	resize() {
-		canvas.innerWidth = (window.innerWidth);
-		canvas.innerHeight = (window.innerHeight);
-		
-		resize();
+	
+      	function draw() {
+  	   ctx.canvas.width  = window.innerWidth;
+  	   ctx.canvas.height = window.innerHeight;
+           
+	   draw()
 	}
     </script>
   </body>
