@@ -22,12 +22,12 @@
       c.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
     </script>
     <script>
-	const resize = function () {
+	resize() {
 		canvas.innerWidth = (window.innerWidth);
 		canvas.innerHeight = (window.innerHeight);
+		
+		resize();
 	}
-	
-	resize()
     </script>
   </body>
 </html>
