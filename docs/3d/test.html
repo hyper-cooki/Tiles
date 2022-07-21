@@ -27,6 +27,7 @@
             const light = new THREE.PointLight( 0xffffff, 1, 100 );
             light.position.set( 0, 10, 4 );
             light.castShadow = true; // default false
+            light.intensity = 100;
             scene.add( light );
 
             //Set up shadow properties for the light
