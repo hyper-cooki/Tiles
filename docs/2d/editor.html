@@ -16,14 +16,14 @@
     <script>      
       var canvas = document.getElementById("mainCanvas")
       var c = canvas.getContext('2d')
-      canvas.width = CANVAS_WIDTH;
-      canvas.height = CANVAS_HEIGHT;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
       
       c.canvas.width  = window.innerWidth;
       c.canvas.height = window.innerHeight;
            
       c.fillStyle = "#FFA500";
-      c.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+      c.fillRect(0,0,window.innerWidth,window.innerHeight);
     </script>
   </body>
 </html>
