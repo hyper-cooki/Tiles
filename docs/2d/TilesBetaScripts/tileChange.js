@@ -69,10 +69,9 @@ function deleteTileTypes() {
   console.log(TILE_TYPES[0].color);
 }
 
-function exportTilesPNG() {
-  var link = document.createElement('a');
-  link.download = '/Users/kieraneaves/Desktop/Code/Tiles//img/TilesIcon.png';
-  document.body.appendChild(link);
+function download(dataurl, filename) {
+  const link = document.createElement("a");
+  link.href = dataurl;
+  link.download = filename;
   link.click();
-  document.body.removeChild(link);
 }

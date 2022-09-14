@@ -121,12 +121,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // Init orthogonal map
   const map = new OrthogonalMap('orthogonal-map', mapData, { tileSize: 64 })
 
-  // Bind click event to show grid checkbox toggle
-  const cb = document.getElementById('toggle-grid')
-  cb.addEventListener('click', function () {
-    map.toggleGrid()
-  })
-
   const loader = document.getElementById('orthogonal-map')
   loader.addEventListener('click', function () {
     map.draw()
@@ -135,5 +129,15 @@ document.addEventListener('DOMContentLoaded', function () {
   const resetLoader = document.getElementById('resetButton')
   resetLoader.addEventListener('click', function () {
     map.draw()
+  })
+
+  const exportButton = document.getElementById('exportButton')
+  exportButton.addEventListener('click', function () {
+    map.toggleGrid();
+    var canvas = document.getElementById('orthogonal-map');
+    var img = canvas.toDataURL('image/png');
+    var fileName = document.getElementById('fileNameInput').value;
+    download(img, fileName+".png");
+    map.toggleGrid();
   })
 })
