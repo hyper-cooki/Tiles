@@ -67,7 +67,7 @@ function clickTile() {
 
 function deleteTileTypes() {
   for (let i = 0; i < Object.keys(TILE_TYPES).length-2; i++) {
-    if (!(mapData.includes(i))) {
+    if (!(mapData.toString().includes(i))) {
       delete TILE_TYPES[i];
     }
   }
