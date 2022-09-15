@@ -66,7 +66,11 @@ function clickTile() {
 }
 
 function deleteTileTypes() {
-  console.log(TILE_TYPES[0].color);
+  for (let i = 0; i < Object.keys(TILE_TYPES).length-2; i++) {
+    if (!(mapData.includes(i))) {
+      delete TILE_TYPES[i];
+    }
+  }
 }
 
 function download(dataurl, filename) {
