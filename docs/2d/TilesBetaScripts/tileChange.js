@@ -71,6 +71,7 @@ function deleteTileTypes() {
       delete TILE_TYPES[i];
     }
   }
+  console.log(TILE_TYPES);
 }
 
 function download(dataurl, filename) {
