@@ -55,9 +55,42 @@ transparency.addEventListener("input",(event)=>{
   TILE_TYPES[tileTypeID] = { name: 'Custom', color: rgba };
 });
 
+function findObjectCoords(mouseEvent)
+{
+  var obj = document.getElementById("orthogonal-map");
+  var obj_left = 0;
+  var obj_top = 0;
+  var xpos;
+  var ypos;
+  while (obj.offsetParent)
+  {
+    obj_left += obj.offsetLeft;
+    obj_top += obj.offsetTop;
+    obj = obj.offsetParent;
+  }
+  if (mouseEvent)
+  {
+    //FireFox
+    xpos = mouseEvent.pageX;
+    ypos = mouseEvent.pageY;
+  }
+  else
+  {
+    //IE
+    xpos = window.event.x + document.body.scrollLeft - 2;
+    ypos = window.event.y + document.body.scrollTop - 2;
+  }
+  xpos -= obj_left;
+  ypos -= obj_top;
+
+  newXpos = xpos;
+  newYpos = ypos;
+}
+document.getElementById("orthogonal-map").onmousemove = findObjectCoords;
+
 function clickTile() {
-  var x = event.clientX - 9;
-  var y = event.clientY - 40;
+  var x = newXpos;
+  var y = newYpos;
 
   x = Math.trunc(x / 64);
   y = Math.trunc(y / 64);
@@ -66,12 +99,15 @@ function clickTile() {
 }
 
 function deleteTileTypes() {
-  for (let i = 0; i < Object.keys(TILE_TYPES).length-2; i++) {
-    if (!(mapData.toString().includes(i))) {
-      delete TILE_TYPES[i];
+  for (let i2 = 0; i2 < mapData.length; i2++) {
+    for (let i = 0; i < Object.keys(TILE_TYPES).length-2; i++) {
+      if (!(mapData[i2].includes(i))) {
+        console.log(TILE_TYPES[i])
+        delete TILE_TYPES[i];
+      }
     }
   }
-  console.log(TILE_TYPES);
+  console.log(TILE_TYPES)
 }
 
 function download(dataurl, filename) {

@@ -1,7 +1,7 @@
 // Possible tile types
 const TILE_TYPES = {
   0: { name: 'Transparent', color: 'rgba(0,0,0,0)' },
-  1: { name: 'Custom', color: 'black' },
+  1: { name: 'Custom', color: 'rgba(0,0,0,1)' },
 }
     
     // Map tile data
