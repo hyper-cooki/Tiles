@@ -40,13 +40,13 @@
   </script>
   <script defer src="TilesBetaScripts/map.js"></script>
   <script defer src="TilesBetaScripts/tileChange.js"></script>
-  <script src="https://kit.fontawesome.com/6c52ca2adf.js" crossorigin="anonymous"></script>
+  <script defer src="https://kit.fontawesome.com/6c52ca2adf.js" crossorigin="anonymous"></script>
   </head>
   <div id="draggable" class="ui-widget-content">
     <i class="fa-solid fa-grip" id="drag-grip"></i>
     <i class="fa-solid fa-paintbrush"></i>
   </div>
-  <canvas id="orthogonal-map" class="canvas-map" width="704" height="576" onmousedown="clickTile()"></canvas>
+  <canvas id="orthogonal-map" class="canvas-map" width="704" height="576"></canvas>
   <button id="resetButton" onclick="resetTiles()">RESET</button>
   <button onclick="clickCounter()">SAVE TEST</button>
   <h1 id="result"></h1>
@@ -55,4 +55,6 @@
   <button onclick="deleteTileTypes()">DELETE TYPES</button>
   <input type="text" id="fileNameInput" value="TilesPixelArt">
   <button id="exportButton">Export to PNG</button>
+  <input type="range" value="64" min="0" max="128" step="16" id="tileSize">
+  <p id="tileSizeValue"></p>
 </html>

@@ -115,15 +115,28 @@ class OrthogonalMap extends Map {
   }
 }
 
+function mouseMoveWhilstDown(target, whileMove) {
+  
+}
+
 // Init canvas tile map on document ready
 document.addEventListener('DOMContentLoaded', function () {
 
   // Init orthogonal map
-  const map = new OrthogonalMap('orthogonal-map', mapData, { tileSize: 64 })
+  const map = new OrthogonalMap('orthogonal-map', mapData, { tileSize: document.getElementById("tileSize").value })
+
+  function sussyfunc() {
+    clickTile();
+    map.draw();
+  }
 
   const loader = document.getElementById('orthogonal-map')
-  loader.addEventListener('click', function () {
-    map.draw()
+  loader.addEventListener('mousedown', function () {
+    inter=setInterval(sussyfunc, 0);
+  })
+
+  loader.addEventListener('mouseup', function () {
+    clearInterval(inter);
   })
 
   const resetLoader = document.getElementById('resetButton')

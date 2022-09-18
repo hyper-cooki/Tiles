@@ -40,6 +40,7 @@ function clickCounter() {
 
 const color = document.getElementById("tileColour");
 const transparency = document.getElementById("tileOpacity");
+const size = document.getElementById("tileSize");
 
 color.addEventListener("input",(event)=>{
   var tileTypeID = Object.keys(TILE_TYPES).length
@@ -76,7 +77,7 @@ function findObjectCoords(mouseEvent)
   }
   else
   {
-    //IE
+    //IE (I should remove this because it's no like anyone uses Internet Explorer anymore, RIGHT?)
     xpos = window.event.x + document.body.scrollLeft - 2;
     ypos = window.event.y + document.body.scrollTop - 2;
   }
