@@ -1,7 +1,7 @@
 // Possible tile types
 const TILE_TYPES = {
   0: { name: 'Transparent', color: 'rgba(0,0,0,0)' },
-  1: { name: 'Custom', color: 'rgba(0,0,0,1)' },
+  1: { name: 'Custom', color: 'rgba(255,255,255,1)' },
 }
     
     // Map tile data
@@ -109,14 +109,10 @@ class OrthogonalMap extends Map {
     const yPos = y * this.tileSize
 
     // Draw grid
-    this.ctx.strokeStyle = '#999'
+    this.ctx.strokeStyle = '#fff'
     this.ctx.lineWidth = 0.5
     this.ctx.strokeRect(xPos, yPos, this.tileSize, this.tileSize)
   }
-}
-
-function mouseMoveWhilstDown(target, whileMove) {
-  
 }
 
 // Init canvas tile map on document ready
@@ -125,19 +121,26 @@ document.addEventListener('DOMContentLoaded', function () {
   // Init orthogonal map
   const map = new OrthogonalMap('orthogonal-map', mapData, { tileSize: document.getElementById("tileSize").value })
 
-  function sussyfunc() {
-    clickTile();
-    map.draw();
-  }
+  var inter = null;
 
   const loader = document.getElementById('orthogonal-map')
   loader.addEventListener('mousedown', function () {
-    inter=setInterval(sussyfunc, 0);
+    inter = setInterval(downfunc, 0);
   })
 
   loader.addEventListener('mouseup', function () {
     clearInterval(inter);
   })
+
+  const html = document.getElementById('windowHTML')
+  html.addEventListener('mouseleave', function () {
+    clearInterval(inter);
+  })
+
+  function downfunc() {
+    clickTile();
+    map.draw();
+  }
 
   const resetLoader = document.getElementById('resetButton')
   resetLoader.addEventListener('click', function () {
@@ -147,10 +150,22 @@ document.addEventListener('DOMContentLoaded', function () {
   const exportButton = document.getElementById('exportButton')
   exportButton.addEventListener('click', function () {
     map.toggleGrid();
+    map.tileSize = 64;
     var canvas = document.getElementById('orthogonal-map');
     var img = canvas.toDataURL('image/png');
     var fileName = document.getElementById('fileNameInput').value;
     download(img, fileName+".png");
     map.toggleGrid();
+    setTimeout(function(){
+      map.tileSize = document.getElementById("tileSize").value;
+    }, 1);
   })
+
+  const size = document.getElementById("tileSize");
+  size.oninput = function(){
+    map.tileSize = document.getElementById("tileSize").value;
+    document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * 7;
+    document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * 11;
+    map.draw();
+  }
 })

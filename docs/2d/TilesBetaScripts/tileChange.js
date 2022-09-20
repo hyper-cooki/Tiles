@@ -40,7 +40,6 @@ function clickCounter() {
 
 const color = document.getElementById("tileColour");
 const transparency = document.getElementById("tileOpacity");
-const size = document.getElementById("tileSize");
 
 color.addEventListener("input",(event)=>{
   var tileTypeID = Object.keys(TILE_TYPES).length
@@ -93,8 +92,8 @@ function clickTile() {
   var x = newXpos;
   var y = newYpos;
 
-  x = Math.trunc(x / 64);
-  y = Math.trunc(y / 64);
+  x = Math.trunc(x / document.getElementById("tileSize").value);
+  y = Math.trunc(y / document.getElementById("tileSize").value);
 
   mapData[y][x] = Object.keys(TILE_TYPES).length-1;
 }
@@ -117,3 +116,4 @@ function download(dataurl, filename) {
   link.download = filename;
   link.click();
 }
+
