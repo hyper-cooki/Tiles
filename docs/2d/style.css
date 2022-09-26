@@ -1,0 +1,23 @@
+body {
+    font-family: Quicksand, sans-serif !important;
+    font-weight: bold !important;
+    color: #fff !important;
+    background-color: #121212 !important;
+    -webkit-user-select: none !important; /* Safari */
+    -ms-user-select: none !important; /* IE 10 and IE 11 */
+    user-select: none !important;
+  }
+
+  .canvas-map {
+    padding: 0 !important;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  #draggable {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    float: inline-end !important;
+    position: absolute !important;
+    border-radius: 1rem !important;
+    padding: 1em !important;
+    cursor: all-scroll !important;
+  }

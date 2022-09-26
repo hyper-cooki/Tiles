@@ -122,25 +122,42 @@ document.addEventListener('DOMContentLoaded', function () {
   const map = new OrthogonalMap('orthogonal-map', mapData, { tileSize: document.getElementById("tileSize").value })
 
   var inter = null;
+  var penDown = false;
+
+  const ui = document.getElementById('draggable');
+
+  function downfunc() {
+    clickTile();
+    map.draw();
+    penDown = true;
+  }
+
+  function downCheck() {
+    if (penDown) {
+      document.getElementById('draggable').style.pointerEvents = "none";
+    }
+    else {
+      document.getElementById('draggable').style.pointerEvents = "all";
+    }
+  }
+
+  downCheckInter = setInterval(downCheck, 0);
 
   const loader = document.getElementById('orthogonal-map')
   loader.addEventListener('mousedown', function () {
     inter = setInterval(downfunc, 0);
   })
-
+  
   loader.addEventListener('mouseup', function () {
     clearInterval(inter);
+    penDown = false;
   })
 
   const html = document.getElementById('windowHTML')
   html.addEventListener('mouseleave', function () {
     clearInterval(inter);
+    penDown = false;
   })
-
-  function downfunc() {
-    clickTile();
-    map.draw();
-  }
 
   const resetLoader = document.getElementById('resetButton')
   resetLoader.addEventListener('click', function () {
@@ -151,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
   exportButton.addEventListener('click', function () {
     map.toggleGrid();
     map.tileSize = 64;
+    map.draw();
     var canvas = document.getElementById('orthogonal-map');
     var img = canvas.toDataURL('image/png');
     var fileName = document.getElementById('fileNameInput').value;
@@ -158,14 +176,15 @@ document.addEventListener('DOMContentLoaded', function () {
     map.toggleGrid();
     setTimeout(function(){
       map.tileSize = document.getElementById("tileSize").value;
+      map.draw();
     }, 1);
   })
 
   const size = document.getElementById("tileSize");
   size.oninput = function(){
     map.tileSize = document.getElementById("tileSize").value;
-    document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * 7;
-    document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * 11;
+    document.getElementById("orthogonal-map").style.height = document.getElementById("tileSize").value * 7;
+    document.getElementById("orthogonal-map").style.width = document.getElementById("tileSize").value * 11;
     map.draw();
   }
 })

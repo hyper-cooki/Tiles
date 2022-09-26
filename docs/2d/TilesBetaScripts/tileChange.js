@@ -16,10 +16,10 @@ function hexToRgb(hex){
   throw new Error('Bad Hex');
 }
 
-function resetTiles() {
+function resetTiles(tileTypeNumber) {
   for (let i = 0; i < mapData.length; i++) {
     for (let i2 = 0; i2 < mapData[i].length; i2++) {
-      mapData[i][i2] = 0;
+      mapData[i][i2] = tileTypeNumber;
       sessionStorage.tiles = mapData;
     }
   }
