@@ -153,6 +153,11 @@ document.addEventListener('DOMContentLoaded', function () {
     penDown = false;
   })
 
+  loader.addEventListener('mouseleave', function () {
+    clearInterval(inter);
+    penDown = false;
+  })
+
   const html = document.getElementById('windowHTML')
   html.addEventListener('mouseleave', function () {
     clearInterval(inter);
