@@ -1,8 +1,8 @@
 // Possible tile types
-const TILE_TYPES = {
-  0: { name: 'Transparent', color: 'rgba(0,0,0,0)' },
-  1: { name: 'Custom', color: 'rgba(255,255,255,1)' },
-}
+const TILE_TYPES = [
+  { name: 'Transparent', color: 'rgba(0,0,0,0)' },
+  { name: 'Custom', color: 'rgba(255,255,255,1)' },
+]
     
     // Map tile data
 const mapData = [
@@ -90,10 +90,10 @@ class OrthogonalMap extends Map {
         const tileId = this.data[y][x]
         
         // Use tile ID to determine tile type from TILE_TYPES (i.e. Sea or Land)
-        const tileType = TILE_TYPES[tileId]
+        const tileType = TILE_TYPES[tileId];
 
         // Create tile instance and draw to our canvas
-        new Tile(this.tileSize, tileType, this.ctx).draw(x, y)
+        new Tile(this.tileSize, tileType, this.ctx).draw(x, y);
 
         // Draw an outline with coordinates on top of tile if show grid is enabled
         if (this.showGrid) {
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const resetLoader = document.getElementById('resetButton')
   resetLoader.addEventListener('click', function () {
-    map.draw()
+    map.draw();
   })
 
   const exportButton = document.getElementById('exportButton')
@@ -178,6 +178,14 @@ document.addEventListener('DOMContentLoaded', function () {
       map.tileSize = document.getElementById("tileSize").value;
       map.draw();
     }, 1);
+  })
+
+  ui.addEventListener('mousedown', function () {
+    document.getElementById('draggable').style.cursor = "grabbing";
+  })
+
+  ui.addEventListener('mouseup', function () {
+    document.getElementById('draggable').style.cursor = "grab";
   })
 
   const size = document.getElementById("tileSize");

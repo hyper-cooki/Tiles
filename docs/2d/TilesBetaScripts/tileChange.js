@@ -46,6 +46,7 @@ color.addEventListener("input",(event)=>{
   rgb = hexToRgb(document.getElementById("tileColour").value);
   rgba = "rgba("+rgb+","+document.getElementById("tileOpacity").value+")";
   TILE_TYPES[tileTypeID] = { name: 'Custom'+tileTypeID, color: rgba };
+  console.log(TILE_TYPES);
 });
 
 transparency.addEventListener("input",(event)=>{
@@ -100,14 +101,13 @@ function clickTile() {
 
 function deleteTileTypes() {
   for (let i2 = 0; i2 < mapData.length; i2++) {
-    for (let i = 0; i < Object.keys(TILE_TYPES).length-2; i++) {
+    for (let i = 1; i < Object.keys(TILE_TYPES).length-2; i++) {
       if (!(mapData[i2].includes(i))) {
-        console.log(TILE_TYPES[i])
         delete TILE_TYPES[i];
       }
     }
   }
-  console.log(TILE_TYPES)
+  console.log(TILE_TYPES);
 }
 
 function download(dataurl, filename) {
@@ -115,5 +115,18 @@ function download(dataurl, filename) {
   link.href = dataurl;
   link.download = filename;
   link.click();
+}
+
+var uihidden = false;
+
+function toggleUI() {
+  uihidden = !uihidden;
+  if (uihidden) {
+    document.getElementById('ui-stuff').style.display = "none";
+    document.getElementById('minimise-bar').style.cursor = "s-resize";
+  } else {
+    document.getElementById('ui-stuff').style.display = "block";
+    document.getElementById('minimise-bar').style.cursor = "n-resize";
+  }
 }
 

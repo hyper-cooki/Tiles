@@ -6,7 +6,6 @@
     </title>
     <link rel="icon" type="image/png" href="img/TilesIcon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,7 +15,7 @@
     <link rel="stylesheet" href="style.css">
     <script>
         $(function() {
-          $( "#draggable" ).draggable({containment: "#orthogonal-map" });
+          $( "#draggable" ).draggable({ containment: "#orthogonal-map" });
         });
     </script>
     <script defer src="TilesBetaScripts/map.js"></script>
@@ -25,19 +24,24 @@
   </head>
   <body>
     <div id="draggable" style="pointer-events: all;">
-      <p>Tile Visuals</p>
-      <input type="color" id="tileColour" value="#ffffff">
-      <input type="range" value="1" min="0" max="1" step="0.5" id="tileOpacity"><br>
-      <button id="resetButton" onclick="resetTiles(0)">RESET</button><br>
-      <button onclick="resetTiles(1)">FILL</button>
-      <p>File</p>
-      <input type="text" id="fileNameInput" value="TilesPixelArt">
-      <button id="exportButton">Export to PNG</button><br>
-      <p>Other</p>
-      <button onclick="deleteTileTypes()">DELETE TYPES (BUG-FULL)</button><br>
-      <input type="range" value="64" min="16" max="128" step="16" id="tileSize"><br>
-      <button onclick="clickCounter()">SAVE TEST (BUG-FREE)</button>
-      <p id="result"></p>
+      <div>
+        <div id="minimise-bar" onclick="toggleUI()"></div><br>
+      </div>
+      <div id="ui-stuff">
+        <p>Tile Visuals</p>
+        <input type="color" id="tileColour" value="#ffffff">
+        <input type="range" value="1" min="0" max="1" step="0.5" id="tileOpacity"><br>
+        <button id="resetButton" onclick="resetTiles(0)">RESET</button><br>
+        <button onclick="resetTiles(1)">FILL</button>
+        <p>File</p>
+        <input type="text" id="fileNameInput" value="TilesPixelArt">
+        <button id="exportButton">Export to PNG</button><br>
+        <p>Other</p>
+        <button onclick="deleteTileTypes()">DELETE TYPES (BUG-FULL)</button><br>
+        <input type="range" value="64" min="16" max="128" step="16" id="tileSize"><br>
+        <button onclick="clickCounter()">SAVE TEST (BUG-FREE)</button>
+        <p id="result"></p>
+      </div>
     </div>
   <canvas id="orthogonal-map" class="canvas-map" width="704" height="448"></canvas>
 </div>
