@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html id="windowHTML">
+<html id="windowHTML" onscroll="console.log(L)">
   <head>
     <title>
       Tiles Beta
@@ -20,7 +20,6 @@
     </script>
     <script defer src="TilesBetaScripts/map.js"></script>
     <script defer src="TilesBetaScripts/tileChange.js"></script>
-    <script defer src="https://kit.fontawesome.com/6c52ca2adf.js" crossorigin="anonymous"></script>
   </head>
   <body>
     <div id="draggable" style="pointer-events: all;">
@@ -38,12 +37,13 @@
         <button id="exportButton">Export to PNG</button><br>
         <p>Other</p>
         <button onclick="deleteTileTypes()">DELETE TYPES (BUG-FULL)</button><br>
+        <button id="draw">DRAW</button><br>
         <input type="range" value="64" min="16" max="128" step="16" id="tileSize"><br>
-        <button onclick="clickCounter()">SAVE TEST (BUG-FREE)</button>
+        <button onclick="clickCounter()">SAVE TEST</button>
         <p id="result"></p>
       </div>
     </div>
-  <canvas id="orthogonal-map" class="canvas-map" width="704" height="448"></canvas>
+  <canvas id="orthogonal-map" class="canvas-map" width="0" height="0"></canvas>
 </div>
 </body>
 </html>

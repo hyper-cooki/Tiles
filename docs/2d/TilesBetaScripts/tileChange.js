@@ -20,7 +20,6 @@ function resetTiles(tileTypeNumber) {
   for (let i = 0; i < mapData.length; i++) {
     for (let i2 = 0; i2 < mapData[i].length; i2++) {
       mapData[i][i2] = tileTypeNumber;
-      sessionStorage.tiles = mapData;
     }
   }
 }
@@ -32,7 +31,7 @@ function clickCounter() {
     } else {
       sessionStorage.clickcount = 1;
     }
-    document.getElementById("result").innerHTML = "You have clicked the button " + sessionStorage.clickcount + " time(s) in this session.";
+    document.getElementById("result").innerHTML = "Saved! " + "(" + sessionStorage.clickcount + ")";
   } else {
     document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
   }
@@ -45,8 +44,7 @@ color.addEventListener("input",(event)=>{
   var tileTypeID = Object.keys(TILE_TYPES).length
   rgb = hexToRgb(document.getElementById("tileColour").value);
   rgba = "rgba("+rgb+","+document.getElementById("tileOpacity").value+")";
-  TILE_TYPES[tileTypeID] = { name: 'Custom'+tileTypeID, color: rgba };
-  console.log(TILE_TYPES);
+  TILE_TYPES[tileTypeID] = { id: TILE_TYPES.length, color: rgba };
 });
 
 transparency.addEventListener("input",(event)=>{
@@ -96,15 +94,20 @@ function clickTile() {
   x = Math.trunc(x / document.getElementById("tileSize").value);
   y = Math.trunc(y / document.getElementById("tileSize").value);
 
-  mapData[y][x] = Object.keys(TILE_TYPES).length-1;
+  mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
+
+  document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
+  document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
 }
 
+var indexOfObject;
+
 function deleteTileTypes() {
-  for (let i2 = 0; i2 < mapData.length; i2++) {
-    for (let i = 1; i < Object.keys(TILE_TYPES).length-2; i++) {
-      if (!(mapData[i2].includes(i))) {
-        delete TILE_TYPES[i];
-      }
+  for (let i = 1; i < TILE_TYPES.length-1;) {
+    if (!(mapData.toString().includes(i))) {      
+      TILE_TYPES.splice(i, 1);
+    } else {
+      i++;
     }
   }
   console.log(TILE_TYPES);
@@ -129,4 +132,3 @@ function toggleUI() {
     document.getElementById('minimise-bar').style.cursor = "n-resize";
   }
 }
-

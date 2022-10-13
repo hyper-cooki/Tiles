@@ -1,21 +1,31 @@
-// Possible tile types
-const TILE_TYPES = [
-  { name: 'Transparent', color: 'rgba(0,0,0,0)' },
-  { name: 'Custom', color: 'rgba(255,255,255,1)' },
-]
+if (sessionStorage.tilemap) {
+  TILE_TYPES = JSON.parse(sessionStorage.getItem("tiletypes"))
+} else {
+  // Possible tile types
+  TILE_TYPES = [
+    { id: 0, color: 'rgba(0,0,0,0)' },
+    { id: 1, color: 'rgba(255,255,255,1)' },
+  ]
+}
+
+
     
-    // Map tile data
-const mapData = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
+if (sessionStorage.tilemap) {
+  mapData = JSON.parse(sessionStorage.getItem("tilemap"))
+} else {
+  // Map tile data
+  mapData = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ]
+}
 
 /**
   Tile class
@@ -69,13 +79,14 @@ class Map {
 /**
   OrthogonalMap class
  */
+
 class OrthogonalMap extends Map {
 
   constructor (selector, data, opts) {
     super(selector, data, opts)
     this.draw()
   }
-  
+
   draw () {
     super.draw() // Call draw() method from Map class
 
@@ -88,9 +99,12 @@ class OrthogonalMap extends Map {
 
         // Get tile ID from map data
         const tileId = this.data[y][x]
-        
-        // Use tile ID to determine tile type from TILE_TYPES (i.e. Sea or Land)
-        const tileType = TILE_TYPES[tileId];
+
+        for (let i = 0; i < TILE_TYPES[TILE_TYPES.length-1].id+1; i++) {
+          if (i == tileId) {
+            var tileType = TILE_TYPES[i];
+          }
+        }
 
         // Create tile instance and draw to our canvas
         new Tile(this.tileSize, tileType, this.ctx).draw(x, y);
@@ -109,8 +123,8 @@ class OrthogonalMap extends Map {
     const yPos = y * this.tileSize
 
     // Draw grid
-    this.ctx.strokeStyle = '#fff'
-    this.ctx.lineWidth = 0.5
+    this.ctx.strokeStyle = 'rgba(255,255,255,0.25)'
+    this.ctx.lineWidth = document.getElementById('tileSize').value / 32
     this.ctx.strokeRect(xPos, yPos, this.tileSize, this.tileSize)
   }
 }
@@ -121,6 +135,10 @@ document.addEventListener('DOMContentLoaded', function () {
   // Init orthogonal map
   const map = new OrthogonalMap('orthogonal-map', mapData, { tileSize: document.getElementById("tileSize").value })
 
+  document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
+  document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
+  map.draw();
+
   var inter = null;
   var penDown = false;
 
@@ -130,6 +148,11 @@ document.addEventListener('DOMContentLoaded', function () {
     clickTile();
     map.draw();
     penDown = true;
+    sessionStorage.setItem("tilemap", JSON.stringify(mapData));
+    sessionStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
+    for (let i = 0; i < mapData.length; i++) {
+      mapData[i][mapData[0].length] = 0;
+    }
   }
 
   function downCheck() {
@@ -167,6 +190,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const resetLoader = document.getElementById('resetButton')
   resetLoader.addEventListener('click', function () {
     map.draw();
+    sessionStorage.setItem("tilemap", JSON.stringify(mapData));
+  })
+
+  const drawButton = document.getElementById('draw')
+  drawButton.addEventListener('click', function () {
+    map.draw();
+    console.log(mapData);
   })
 
   const exportButton = document.getElementById('exportButton')
@@ -196,8 +226,15 @@ document.addEventListener('DOMContentLoaded', function () {
   const size = document.getElementById("tileSize");
   size.oninput = function(){
     map.tileSize = document.getElementById("tileSize").value;
-    document.getElementById("orthogonal-map").style.height = document.getElementById("tileSize").value * 7;
-    document.getElementById("orthogonal-map").style.width = document.getElementById("tileSize").value * 11;
+    document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
+    document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
+    document.getElementById("orthogonal-map").border = document.getElementById('tileSize').value / 32 + "px";
     map.draw();
   }
+
+  document.addEventListener('keyup', (event) => {
+    if (event.key === 'Control') {
+      alert('Control key released');
+    }
+  }, false);
 })
