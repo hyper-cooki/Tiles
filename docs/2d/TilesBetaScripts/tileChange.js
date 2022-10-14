@@ -45,6 +45,7 @@ color.addEventListener("input",(event)=>{
   rgb = hexToRgb(document.getElementById("tileColour").value);
   rgba = "rgba("+rgb+","+document.getElementById("tileOpacity").value+")";
   TILE_TYPES[tileTypeID] = { id: TILE_TYPES.length, color: rgba };
+  document.getElementById("tileColour").style.backgroundColor = document.getElementById("tileColour").value;
 });
 
 transparency.addEventListener("input",(event)=>{
@@ -94,7 +95,15 @@ function clickTile() {
   x = Math.trunc(x / document.getElementById("tileSize").value);
   y = Math.trunc(y / document.getElementById("tileSize").value);
 
-  mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
+  if (modeSwitch == 0) {
+    mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
+  } else if (modeSwitch == 1) {
+    mapData[y][x] = 0;
+  } else if (modeSwitch == 2) {
+    console.log("fill?");
+  } else if (modeSwitch == 3) {
+    document.getElementById("tileColour").value = TILE_TYPES[mapData[y][x]].color;
+  }
 
   document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
   document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
@@ -131,4 +140,15 @@ function toggleUI() {
     document.getElementById('ui-stuff').style.display = "block";
     document.getElementById('minimise-bar').style.cursor = "n-resize";
   }
+}
+
+modeSwitch = 0;
+modes = ['PEN', 'ERASER', 'FILL', 'DROPPER'];
+
+function toggleMode() {
+  modeSwitch += 1;
+  if (modeSwitch > modes.length-1) {
+    modeSwitch = 0;
+  }
+  document.getElementById("mode").innerHTML = "MODE: "+modes[modeSwitch];
 }

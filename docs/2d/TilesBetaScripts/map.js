@@ -7,8 +7,6 @@ if (sessionStorage.tilemap) {
     { id: 1, color: 'rgba(255,255,255,1)' },
   ]
 }
-
-
     
 if (sessionStorage.tilemap) {
   mapData = JSON.parse(sessionStorage.getItem("tilemap"))
@@ -132,6 +130,7 @@ class OrthogonalMap extends Map {
 // Init canvas tile map on document ready
 document.addEventListener('DOMContentLoaded', function () {
 
+  document.getElementById("tileColour").style.backgroundColor = document.getElementById("tileColour").value;
   // Init orthogonal map
   const map = new OrthogonalMap('orthogonal-map', mapData, { tileSize: document.getElementById("tileSize").value })
 
@@ -150,9 +149,6 @@ document.addEventListener('DOMContentLoaded', function () {
     penDown = true;
     sessionStorage.setItem("tilemap", JSON.stringify(mapData));
     sessionStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
-    for (let i = 0; i < mapData.length; i++) {
-      mapData[i][mapData[0].length] = 0;
-    }
   }
 
   function downCheck() {
@@ -232,9 +228,48 @@ document.addEventListener('DOMContentLoaded', function () {
     map.draw();
   }
 
-  document.addEventListener('keyup', (event) => {
-    if (event.key === 'Control') {
-      alert('Control key released');
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowRight') {
+      for (let i = 0; i < mapData.length; i++) {
+        mapData[i][mapData[i].length] = 0;
+      }
+      document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
+      map.draw();
+    }
+  }, false);
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+      for (let i = 0; i < mapData.length; i++) {
+        mapData[i].length -= 1;
+      }
+      document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
+      map.draw();
+    }
+  }, false);
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowDown') {
+      mapData[mapData.length] = [];
+      for (let i = 0; i < mapData[0].length; i++) {
+        mapData[mapData.length-1][i] = 0;
+      }
+      document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
+      map.draw();
+    }
+  }, false);
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowUp') {
+      mapData.length -= 1;
+      document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
+      map.draw();
+    }
+  }, false);
+
+  document.addEventListener('keydown', (event) => {    
+    if ((event.metaKey) && (event.key == 's')){
+      console.log("Saving...");
     }
   }, false);
 })

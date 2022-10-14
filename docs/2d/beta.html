@@ -28,8 +28,9 @@
       </div>
       <div id="ui-stuff">
         <p>Tile Visuals</p>
-        <input type="color" id="tileColour" value="#ffffff">
+        <input type="color" id="tileColour" value="#ffffff" style="border: 0; border-radius: 0.1em; padding: 0;">
         <input type="range" value="1" min="0" max="1" step="0.5" id="tileOpacity"><br>
+        <button id="mode" onclick="toggleMode()">MODE: PEN</button><br><br>
         <button id="resetButton" onclick="resetTiles(0)">RESET</button><br>
         <button onclick="resetTiles(1)">FILL</button>
         <p>File</p>
