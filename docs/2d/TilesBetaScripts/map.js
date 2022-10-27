@@ -1,10 +1,13 @@
-if (sessionStorage.tilemap) {
+console.log("hello aston, i hope u like deez nuts...")
+
+if (sessionStorage.tiletypes) {
   TILE_TYPES = JSON.parse(sessionStorage.getItem("tiletypes"))
 } else {
   // Possible tile types
+  tile1 = 'document.getElementById("tile1")';
   TILE_TYPES = [
-    { id: 0, color: 'rgba(0,0,0,0)' },
-    { id: 1, color: 'rgba(255,255,255,1)' },
+    { id: 0, colour: 'rgba(0,0,0,0)', tileImage: 'rgba(0,0,0,0)' },
+    { id: 1, colour: 'rgba(255,255,255,1)', tileImage: 'undefined' },
   ]
 }
     
@@ -42,8 +45,12 @@ class Tile {
     const yPos = y * this.size
 
     // Draw tile
-    this.ctx.fillStyle = this.type.color
+    this.ctx.fillStyle = this.type.colour
     this.ctx.fillRect(xPos, yPos, this.size, this.size)
+    console.log(TILE_TYPES[0].type.image);
+    if (!(this.type.image == "undefined")) {
+      this.ctx.drawImage(this.type.image, xPos, yPos, this.size, this.size)
+    }
   }
 }
 
@@ -130,7 +137,7 @@ class OrthogonalMap extends Map {
 // Init canvas tile map on document ready
 document.addEventListener('DOMContentLoaded', function () {
 
-  document.getElementById("tileColour").style.backgroundColor = document.getElementById("tileColour").value;
+  document.getElementById("tileColour").style.backgroundcolour = document.getElementById("tileColour").value;
   // Init orthogonal map
   const map = new OrthogonalMap('orthogonal-map', mapData, { tileSize: document.getElementById("tileSize").value })
 
@@ -142,7 +149,6 @@ document.addEventListener('DOMContentLoaded', function () {
   var penDown = false;
 
   const ui = document.getElementById('draggable');
-
   function downfunc() {
     clickTile();
     map.draw();
@@ -183,10 +189,16 @@ document.addEventListener('DOMContentLoaded', function () {
     penDown = false;
   })
 
+  html.addEventListener('resize', function () {
+    console.log(html.scrollTop);
+    console.log(html.scrollLeft);
+  })
+
   const resetLoader = document.getElementById('resetButton')
   resetLoader.addEventListener('click', function () {
     map.draw();
     sessionStorage.setItem("tilemap", JSON.stringify(mapData));
+    sessionStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
   })
 
   const drawButton = document.getElementById('draw')
@@ -263,6 +275,13 @@ document.addEventListener('DOMContentLoaded', function () {
     if (event.key === 'ArrowUp') {
       mapData.length -= 1;
       document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
+      map.draw();
+    }
+  }, false);
+
+  document.addEventListener('keydown', (event) => {
+    if ((event.key === 'r') && (!(event.metaKey))) {
+      resetTiles(0);
       map.draw();
     }
   }, false);
