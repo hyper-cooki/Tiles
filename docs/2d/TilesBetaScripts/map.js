@@ -1,5 +1,3 @@
-console.log("hello aston, i hope u like deez nuts...")
-
 if (sessionStorage.tiletypes) {
   TILE_TYPES = JSON.parse(sessionStorage.getItem("tiletypes"))
 } else {
