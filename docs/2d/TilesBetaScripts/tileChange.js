@@ -41,6 +41,7 @@ function clickCounter() {
 
 const colour = document.getElementById("tileColour");
 const transparency = document.getElementById("tileOpacity");
+const image = document.getElementById("tileImageSelect");
 
 colour.addEventListener("input",(event)=>{
   var tileTypeID = Object.keys(TILE_TYPES).length
@@ -55,6 +56,14 @@ transparency.addEventListener("input",(event)=>{
   rgb = hexToRgb(document.getElementById("tileColour").value);
   rgba = "rgba("+rgb+","+document.getElementById("tileOpacity").value+")";
   TILE_TYPES[tileTypeID] = { name: 'Custom', colour: rgba };
+});
+
+image.addEventListener("input",(event)=>{
+  var tileTypeID = Object.keys(TILE_TYPES).length
+  rgb = hexToRgb(document.getElementById("tileColour").value);
+  rgba = "rgba("+rgb+","+document.getElementById("tileOpacity").value+")";
+  TILE_TYPES[tileTypeID] = { name: 'Custom', colour: rgba, image: image.value };
+  console.log(TILE_TYPES[tileTypeID-1]);
 });
 
 function findObjectCoords(mouseEvent)
@@ -107,9 +116,6 @@ function clickTile() {
 
   x = Math.trunc(x2 / document.getElementById("tileSize").value);
   y = Math.trunc(y2 / document.getElementById("tileSize").value);
-
-  //document.getElementById("draggable").style.left = x2+"px";
-  //document.getElementById("draggable").style.top = y2+"px";
 
   if (modeSwitch == 0) {
     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;

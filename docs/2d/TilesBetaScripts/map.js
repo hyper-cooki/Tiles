@@ -2,10 +2,9 @@ if (sessionStorage.tiletypes) {
   TILE_TYPES = JSON.parse(sessionStorage.getItem("tiletypes"))
 } else {
   // Possible tile types
-  tile1 = 'document.getElementById("tile1")';
   TILE_TYPES = [
-    { id: 0, colour: 'rgba(0,0,0,0)', tileImage: 'rgba(0,0,0,0)' },
-    { id: 1, colour: 'rgba(255,255,255,1)', tileImage: 'undefined' },
+    { id: 0, colour: 'rgba(0,0,0,0)', tileImage: 'tile1' },
+    { id: 1, colour: 'rgba(255,255,255,1)', tileImage: 'tile2' },
   ]
 }
     
@@ -45,9 +44,12 @@ class Tile {
     // Draw tile
     this.ctx.fillStyle = this.type.colour
     this.ctx.fillRect(xPos, yPos, this.size, this.size)
-    console.log(TILE_TYPES[0].type.image);
-    if (!(this.type.image == "undefined")) {
-      this.ctx.drawImage(this.type.image, xPos, yPos, this.size, this.size)
+    const img = new Image();   // Create new img element
+    img.src = 'img/'+this.type.tileImage+'.svg';
+    if (!(this.type.tileImage == "undefined")) {
+      this.ctx.drawImage(img, xPos, yPos, this.size, this.size)
+    } else {
+      console.log('oof');
     }
   }
 }
@@ -223,7 +225,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   ui.addEventListener('mousedown', function () {
     document.getElementById('draggable').style.cursor = "grabbing";
+    document.getElementById("draggable").style.left = findObjectCoords+"px";
+    document.getElementById("draggable").style.top = findObjectCoords+"px";
   })
+
+  function uiHandlerScript() {
+    if ( ui.style.cursor == "grabbing" ) {
+      findObjectCoords()
+      console.log(console.log(newXpos));
+    }
+  }
+
+  var uihandler = setInterval(uiHandlerScript, 0)
 
   ui.addEventListener('mouseup', function () {
     document.getElementById('draggable').style.cursor = "grab";
