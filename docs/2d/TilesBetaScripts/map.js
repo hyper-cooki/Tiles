@@ -166,11 +166,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  downCheckInter = setInterval(downCheck, 0);
+  downCheckInter = setInterval(downCheck);
 
   const loader = document.getElementById('orthogonal-map')
   loader.addEventListener('mousedown', function () {
-    inter = setInterval(downfunc, 0);
+    inter = setInterval(downfunc);
   })
   
   loader.addEventListener('mouseup', function () {
@@ -223,22 +223,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 1);
   })
 
-  ui.addEventListener('mousedown', function () {
-    document.getElementById('draggable').style.cursor = "grabbing";
-    document.getElementById("draggable").style.left = findObjectCoords+"px";
-    document.getElementById("draggable").style.top = findObjectCoords+"px";
-  })
-
-  function uiHandlerScript() {
-    if ( ui.style.cursor == "grabbing" ) {
-      findObjectCoords()
-      console.log(console.log(newXpos));
-    }
+  function uiDrag(e) {
+    xPos = e.clientX;
+    yPos = e.clientY;
+    ui.style.left = xPos+"px";
+    ui.style.top = yPos+"px";
+    console.log(xPos+', '+yPos)
   }
 
-  var uihandler = setInterval(uiHandlerScript, 0)
+  var uiDragInter = null;
+
+  ui.addEventListener('mousedown', (e) => {
+    uiDragInter = setInterval(function () { uiDrag(e) });
+    document.getElementById('draggable').style.cursor = "grabbing";
+  });
 
   ui.addEventListener('mouseup', function () {
+    clearInterval(uiDragInter);
     document.getElementById('draggable').style.cursor = "grab";
   })
 

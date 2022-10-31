@@ -66,38 +66,10 @@ image.addEventListener("input",(event)=>{
   console.log(TILE_TYPES[tileTypeID-1]);
 });
 
-function findObjectCoords(mouseEvent)
-{
-  var obj = document.getElementById("orthogonal-map");
-  var obj_left = 0;
-  var obj_top = 0;
-  var xpos;
-  var ypos;
-  while (obj.offsetParent)
-  {
-    obj_left += obj.offsetLeft;
-    obj_top += obj.offsetTop;
-    obj = obj.offsetParent;
-  }
-  if (mouseEvent)
-  {
-    //FireFox
-    xpos = mouseEvent.pageX;
-    ypos = mouseEvent.pageY;
-  }
-  else
-  {
-    //IE (I should remove this because it's no like anyone uses Internet Explorer anymore, RIGHT?)
-    xpos = window.event.x + document.body.scrollLeft - 2;
-    ypos = window.event.y + document.body.scrollTop - 2;
-  }
-  xpos -= obj_left;
-  ypos -= obj_top;
-
-  newXpos = xpos;
-  newYpos = ypos;
-}
-document.getElementById("orthogonal-map").onmousemove = findObjectCoords;
+document.getElementById('orthogonal-map').addEventListener("mousemove", (e) => {
+  xPosMap = e.clientX;
+  yPosMap = e.clientY;
+});
 
 modeSwitch = 0;
 modes = ['PEN', 'ERASER', 'FILL', 'DROPPER'];
@@ -111,8 +83,8 @@ function toggleMode() {
 }
 
 function clickTile() {
-  var x2 = newXpos;
-  var y2 = newYpos;
+  var x2 = xPosMap;
+  var y2 = yPosMap;
 
   x = Math.trunc(x2 / document.getElementById("tileSize").value);
   y = Math.trunc(y2 / document.getElementById("tileSize").value);
