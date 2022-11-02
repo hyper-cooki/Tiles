@@ -3,8 +3,8 @@ if (sessionStorage.tiletypes) {
 } else {
   // Possible tile types
   TILE_TYPES = [
-    { id: 0, colour: 'rgba(0,0,0,0)', tileImage: 'tile1' },
-    { id: 1, colour: 'rgba(255,255,255,1)', tileImage: 'tile2' },
+    { id: 0, colour: 'rgba(0,0,0,0)', tileImage: 'Tile1' },
+    { id: 1, colour: 'rgba(255,255,255,1)', tileImage: 'Tile2' },
   ]
 }
     
