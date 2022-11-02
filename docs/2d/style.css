@@ -20,6 +20,8 @@ body {
     border-radius: 1rem !important;
     padding: 1em !important;
     cursor: grab;
+    overflow: hidden;
+    resize: both
   }
 
   #minimise-bar {

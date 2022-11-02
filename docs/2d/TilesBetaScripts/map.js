@@ -223,24 +223,58 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 1);
   })
 
-  function uiDrag(e) {
-    xPos = e.clientX;
-    yPos = e.clientY;
-    ui.style.left = xPos+"px";
-    ui.style.top = yPos+"px";
-    console.log(xPos+', '+yPos)
-  }
+  var mousedown = false;
+  var uix = 0;
+  var uiy = 0;
+  var uioffsetx = 0;
+  var uioffsety = 0;
+  var newuix = 0;
+  var newuiy = 0;
+  var marginTop = 0;
+  var marginLeft = 0;
 
-  var uiDragInter = null;
-
-  ui.addEventListener('mousedown', (e) => {
-    uiDragInter = setInterval(function () { uiDrag(e) });
+  ui.addEventListener('mousedown', function () {
     document.getElementById('draggable').style.cursor = "grabbing";
+    mousedown = true;
+
+    marginTop = parseInt(window.getComputedStyle(current, null).getPropertyValue('margin-top'));
+    marginLeft = parseInt(window.getComputedStyle(current, null).getPropertyValue('margin-left'));
+
+    let rect = ui.getBoundingClientRect();
+    ui.style.position = "fixed";
+    ui.style.cursor = "pointer";
+    ui.style.zIndex = "1000";
+
+    uix = rect.left - marginLeft;
+    uiy = rect.top - marginTop;
+  });
+
+  ui.addEventListener('mousemove', function (e) {
+    if (mousedown) {
+        if (uioffsetx == 0 && uioffsety == 0) {
+            uioffsetx = (e.clientX - uix);
+            uioffsety = (e.clientY - uiy);
+        }
+
+        newuix = (e.clientX - uioffsetx);
+        newuiy = (e.clientY - uioffsety);
+
+        ui.style.left = newuix + "px";
+        ui.style.top = newuiy + "px";
+        ui.style.bottom = 'auto';
+        ui.style.right = 'auto';
+    }
   });
 
   ui.addEventListener('mouseup', function () {
-    clearInterval(uiDragInter);
     document.getElementById('draggable').style.cursor = "grab";
+    mousedown = false;
+    currentx = 0;
+    currenty = 0;
+    offsetx = 0;
+    offsety = 0;
+    marginTop = 0;
+    marginLeft = 0;
   })
 
   const size = document.getElementById("tileSize");
