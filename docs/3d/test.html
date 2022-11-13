@@ -1,71 +1,33 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Tiles 3D</title>
-		<style>
-			body { margin: 0; }
-		</style>
-	</head>
-	<body>
-		<script src="js/three.js"></script>
-		<script type="module">
-           	import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+<title>Tiles 3D</title>
 
-			const scene = new THREE.Scene();
-			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+<script src="https://threejs.org/build/three.js"></script>
+<script>
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 
-			const renderer = new THREE.WebGLRenderer();
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			document.body.appendChild( renderer.domElement );
-            
-            //Create a WebGLRenderer and turn on shadows in the renderer
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+  var renderer = new THREE.WebGLRenderer();
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  document.body.appendChild( renderer.domElement );
 
-            //Create a PointLight and turn on shadows for the light
-            const light = new THREE.PointLight( 0xffffff, 1, 100 );
-            light.position.set( 0, 10, 4 );
-            light.castShadow = true; // default false
-            light.intensity = 100;
-            scene.add( light );
+  var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+  var material = new THREE.MeshBasicMaterial( { color: 0xffa500 } );
+  var cube = new THREE.Mesh( geometry, material );
+  scene.add( cube );
 
-            //Set up shadow properties for the light
-            light.shadow.mapSize.width = 512; // default
-            light.shadow.mapSize.height = 512; // default
-            light.shadow.camera.near = 0.5; // default
-            light.shadow.camera.far = 500; // default
+  camera.position.z = 5;
 
-            //Create a plane that receives shadows (but does not cast them)
-            const planeGeometry = new THREE.PlaneGeometry( 20, 20, 32, 32 );
-            const planeMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00 } )
-            const plane = new THREE.Mesh( planeGeometry, planeMaterial );
-            plane.receiveShadow = true;
-            scene.add( plane );
+  var animate = function () {
+    requestAnimationFrame( animate );
 
-            //Create a helper for the shadow camera (optional)
-            const helper = new THREE.CameraHelper( light.shadow.camera );
-            scene.add( helper );
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
 
-			const geometry = new THREE.BoxGeometry();
-			const material = new THREE.MeshBasicMaterial( { color: 0xffa500 } );
-			const cube = new THREE.Mesh( geometry, material );
-			scene.add( cube );
-            sphere.castShadow = true;
-            sphere.receiveShadow = true;
+    renderer.render( scene, camera );
+  };
 
-			camera.position.z = 5;
-			
-			const animate = function () {
-				requestAnimationFrame( animate );
-
-				cube.rotation.x += 0.01;
-				cube.rotation.y += 0.01;
-				
-				renderer.render( scene, camera );
-			};
-
-			animate();
-		</script>
-	</body>
-</html>
+  animate();
+</script>
+<style>
+  body { margin: 0; }
+  canvas { width: 100%; height: 100% }
+</style>
