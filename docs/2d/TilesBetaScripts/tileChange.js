@@ -12,7 +12,7 @@ function hexToRgb(hex){
       }
       c= '0x'+c.join('');
       return [(c>>16)&255, (c>>8)&255, c&255].join(',');
-  }
+    }
   throw new Error('Bad Hex');
 }
 

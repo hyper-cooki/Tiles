@@ -3,8 +3,8 @@ if (sessionStorage.tiletypes) {
 } else {
   // Possible tile types
   TILE_TYPES = [
-    { id: 0, colour: 'rgba(0,0,0,0)', tileImage: 'tile1' },
-    { id: 1, colour: 'rgba(255,255,255,1)', tileImage: 'tile2' },
+    { id: 0, colour: 'rgba(0,0,0,0)' },
+    { id: 1, colour: 'rgba(255,255,255,1)' },
   ]
 }
     
@@ -43,13 +43,35 @@ class Tile {
 
     // Draw tile
     this.ctx.fillStyle = this.type.colour
-    this.ctx.fillRect(xPos, yPos, this.size, this.size)
-    const img = new Image();   // Create new img element
-    img.src = 'img/'+this.type.tileImage+'.svg';
-    if (!(this.type.tileImage == "undefined")) {
-      this.ctx.drawImage(img, xPos, yPos, this.size, this.size)
+    if (!(this.type.tileImage == null)) {
+      if (this.type.tileImage == 'tri') {
+        this.ctx.moveTo(xPos, yPos);
+        this.ctx.lineTo(xPos+this.size, yPos+this.size);
+        this.ctx.lineTo(xPos,yPos+this.size);
+        this.ctx.lineTo(xPos, yPos);
+        this.ctx.fill();
+      } else if (this.type.tileImage == 'thin-tri') {
+        this.ctx.moveTo(xPos, yPos);
+        this.ctx.lineTo(xPos+this.size/2, yPos+this.size);
+        this.ctx.lineTo(xPos,yPos+this.size);
+        this.ctx.lineTo(xPos, yPos);
+        this.ctx.fill();
+      }else if (this.type.tileImage == 'curve') {
+        //CURVE
+        this.ctx.beginPath();
+        this.ctx.arc(xPos, yPos+this.size, this.size, 1.5*Math.PI, 0);
+        this.ctx.lineTo(xPos,yPos+this.size);
+        this.ctx.fill();
+      } else if (this.type.tileImage == '-curve') {
+        //NEGATIVE CURVE
+        this.ctx.beginPath();
+        this.ctx.arc(xPos+this.size, yPos, this.size, 2.5*Math.PI, 1*Math.PI);
+        this.ctx.lineTo(xPos,yPos+this.size);
+        this.ctx.fill();
+      }
     } else {
-      console.log('oof');
+      //SQUARE/PIXEL
+      this.ctx.fillRect(xPos, yPos, this.size, this.size)
     }
   }
 }
@@ -138,8 +160,9 @@ class OrthogonalMap extends Map {
 document.addEventListener('DOMContentLoaded', function () {
 
   document.getElementById("tileColour").style.backgroundcolour = document.getElementById("tileColour").value;
+
   // Init orthogonal map
-  const map = new OrthogonalMap('orthogonal-map', mapData, { tileSize: document.getElementById("tileSize").value })
+  const map = new OrthogonalMap('orthogonal-map', mapData, { tileSize: parseInt(document.getElementById("tileSize").value) })
 
   document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
   document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
