@@ -19,9 +19,9 @@ function hexToRgb(hex){
 function resetTiles(tileTypeNumber) {
   for (let i = 0; i < Math.ceil(window.innerWidth/64); i++) {
     for (let i2 = 0; i2 < Math.ceil(window.innerHeight/64); i2++) {
-      mapData[i][i2] = tileTypeNumber;
-      document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
-      document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
+      mapData[0][i][i2] = tileTypeNumber;
+      document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData[0].length;
+      document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0][0].length;
     }
   }
 }
@@ -55,15 +55,14 @@ transparency.addEventListener("input",(event)=>{
   var tileTypeID = Object.keys(TILE_TYPES).length
   rgb = hexToRgb(document.getElementById("tileColour").value);
   rgba = "rgba("+rgb+","+document.getElementById("tileOpacity").value+")";
-  TILE_TYPES[tileTypeID] = { name: 'Custom', colour: rgba };
+  TILE_TYPES[tileTypeID] = { id: TILE_TYPES.length, colour: rgba };
 });
 
 image.addEventListener("input",(event)=>{
   var tileTypeID = Object.keys(TILE_TYPES).length
   rgb = hexToRgb(document.getElementById("tileColour").value);
   rgba = "rgba("+rgb+","+document.getElementById("tileOpacity").value+")";
-  TILE_TYPES[tileTypeID] = { name: 'Custom', colour: rgba, image: image.value };
-  console.log(TILE_TYPES[tileTypeID-1]);
+  TILE_TYPES[tileTypeID] = { id: TILE_TYPES.length, colour: rgba, tileImage: image.value };
 });
 
 document.getElementById('orthogonal-map').addEventListener("mousemove", (e) => {
@@ -90,17 +89,21 @@ function clickTile() {
   y = Math.trunc(y2 / document.getElementById("tileSize").value);
 
   if (modeSwitch == 0) {
-    mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
+    mapData[0][y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
   } else if (modeSwitch == 1) {
-    mapData[y][x] = 0;
+    mapData[0][y][x] = 0;
   } else if (modeSwitch == 2) {
-    TILE_TYPES[mapData[y][x]].colour = colour.value;
+    for (let i = 0; i < mapData[0].length; i++) {
+      for (let i2 = 0; i2 < mapData[0][0].length; i2++) {
+        mapData[0][i][i2] = TILE_TYPES[TILE_TYPES.length-1].id;
+      }
+    }
   } else if (modeSwitch == 3) {
-    document.getElementById("tileColour").value = TILE_TYPES[mapData[y][x]].colour;
+    document.getElementById("tileColour").value = TILE_TYPES[mapData[0][y][x]].colour;
   }
 
-  document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
-  document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
+  document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData[0].length;
+  document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0][0].length;
 }
 
 var indexOfObject;

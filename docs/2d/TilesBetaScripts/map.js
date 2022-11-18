@@ -12,17 +12,37 @@ if (sessionStorage.tilemap) {
   mapData = JSON.parse(sessionStorage.getItem("tilemap"))
 } else {
   // Map tile data
-  mapData = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ]
+  mapData = [[
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ], [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ], [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ]]
 }
 
 /**
@@ -117,28 +137,30 @@ class OrthogonalMap extends Map {
   draw () {
     super.draw() // Call draw() method from Map class
 
-    const numCols = this.data[0].length
-    const numRows = this.data.length
+    const numCols = this.data[0][0].length
+    const numRows = this.data[0].length
     
     // Iterate through map data and draw each tile
-    for (let y = 0; y < numRows; y++) {
-      for (let x = 0; x < numCols; x++) {
+    for (let z = 0; z < this.data.length; z++) {
+      for (let y = 0; y < numRows; y++) {
+        for (let x = 0; x < numCols; x++) {
 
-        // Get tile ID from map data
-        const tileId = this.data[y][x]
+          // Get tile ID from map data
+          const tileId = this.data[z][y][x]
 
-        for (let i = 0; i < TILE_TYPES[TILE_TYPES.length-1].id+1; i++) {
-          if (i == tileId) {
-            var tileType = TILE_TYPES[i];
+          for (let i = 0; i < TILE_TYPES[TILE_TYPES.length-1].id+1; i++) {
+            if (i == tileId) {
+              var tileType = TILE_TYPES[i];
+            }
           }
-        }
 
-        // Create tile instance and draw to our canvas
-        new Tile(this.tileSize, tileType, this.ctx).draw(x, y);
+          // Create tile instance and draw to our canvas
+          new Tile(this.tileSize, tileType, this.ctx).draw(x, y);
 
-        // Draw an outline with coordinates on top of tile if show grid is enabled
-        if (this.showGrid) {
-          this.drawGridTile(x, y)
+          // Draw an outline with coordinates on top of tile if show grid is enabled
+          if (this.showGrid) {
+            this.drawGridTile(x, y)
+          }
         }
       }
     }
@@ -159,13 +181,14 @@ class OrthogonalMap extends Map {
 // Init canvas tile map on document ready
 document.addEventListener('DOMContentLoaded', function () {
 
-  document.getElementById("tileColour").style.backgroundcolour = document.getElementById("tileColour").value;
+  document.getElementById("tileColour").style.backgroundColour = document.getElementById("tileColour").value;
+  document.getElementById("tileImageSelect").value = TILE_TYPES[TILE_TYPES.length-1].tileImage;
 
   // Init orthogonal map
   const map = new OrthogonalMap('orthogonal-map', mapData, { tileSize: parseInt(document.getElementById("tileSize").value) })
 
-  document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
-  document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
+  document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData[0].length;
+  document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0][0].length;
   map.draw();
 
   var inter = null;
@@ -303,47 +326,47 @@ document.addEventListener('DOMContentLoaded', function () {
   const size = document.getElementById("tileSize");
   size.oninput = function(){
     map.tileSize = document.getElementById("tileSize").value;
-    document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
-    document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
+    document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData[0].length;
+    document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0][0].length;
     document.getElementById("orthogonal-map").border = document.getElementById('tileSize').value / 32 + "px";
     map.draw();
   }
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowRight') {
-      for (let i = 0; i < mapData.length; i++) {
-        mapData[i][mapData[i].length] = 0;
+      for (let i = 0; i < mapData[0].length; i++) {
+        mapData[0][i][mapData[0][i].length] = 0;
       }
-      document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
+      document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0][0].length;
       map.draw();
     }
   }, false);
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowLeft') {
-      for (let i = 0; i < mapData.length; i++) {
-        mapData[i].length -= 1;
+      for (let i = 0; i < mapData[0].length; i++) {
+        mapData[0][i].length -= 1;
       }
-      document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
+      document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0][0].length;
       map.draw();
     }
   }, false);
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowDown') {
-      mapData[mapData.length] = [];
+      mapData[0][mapData.length] = [];
       for (let i = 0; i < mapData[0].length; i++) {
-        mapData[mapData.length-1][i] = 0;
+        mapData[0][mapData.length-1][i] = 0;
       }
-      document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
+      document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData[0].length;
       map.draw();
     }
   }, false);
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowUp') {
-      mapData.length -= 1;
-      document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
+      mapData[0].length -= 1;
+      document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData[0].length;
       map.draw();
     }
   }, false);
