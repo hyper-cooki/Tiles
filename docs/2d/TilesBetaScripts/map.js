@@ -4,7 +4,8 @@ if (sessionStorage.tiletypes) {
   // Possible tile types
   TILE_TYPES = [
     { id: 0, colour: 'rgba(0,0,0,0)' },
-    { id: 1, colour: 'rgba(255,255,255,1)' },
+    { id: 1, colour: 'rgba(200,255,40,0.5)' },
+    { id: 2, colour: 'rgba(255,255,255,1)' },
   ]
 }
     
@@ -25,7 +26,7 @@ if (sessionStorage.tilemap) {
   ], [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -63,33 +64,31 @@ class Tile {
 
     // Draw tile
     this.ctx.fillStyle = this.type.colour
-    if (!(this.type.tileImage == null)) {
-      if (this.type.tileImage == 'tri') {
-        this.ctx.moveTo(xPos, yPos);
-        this.ctx.lineTo(xPos+this.size, yPos+this.size);
-        this.ctx.lineTo(xPos,yPos+this.size);
-        this.ctx.lineTo(xPos, yPos);
-        this.ctx.fill();
-      } else if (this.type.tileImage == 'thin-tri') {
-        this.ctx.moveTo(xPos, yPos);
-        this.ctx.lineTo(xPos+this.size/2, yPos+this.size);
-        this.ctx.lineTo(xPos,yPos+this.size);
-        this.ctx.lineTo(xPos, yPos);
-        this.ctx.fill();
-      }else if (this.type.tileImage == 'curve') {
-        //CURVE
-        this.ctx.beginPath();
-        this.ctx.arc(xPos, yPos+this.size, this.size, 1.5*Math.PI, 0);
-        this.ctx.lineTo(xPos,yPos+this.size);
-        this.ctx.fill();
-      } else if (this.type.tileImage == '-curve') {
-        //NEGATIVE CURVE
-        this.ctx.beginPath();
-        this.ctx.arc(xPos+this.size, yPos, this.size, 2.5*Math.PI, 1*Math.PI);
-        this.ctx.lineTo(xPos,yPos+this.size);
-        this.ctx.fill();
-      }
-    } else {
+    if (this.type.tileImage == 'tri') {
+      this.ctx.moveTo(xPos, yPos);
+      this.ctx.lineTo(xPos+this.size, yPos+this.size);
+      this.ctx.lineTo(xPos,yPos+this.size);
+      this.ctx.lineTo(xPos, yPos);
+      this.ctx.fill();
+    } else if (this.type.tileImage == 'thin-tri') {
+      this.ctx.moveTo(xPos, yPos);
+      this.ctx.lineTo(xPos+this.size/2, yPos+this.size);
+      this.ctx.lineTo(xPos,yPos+this.size);
+      this.ctx.lineTo(xPos, yPos);
+      this.ctx.fill();
+    }else if (this.type.tileImage == 'curve') {
+      //CURVE
+      this.ctx.beginPath();
+      this.ctx.arc(xPos, yPos+this.size, this.size, 1.5*Math.PI, 0);
+      this.ctx.lineTo(xPos,yPos+this.size);
+      this.ctx.fill();
+    } else if (this.type.tileImage == '-curve') {
+      //NEGATIVE CURVE
+      this.ctx.beginPath();
+      this.ctx.arc(xPos+this.size, yPos, this.size, 2.5*Math.PI, 1*Math.PI);
+      this.ctx.lineTo(xPos,yPos+this.size);
+      this.ctx.fill();
+    } else if (this.type.tileImage == 'square'){
       //SQUARE/PIXEL
       this.ctx.fillRect(xPos, yPos, this.size, this.size)
     }
