@@ -65,10 +65,10 @@ image.addEventListener("input",(event)=>{
   TILE_TYPES[tileTypeID] = { id: TILE_TYPES.length, colour: rgba, tileImage: image.value };
 });
 
-document.getElementById('orthogonal-map').addEventListener("mousemove", (e) => {
+function mousePos(e) {
   xPosMap = e.clientX;
   yPosMap = e.clientY;
-});
+}
 
 modeSwitch = 0;
 modes = ['PEN', 'ERASER', 'FILL', 'DROPPER'];
