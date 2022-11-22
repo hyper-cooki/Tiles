@@ -352,20 +352,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowDown') {
-      mapData[0][mapData.length] = [];
-      for (let i = 0; i < mapData[0].length; i++) {
-        mapData[0][mapData.length-1][i] = 0;
+      for (let i2 = 0; i2 < mapData.length; i2++) {
+        mapData[i2][mapData[i2].length] = [];
+        for (let i = 0; i < mapData[0].length; i++) {
+          mapData[i2][mapData.length-1][i] = 0;
+        }
       }
       document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData[0].length;
       map.draw();
+      console.log(mapData);
     }
   }, false);
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowUp') {
-      mapData[0].length -= 1;
+      for (let i = 0; i < mapData.length; i++) {
+        mapData[i].length -= 1;
+      }
       document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData[0].length;
       map.draw();
+      console.log(mapData);
     }
   }, false);
 
