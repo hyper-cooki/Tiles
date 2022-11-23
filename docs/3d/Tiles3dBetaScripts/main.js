@@ -58,10 +58,6 @@ const cube = new THREE.Mesh( geometry, material );
 scene.add( cube );
 cube.position.set(0, 0, 0);
 
-const cube2 = new THREE.Mesh( geometry, material );
-scene.add( cube2 );
-cube2.position.set(1, 0, 0);
-
 camera.position.z = 5;
 
 function animate() {
@@ -69,8 +65,8 @@ function animate() {
 
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
-    cube2.rotation.x += 0.01;
-    cube2.rotation.y += 0.01;
+    camera.rotation.x += 0.01;
+    camera.rotation.y += 0.01;
 
     renderer.render( scene, camera );
 };
