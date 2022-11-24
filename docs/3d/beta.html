@@ -24,8 +24,7 @@
 	</style>
 	<body onresize="resize()">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" referrerpolicy="no-referrer">import * as THREE from 'three';</script>
-
-		<script type="module">
+		<script>
 			if (sessionStorage.tiletypes) {
 				TILE_TYPES = JSON.parse(sessionStorage.getItem("tiletypes"))
 			} else {
@@ -72,7 +71,8 @@
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 			]]
 			}
-
+		</script>
+		<script type="module">
 			import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
 			import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js";
 		  
@@ -109,10 +109,10 @@
 			  requestAnimationFrame(animate);
 		  
 			  let i = 0;
-			  for (let x = 0; x < size; x++) {
-				for (let y = 0; y < size; y++) {
-				  for (let z = 0; z < size; z++) {
-					cube.position.set(x, y, z);
+			  for (let x = 0; x < mapData.length; x++) {
+				for (let y = 0; y < mapData[0].length; y++) {
+				  for (let z = 0; z < mapData[0][0].length; z++) {
+					cube.position.set(z, y, x);
 					cube.updateMatrix();
 					cubes.setMatrixAt(i, cube.matrix);
 					i++;
@@ -121,8 +121,6 @@
 			  }
 		  
 			  cubes.instanceMatrix.needsUpdate = true;
-			  cubes.rotation.x += 0.01;
-			  cubes.rotation.y += 0.01;
 		  
 			  controls.update();
 			  renderer.render(scene, camera);
