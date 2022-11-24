@@ -7,15 +7,83 @@
 		body {
 			padding: 0;
 			margin: 0;
+			border: 0;
 			background-color: #f0f0f0;
 			color: #444;
+			-ms-overflow-style: none;  /* Internet Explorer 10+ */
+			scrollbar-width: none;  /* Firefox */
 		}
+
+		body::-webkit-scrollbar { 
+			display: none;  /* Safari and Chrome */
+		}
+
 		a {
 			color: #08f;
 		}
 	</style>
 	<body onresize="resize()">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" referrerpolicy="no-referrer">import * as THREE from 'three';</script>
-		<script src="Tiles3dBetaScripts/main.js"></script>
+
+		<script type="module">
+			import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
+			import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js";
+		  
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			document.body.appendChild(renderer.domElement);
+		  
+			const scene = new THREE.Scene();
+			const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+			const controls = new OrbitControls(camera, renderer.domElement);
+
+			camera.position.z = 5;
+		  
+			const grid = new THREE.Group();
+		  
+			const cubeSize = 1;
+			const size = 10;
+			const gap = 0.01;
+		  
+			const geometry = new THREE.BoxBufferGeometry(
+			  cubeSize,
+			  cubeSize,
+			  cubeSize
+			);
+			const material = new THREE.MeshNormalMaterial();
+			const cubes = new THREE.InstancedMesh(geometry, material, Math.pow(size, 3));
+			cubes.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+		  
+			grid.add(cubes);
+			scene.add(grid);
+		  
+			const cube = new THREE.Object3D();
+			const center = (size + gap * (size - 1)) * -0.5;
+		  
+			grid.position.set(0, 0, 0);
+		  
+			(function animate() {
+			  requestAnimationFrame(animate);
+		  
+			  let i = 0;
+			  for (let x = 0; x < size; x++) {
+				for (let y = 0; y < size; y++) {
+				  for (let z = 0; z < size; z++) {
+					cube.position.set(x, y, z);
+					cube.updateMatrix();
+					cubes.setMatrixAt(i, cube.matrix);
+					i++;
+				  }
+				}
+			  }
+		  
+			  cubes.instanceMatrix.needsUpdate = true;
+			  cubes.rotation.x += 0.01;
+			  cubes.rotation.y += 0.01;
+		  
+			  controls.update();
+			  renderer.render(scene, camera);
+			})();
+		  </script>
 </body>
 </html>

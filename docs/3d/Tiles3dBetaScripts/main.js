@@ -56,15 +56,9 @@ const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 const material = new THREE.MeshBasicMaterial( { color: 0xffa500 } );
 const cube = new THREE.Mesh( geometry, material );
 
-for (let z = 0; z < mapData.length; z++) {
-    for (let y = 0; y < mapData[0].length; y++) {
-        for (let x = 0; x < mapData[0][0].length; x++) {
-            scene.add( cube ).position.set(x, y, z);
-        }
-    }
-}
+scene.add( cube );
 
-camera.position.z = 100;
+camera.position.z = 5;
 
 function animate() {
     requestAnimationFrame( animate );
