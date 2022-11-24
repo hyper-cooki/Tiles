@@ -52,7 +52,7 @@
 			], [
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -103,7 +103,7 @@
 			const cube = new THREE.Object3D();
 			const center = (size + gap * (size - 1)) * -0.5;
 		  
-			grid.position.set(center, center, center);
+			grid.position.set(center, center+(size*0.125), center);
 		  
 			(function animate() {
 			  requestAnimationFrame(animate);
