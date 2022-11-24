@@ -26,6 +26,53 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" referrerpolicy="no-referrer">import * as THREE from 'three';</script>
 
 		<script type="module">
+			if (sessionStorage.tiletypes) {
+				TILE_TYPES = JSON.parse(sessionStorage.getItem("tiletypes"))
+			} else {
+			// Possible tile types
+			TILE_TYPES = [
+				{ id: 0, colour: 'rgba(0,0,0,0)', tileImage: 'square' },
+				{ id: 1, colour: 'rgba(255,255,255,1)', tileImage: 'square' },
+			]
+			}
+				
+			if (sessionStorage.tilemap) {
+			mapData = JSON.parse(sessionStorage.getItem("tilemap"))
+			} else {
+			// Map tile data
+			mapData = [[
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			], [
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			], [
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			]]
+			}
+
 			import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
 			import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js";
 		  
@@ -45,11 +92,7 @@
 			const size = 10;
 			const gap = 0.01;
 		  
-			const geometry = new THREE.BoxBufferGeometry(
-			  cubeSize,
-			  cubeSize,
-			  cubeSize
-			);
+			const geometry = new THREE.BoxBufferGeometry(cubeSize, cubeSize, cubeSize);
 			const material = new THREE.MeshNormalMaterial();
 			const cubes = new THREE.InstancedMesh(geometry, material, Math.pow(size, 3));
 			cubes.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
