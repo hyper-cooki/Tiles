@@ -103,7 +103,7 @@
 			const cube = new THREE.Object3D();
 			const center = (size + gap * (size - 1)) * -0.5;
 		  
-			grid.position.set(0, 0, 0);
+			grid.position.set(center, center, center);
 		  
 			(function animate() {
 			  requestAnimationFrame(animate);
