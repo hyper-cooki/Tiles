@@ -1,17 +1,26 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="en">
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Tiles 3D Beta</title>
-		
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 	<style>
 		body {
-			padding: 0;
-			margin: 0;
-			border: 0;
-			background-color: #f0f0f0;
-			color: #444;
-			-ms-overflow-style: none;  /* Internet Explorer 10+ */
+			margin: 0px;
+			user-select: none;
+			-ms-user-select: none;
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-overflow-style: none;  /* IE and Edge */
 			scrollbar-width: none;  /* Firefox */
+			font-family: 'Quicksand', sans-serif;
+			font-weight: bold;
+			color: #fff;
+			background-color: #121212;
+			overflow: hidden; /* Hide scrollbars */
 		}
 
 		body::-webkit-scrollbar { 
@@ -21,10 +30,56 @@
 		a {
 			color: #08f;
 		}
+		#ui {
+			background-color: rgba(0, 0, 0, 0.5);
+			float: inline-end;
+			position: absolute;
+			border-top-right-radius: 1rem;
+			border-bottom-right-radius: 1rem;
+			padding: 1em;
+			color: #f0f0f0;
+		}
+		h1,h2,h3,h4,h5,h6,p {
+			font: "Quicksand";
+		}
+
+		@-webkit-keyframes fadeinout {
+			0%,100% { opacity: 0.5; scale: 1.125; }
+			50% { opacity: 1; scale: 1; }
+		}
+
+		@keyframes fadeinout {
+			0%,100% { opacity: 0.5; scale: 1.125; }
+			50% { opacity: 1; scale: 1.5; }
+		}
+
+		#load {
+			margin: 0;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
 	</style>
-	<body onresize="resize()">
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" referrerpolicy="no-referrer">import * as THREE from 'three';</script>
+	</head>
+	<body onload="hideLoad()">
+		<div id="ui">
+			<p>Tile Visuals</p>
+			<button id="download">DOWNLOAD</button>
+		</div>
+		<h1 id="load" onload="animLoad()">LOADING...</h1>
 		<script>
+			function animLoad() {
+				document.getElementById('load').innerText = "no";
+			}
+
+			function hideLoad() {
+				document.getElementById('load').remove();
+			}
+
+			ui = document.getElementById("ui");
+			ui.style.height = (window.innerHeight-32)+"px";
+
 			if (sessionStorage.tiletypes) {
 				TILE_TYPES = JSON.parse(sessionStorage.getItem("tiletypes"))
 			} else {
@@ -52,7 +107,7 @@
 			], [
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-				[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -75,56 +130,70 @@
 		<script type="module">
 			import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js";
 			import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js";
-		  
-			const renderer = new THREE.WebGLRenderer();
-			renderer.setSize(window.innerWidth, window.innerHeight);
-			document.body.appendChild(renderer.domElement);
-		  
-			const scene = new THREE.Scene();
-			const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-			const controls = new OrbitControls(camera, renderer.domElement);
+			import { OBJExporter } from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/exporters/OBJExporter.js';
 
-			camera.position.z = 5;
-		  
-			const grid = new THREE.Group();
-		  
-			const cubeSize = 1;
-			const size = 10;
-			const gap = 0.01;
-		  
-			const geometry = new THREE.BoxBufferGeometry(cubeSize, cubeSize, cubeSize);
-			const material = new THREE.MeshNormalMaterial();
-			const cubes = new THREE.InstancedMesh(geometry, material, Math.pow(size, 3));
-			cubes.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-		  
-			grid.add(cubes);
-			scene.add(grid);
-		  
-			const cube = new THREE.Object3D();
-			const center = (size + gap * (size - 1)) * -0.5;
-		  
-			grid.position.set(center, center+(size*0.125), center);
-		  
-			(function animate() {
-			  requestAnimationFrame(animate);
-		  
-			  let i = 0;
-			  for (let x = 0; x < mapData.length; x++) {
-				for (let y = 0; y < mapData[0].length; y++) {
-				  for (let z = 0; z < mapData[0][0].length; z++) {
-					cube.position.set(z, y, x);
-					cube.updateMatrix();
-					cubes.setMatrixAt(i, cube.matrix);
-					i++;
-				  }
-				}
-			  }
-		  
-			  cubes.instanceMatrix.needsUpdate = true;
-		  
-			  controls.update();
-			  renderer.render(scene, camera);
-			})();
-		  </script>
-</body>
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setClearColor(0x000);
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize( window.innerWidth, window.innerHeight);
+			document.body.appendChild( renderer.domElement );
+
+			//Camera
+			const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 3000);
+			const controls = new OrbitControls(camera, renderer.domElement);
+			
+			//Scene
+			const scene = new THREE.Scene();
+			scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+			scene.add(new THREE.PointLight(0xffffff, 0.5));
+
+			//GEOMETRY MERGE
+			const ball = new THREE.Mesh(new THREE.SphereGeometry(100,350,350), new THREE.MeshPhongMaterial({color: 0xF7FE2E}));
+
+			const pendulumGeo = new THREE.CylinderGeometry(100, 10, 500, 160);
+			ball.updateMatrix();
+			pendulumGeo.merge(ball.geometry, ball.matrix);
+
+			const mesh = new THREE.Mesh(pendulumGeo, new THREE.MeshPhongMaterial({color: 0xF7FE2E}));
+			scene.add(mesh);
+			mesh.position.set(0, 0, -1000);
+
+
+			//Render Loop
+			requestAnimationFrame(render);
+				function render() {
+				mesh.rotation.x +=0.11;
+				mesh.rotation.y +=0.11;
+				renderer.render(scene, camera);
+				requestAnimationFrame(render);
+			}
+
+			
+
+			const link = document.createElement( 'a' );
+			link.style.display = 'none';
+			document.body.appendChild( link );
+
+			function save( blob, filename ) {
+				link.href = URL.createObjectURL( blob );
+				link.download = filename;
+				link.click();
+			}
+
+			function saveString( text, filename ) {
+				save( new Blob( [ text ], { type: 'text/plain' } ), filename );	
+			}
+
+			function exportToObj(part) {
+				const exporter = new OBJExporter();
+				const result = exporter.parse(part);
+				saveString( result, 'object.obj' );
+			}
+
+			const downloadButton = document.getElementById('download')
+			downloadButton.addEventListener('click', function () {
+				exportToObj(mesh);
+			})
+		</script>
+	</body>
 </html>

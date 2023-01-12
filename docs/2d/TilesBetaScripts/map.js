@@ -173,6 +173,10 @@ class OrthogonalMap extends Map {
     this.ctx.strokeStyle = 'rgba(255,255,255,0.25)'
     this.ctx.lineWidth = document.getElementById('tileSize').value / 32
     this.ctx.strokeRect(xPos, yPos, this.tileSize, this.tileSize)
+
+    var img = this.ctx.getSvg();
+    var fileName = document.getElementById('fileNameInput').value;
+    download(img, fileName+".svg");
   }
 }
 
@@ -251,8 +255,8 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log(mapData);
   })
 
-  const exportButton = document.getElementById('exportButton')
-  exportButton.addEventListener('click', function () {
+  const exportPngButton = document.getElementById('exportPngButton')
+  exportPngButton.addEventListener('click', function () {
     map.toggleGrid();
     map.tileSize = 64;
     map.draw();

@@ -6,6 +6,7 @@
     </title>
     <link rel="icon" type="image/png" href="img/TilesIcon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/canvas2svg@1.0.16/canvas2svg.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -35,7 +36,8 @@
         <button onclick="resetTiles(1)">FILL</button>
         <p>File</p>
         <input type="text" id="fileNameInput" value="TilesPixelArt">
-        <button id="exportButton">Export to PNG</button><br>
+        <button id="exportPngButton">Export to PNG</button><br>
+        <button id="exportSvgButton">Export to SVG</button><br>
         <p>Other</p>
         <button onclick="deleteTileTypes()">DELETE TYPES (BUG-FULL)</button><br>
         <button id="draw">DRAW</button><br>
