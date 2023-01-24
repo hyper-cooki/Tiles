@@ -15,11 +15,6 @@ mapData = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
-const p = document.createElement("p");
-
-document.body.appendChild(p);
-p.setAttribute("style", "margin: 0; background: rgba(0,0,0,1); padding:0; border-radius: 1em; position: absolute; top: 10%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%); ")
-
 const c = document.createElement("canvas");
 
 c.height = window.innerHeight;
@@ -59,6 +54,9 @@ function drawLayer(x,y,type) {
         ctx = c.getContext("2d");
     }
 
+    ctx.clearRect(0,0,c.width,c.height);
+    ctx.clearRect(0, 0, 800, 400);
+
     for (let yh = 0; yh < mapData.length-y; yh++) {
         for (let xw = 0; xw < mapData[0].length-x; xw++) {
             drawTile(xw+x,yh+y,type);
@@ -85,36 +83,35 @@ function drawLayer(x,y,type) {
 
 drawLayer(0,0);
 
-var mouseDown = false;
-
-function downCoords(touch) {
-    mouseDown = true;
-
-    p.setAttribute("style", "margin: 0; background: rgba(0,0,0,1); padding:1em; border-radius: 1em; position: absolute; top: 10%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%); ")
-
-    let x = Math.ceil(touch.clientX);
-    let y = Math.ceil(touch.clientY);
-
-    let text = x + ", " + y;
-    p.innerHTML = text;
+function changeTile(x,y) {
+    mapData[y-1][x-1] = 1;
+    drawLayer(0,0);
 }
 
-function showCoords(touch) {
+var mouseDown = false;
+
+function downCoords(event) {
+    mouseDown = true;
+
+    let x = Math.ceil(event.clientX/64);
+    let y = Math.ceil(event.clientY/64);
+
+    changeTile(x,y);
+    drawLayer(0,0);
+}
+
+function showCoords(event) {
     if (mouseDown) {
-        p.setAttribute("style", "margin: 0; background: rgba(0,0,0,1); padding:1em; border-radius: 1em; position: absolute; top: 10%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%); ")
+        let x = Math.ceil(event.clientX/64);
+        let y = Math.ceil(event.clientY/64);
 
-        let x = Math.ceil(touch.clientX);
-        let y = Math.ceil(touch.clientY);
-
-        let text = x + ", " + y;
-        p.innerHTML = text;
+        changeTile(x,y);
+        drawLayer(0,0);
     }
 }
 
 function hideCoords() {
     mouseDown = false
-    p.innerHTML = "";
-    p.setAttribute("style", "margin: 0; background: rgba(0,0,0,1); padding:0; border-radius: 1em; position: absolute; top: 10%; left: 50%; margin-right: -50%; transform: tran")
 }
 
 c.setAttribute("onpointermove","showCoords(event)");
