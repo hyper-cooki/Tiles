@@ -7,8 +7,28 @@ html, body {
     font-weight: bold;
     color: #fff;
     background-color: #121212;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
     overflow: hidden;
+	-ms-overflow-style: none;  /* IE and Edge */
+	scrollbar-width: none;  /* Firefox */
+    user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+
+#ui {
+    background-color: rgba(0, 0, 0, 0.5);
+    float: inline-end;
+    position: absolute;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    padding: 1em;
+    color: #f0f0f0;
+    position: absolute;
+    top:0;
+    left:0;
+}
+
+.disabled {
+    pointer-events: none;
 }

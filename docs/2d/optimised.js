@@ -1,6 +1,6 @@
 TILE_TYPES = [
     { id: 0, colour: 'rgba(0,0,0,0)' },
-    { id: 1, colour: 'rgba(255,255,255,1)' },
+    { id: 1, colour: 'rgba(100,100,100,1)' },
 ]
 
 mapData = [
@@ -90,6 +90,8 @@ function changeTile(x,y) {
 
 var mouseDown = false;
 
+const ui = document.getElementById("ui");
+
 function downCoords(event) {
     mouseDown = true;
 
@@ -98,24 +100,30 @@ function downCoords(event) {
 
     changeTile(x,y);
     drawLayer(0,0);
+
+    ui.classList.add("disabled");
 }
 
-function showCoords(event) {
+function moveCoords(event) {
     if (mouseDown) {
         let x = Math.ceil(event.clientX/64);
         let y = Math.ceil(event.clientY/64);
 
         changeTile(x,y);
         drawLayer(0,0);
+
+        ui.classList.add("disabled");
     }
 }
 
-function hideCoords() {
+function stopCoords() {
     mouseDown = false
+
+    ui.classList.remove("disabled");
 }
 
-c.setAttribute("onpointermove","showCoords(event)");
+c.setAttribute("onpointermove","moveCoords(event)");
 c.setAttribute("onpointerdown","downCoords(event)");
-c.setAttribute("onpointerup","hideCoords()");
-c.setAttribute("onpointerleave","hideCoords()");
-c.setAttribute("oncontextmenu","hideCoords()");
+c.setAttribute("onpointerup","stopCoords()");
+c.setAttribute("onpointerleave","stopCoords()");
+c.setAttribute("oncontextmenu","stopCoords()");
