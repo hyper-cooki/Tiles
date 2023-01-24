@@ -25,10 +25,6 @@ const c = document.createElement("canvas");
 c.height = window.innerHeight;
 c.width = window.innerWidth;
 c.setAttribute("id", "canvas");
-c.setAttribute("onpointermove","showCoords(event)");
-c.setAttribute("onpointerdown","downCoords(event)");
-c.setAttribute("onpointerup","hideCoords()");
-c.setAttribute("oncontextmenu","hideCoords()");
 document.body.appendChild(c);
 
 function drawTile(x,y,type) {
@@ -38,16 +34,18 @@ function drawTile(x,y,type) {
         }
     }
 
-    ctx.beginPath();
-    ctx.fillStyle = tileType.colour;
-    ctx.moveTo(x*64,y*64);
-    ctx.lineTo(x*64+64,y*64)
-    ctx.lineTo(x*64+64,y*64+64);
-    ctx.lineTo(x*64,y*64+64);
-    ctx.lineTo(x*64,y*64);
-    ctx.fill();
+    if (tileType != 0) {
+        ctx.beginPath();
+        ctx.fillStyle = tileType.colour;
+        ctx.moveTo(x*64,y*64);
+        ctx.lineTo(x*64+64,y*64)
+        ctx.lineTo(x*64+64,y*64+64);
+        ctx.lineTo(x*64,y*64+64);
+        ctx.lineTo(x*64,y*64);
+        ctx.fill();
+    }
     
-    if (!(type == "svg")) {
+    if (type != "svg") {
         ctx.strokeStyle = "rgba(255,255,255,0.25)";
         ctx.lineWidth = "2";
         ctx.stroke();
@@ -118,3 +116,9 @@ function hideCoords() {
     p.innerHTML = "";
     p.setAttribute("style", "margin: 0; background: rgba(0,0,0,1); padding:0; border-radius: 1em; position: absolute; top: 10%; left: 50%; margin-right: -50%; transform: tran")
 }
+
+c.setAttribute("onpointermove","showCoords(event)");
+c.setAttribute("onpointerdown","downCoords(event)");
+c.setAttribute("onpointerup","hideCoords()");
+c.setAttribute("onpointerleave","hideCoords()");
+c.setAttribute("oncontextmenu","hideCoords()");
