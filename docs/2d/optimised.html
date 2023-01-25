@@ -16,14 +16,18 @@
         <div id="ui" style="line-height: 1%; line-break: strict;">
 			<p style="padding-top: 1em;">Options</p><br>
             <h5>Tile:</h5>
-            <button onclick="deleteAll()">DELETE</button>
+            <select name="tool" id="tool">
+                <option value="pen" selected="selected">Pen</option>
+                <option value="eraser">Eraser</option>
+            </select>
+            <button onclick="deleteAll()">DELETE TILEMAP</button>
             <h5>Export:</h5>
             <input type="text" name="filename" id="filename" value="Tilemap">
             <select name="filext" id="filext">
                 <option value="svg" selected="selected">.svg</option>
                 <option value="png">.png</option>
-                <option value="jpg">.jpg</option>
                 <option value="jpeg">.jpeg</option>
+                <option value="cstiles">.cstiles</option>
             </select><br>
 			<button onclick="exportImg()">DOWNLOAD</button>
 		</div>

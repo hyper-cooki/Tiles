@@ -53,20 +53,15 @@ function drawTile(x,y,type) {
         ctx.lineWidth = "2";
         ctx.stroke();
     }
-
-    if (type != "svg" && type != undefined) {
-        drawLayer(0,0);
-    }
 }
 
 function drawLayer(x,y,type) {
     if (type == "svg") {
-        ctx = new C2S(mapData.length*64,mapData[0].length*64);
+        ctx = new C2S(c.width,c.height);
     } else {
         ctx = c.getContext("2d");
+        ctx.clearRect(0,0,c.width,c.height);
     }
-
-    ctx.clearRect(0,0,c.width,c.height);
 
     for (let yh = 0; yh < mapData.length-y; yh++) {
         for (let xw = 0; xw < mapData[0].length-x; xw++) {
@@ -75,8 +70,6 @@ function drawLayer(x,y,type) {
     }
 
     if (type == "svg") {
-        var dl = document.createElement("a");
-        document.body.appendChild(dl);
         var svg = ctx.getSvg();
 
         if (window.ActiveXObject) {
@@ -86,9 +79,18 @@ function drawLayer(x,y,type) {
             svgString = oSerializer.serializeToString(svg);
         }
 
-        dl.download = "Tilemap.svg";
-        dl.href='data:image/svg+xml;utf8,' + encodeURIComponent(svgString);
+        var dl = document.createElement("a");
+        dl.download = document.getElementById("filename").value;
+        dl.href = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString);
         dl.click();
+        delete dl;        
+    } else if (type != undefined) {
+        var dl = document.createElement("a");
+        dl.download = document.getElementById("filename").value;
+        dl.href = c.toDataURL("image/"+type);
+        dl.click();
+        delete dl;
+        drawLayer(0,0);
     }
 }
 
@@ -99,7 +101,11 @@ function exportImg() {
 }
 
 function changeTile(x,y) {
-    mapData[y-1][x-1] = 1;
+    if (document.getElementById("tool").value == "pen") {
+        mapData[y-1][x-1] = 1;
+    } else if (document.getElementById("tool").value == "eraser") {
+        mapData[y-1][x-1] = 0;
+    }
     drawLayer(0,0);
 }
 
