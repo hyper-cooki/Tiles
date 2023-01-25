@@ -18,7 +18,6 @@ html, body {
 
 #ui {
     background-color: rgba(0, 0, 0, 0.5);
-    float: inline-end;
     position: absolute;
     border-top-right-radius: 1rem;
     border-bottom-right-radius: 1rem;
@@ -27,6 +26,16 @@ html, body {
     position: absolute;
     top:0;
     left:0;
+    transition-timing-function: ease;
+    transition: transform 0.5s;
+}
+
+#ui.showUI {
+    transform: translateX(0%);
+}
+
+#ui:not(.showUI) {
+    transform: translateX(-100%);
 }
 
 .disabled {

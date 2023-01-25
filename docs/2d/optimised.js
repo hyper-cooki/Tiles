@@ -1,19 +1,27 @@
-TILE_TYPES = [
-    { id: 0, colour: 'rgba(0,0,0,0)' },
-    { id: 1, colour: 'rgba(100,100,100,1)' },
-]
+if (localStorage.tiletypes) {
+    TILE_TYPES = JSON.parse(localStorage.getItem("tiletypes"))
+} else {
+    TILE_TYPES = [
+        { id: 0, colour: 'rgba(0,0,0,0)' },
+        { id: 1, colour: 'rgba(100,100,100,1)' },
+    ]
+}
 
-mapData = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
+if (localStorage.tilemap) {
+    mapData = JSON.parse(localStorage.getItem("tilemap"))
+} else {
+    mapData = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]
+}
 
 const c = document.createElement("canvas");
 
@@ -40,10 +48,14 @@ function drawTile(x,y,type) {
         ctx.fill();
     }
     
-    if (type != "svg") {
+    if (type == undefined) {
         ctx.strokeStyle = "rgba(255,255,255,0.25)";
         ctx.lineWidth = "2";
         ctx.stroke();
+    }
+
+    if (type != "svg" && type != undefined) {
+        drawLayer(0,0);
     }
 }
 
@@ -55,7 +67,6 @@ function drawLayer(x,y,type) {
     }
 
     ctx.clearRect(0,0,c.width,c.height);
-    ctx.clearRect(0, 0, 800, 400);
 
     for (let yh = 0; yh < mapData.length-y; yh++) {
         for (let xw = 0; xw < mapData[0].length-x; xw++) {
@@ -83,6 +94,10 @@ function drawLayer(x,y,type) {
 
 drawLayer(0,0);
 
+function exportImg() {
+    drawLayer(0,0,document.getElementById("filext").value);
+}
+
 function changeTile(x,y) {
     mapData[y-1][x-1] = 1;
     drawLayer(0,0);
@@ -91,6 +106,13 @@ function changeTile(x,y) {
 var mouseDown = false;
 
 const ui = document.getElementById("ui");
+
+ui.style.left = "0px";
+ui.style.height = window.innerHeight+"px";
+
+function toggleUI() {
+    ui.classList.toggle("showUI");
+}
 
 function downCoords(event) {
     mouseDown = true;
@@ -102,6 +124,9 @@ function downCoords(event) {
     drawLayer(0,0);
 
     ui.classList.add("disabled");
+
+    localStorage.setItem("tilemap", JSON.stringify(mapData));
+    localStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
 }
 
 function moveCoords(event) {
@@ -113,6 +138,9 @@ function moveCoords(event) {
         drawLayer(0,0);
 
         ui.classList.add("disabled");
+
+        localStorage.setItem("tilemap", JSON.stringify(mapData));
+        localStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
     }
 }
 
@@ -120,6 +148,9 @@ function stopCoords() {
     mouseDown = false
 
     ui.classList.remove("disabled");
+
+    localStorage.setItem("tilemap", JSON.stringify(mapData));
+    localStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
 }
 
 c.setAttribute("onpointermove","moveCoords(event)");
@@ -127,3 +158,27 @@ c.setAttribute("onpointerdown","downCoords(event)");
 c.setAttribute("onpointerup","stopCoords()");
 c.setAttribute("onpointerleave","stopCoords()");
 c.setAttribute("oncontextmenu","stopCoords()");
+
+function deleteAll() {
+    if (window.confirm("Are you sure?\nAll of your progress saved on this tilemap will be removed.")) {
+        localStorage.clear();
+        location.reload();
+        drawLayer(0,0);
+
+        for (let i = 0; i < Math.ceil(window.innerWidth/64); i++) {
+            for (let i2 = 0; i2 < Math.ceil(window.innerHeight/64); i2++) {
+                mapData[i][i2] = 0;
+                document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
+                document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
+            }
+        }
+
+        TILE_TYPES = [
+            { id: 0, colour: 'rgba(0,0,0,0)' },
+            { id: 1, colour: 'rgba(100,100,100,1)' },
+        ]
+
+        localStorage.setItem("tiletypes",TILE_TYPES);
+        localStorage.setItem("tilemap",mapData);
+    }
+}

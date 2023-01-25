@@ -5,7 +5,6 @@
             Tiles 2D (Optimised)
         </title>
         <link rel="icon" type="image/png" href="img/TilesIcon.png">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
         <script src="https://cdn.jsdelivr.net/npm/canvas2svg@1.0.16/canvas2svg.min.js"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,9 +12,20 @@
         <link rel="stylesheet" href="optimised.css">
     </head>
     <body>
-        <div id="ui">
-			<p>Options:</p>
-			<button onclick="drawLayer(0,0,'svg')">DOWNLOAD</button>
+        <button onclick="toggleUI()" style="position: absolute; z-index: 1;">UI</button>
+        <div id="ui" style="line-height: 1%; line-break: strict;">
+			<p style="padding-top: 1em;">Options</p><br>
+            <h5>Tile:</h5>
+            <button onclick="deleteAll()">DELETE</button>
+            <h5>Export:</h5>
+            <input type="text" name="filename" id="filename" value="Tilemap">
+            <select name="filext" id="filext">
+                <option value="svg" selected="selected">.svg</option>
+                <option value="png">.png</option>
+                <option value="jpg">.jpg</option>
+                <option value="jpeg">.jpeg</option>
+            </select><br>
+			<button onclick="exportImg()">DOWNLOAD</button>
 		</div>
         <script src="optimised.js"></script>
     </body>
