@@ -9,13 +9,13 @@
                 padding: 0;
                 border: 0;
                 user-select: none;
+                text-decoration: none;
             }
 
-            p {
+            .label {
                 font-family: Quicksand, sans-serif;
                 font-size: 10rem;
                 font-weight: 900;
-                text-decoration: none;
                 color: whitesmoke;
                 border: 0;
                 position: relative;
@@ -35,18 +35,46 @@
                 text-align: center;
                 vertical-align: middle;
             }
+
+            .twoDbeta {
+                font-family: Quicksand, sans-serif;
+                font-weight: 900;
+                text-decoration: none;
+                position: absolute;
+                top: 75vh;
+                left: 20vw;
+                padding: 1rem;
+                border-radius: 1rem;
+                background-color: #ffa500;
+                color: whitesmoke;
+            }
+
+            .threeDbeta {
+                font-family: Quicksand, sans-serif;
+                font-weight: 900;
+                text-decoration: none;
+                position: absolute;
+                top: 75vh;
+                right: 20vw;
+                padding: 1rem;
+                border-radius: 1rem;
+                background-color: blueviolet;
+                color: whitesmoke;
+            }
         </style>
     </head>
     <body>
         <a href="2d">
             <div class="column" style="background-color:#aaa;">
-                <p style="background-color: #ffa500;">2D</p>
+                <p class="label" style="background-color: #ffa500;">2D</p>
             </div>
         </a>
+        <a class="twoDbeta" href="2d/beta">BETA VERSION</a>
         <a href="3d">
             <div class="column" style="background-color:#bbb;">
-                <p id="3dLabel" style="background-color: blueviolet; transform: rotate3d(2, -0.75, 2, 60deg);">3D</p>
+                <p class="label" style="background-color: blueviolet; transform: rotate3d(2, -0.75, 2, 60deg);">3D</p>
             </div>
         </a>
+        <a class="threeDbeta" href="3d/beta">BETA VERSION</a>
     </body>
 </html>
