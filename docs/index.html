@@ -1,9 +1,52 @@
-<a href="2d">2D</a>
-<a href="2d/beta">2D (BETA)</a>
-<a href="2d/optimised">2D (Optimised)</a>
-<a href="3d">3D</a>
-<a href="3d/beta">3D (BETA)</a>
-<a href="3d/test">3D (ThreeJS Test)</a>
-<br>
-<img src="https://img.shields.io/github/deployments/Cooki-Studios/tiles/github-pages?label=Page%20Updated%3A">
-<img src="https://img.shields.io/github/last-commit/Cooki-Studios/tiles?label=Last%20Updated%3A">
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet'>
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                user-select: none;
+            }
+
+            p {
+                font-family: Quicksand, sans-serif;
+                font-size: 10rem;
+                font-weight: 900;
+                text-decoration: none;
+                color: whitesmoke;
+                border: 0;
+                position: relative;
+                margin: auto;
+                padding: 1rem;
+                border-radius: 1rem;
+                width: fit-content;
+                height: fit-content;
+                margin-top: 35vh;
+            }
+
+            .column {
+                float: left;
+                width: 50%;
+                min-height:100vh;
+                cursor: pointer;
+                text-align: center;
+                vertical-align: middle;
+            }
+        </style>
+    </head>
+    <body>
+        <a href="2d">
+            <div class="column" style="background-color:#aaa;">
+                <p style="background-color: #ffa500;">2D</p>
+            </div>
+        </a>
+        <a href="3d">
+            <div class="column" style="background-color:#bbb;">
+                <p id="3dLabel" style="background-color: blueviolet; transform: rotate3d(2, -0.75, 2, 60deg);">3D</p>
+            </div>
+        </a>
+    </body>
+</html>

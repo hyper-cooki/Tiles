@@ -57,7 +57,7 @@ function drawTile(x,y,type) {
 
 function drawLayer(x,y,type) {
     if (type == "svg") {
-        ctx = new C2S(c.width,c.height);
+        ctx = new C2S(window.innerWidth,window.innerHeight);
     } else {
         ctx = c.getContext("2d");
         ctx.clearRect(0,0,c.width,c.height);
