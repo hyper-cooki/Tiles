@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title></title>
-        <link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet'>
+        <link rel="icon" type="image/png" href="2d/img/TilesIcon.png">
+        <title>Tiles</title>
+        <link href='https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700' rel='stylesheet'>
         <style>
             html, body {
                 margin: 0;
@@ -18,63 +19,93 @@
                 font-weight: 900;
                 color: whitesmoke;
                 border: 0;
-                position: relative;
-                margin: auto;
                 padding: 1rem;
                 border-radius: 1rem;
                 width: fit-content;
                 height: fit-content;
-                margin-top: 35vh;
+                transition: all 100ms ease-in-out;
             }
 
             .column {
                 float: left;
                 width: 50%;
-                min-height:100vh;
-                cursor: pointer;
-                text-align: center;
-                vertical-align: middle;
+                min-height: 100vh;
             }
 
-            .twoDbeta {
-                font-family: Quicksand, sans-serif;
+            #twoDlabel:hover .label {
+                transition: all 100ms ease-in-out;
+                background: linear-gradient(rgba(0, 0, 0, 0.25),rgba(0, 0, 0, 0.25)),#ffa500;
+            }
+
+            #twoDlabel:hover {
+                transition: all 100ms ease-in-out;
+                scale: 105%;
+                rotate: 1deg;
+            }
+
+            #threeDlabel:hover .label {
+                transition: all 100ms ease-in-out;
+                background: linear-gradient(rgba(0, 0, 0, 0.25),rgba(0, 0, 0, 0.25)),blueviolet;
+            }
+
+            #threeDlabel:hover {
+                transition: all 100ms ease-in-out;
+                scale: 105%;
+                rotate: 1deg;
+            }
+
+            .twoDurl {
+                font-family: 'Quicksand', sans-serif;
                 font-weight: 900;
                 text-decoration: none;
                 position: absolute;
-                top: 75vh;
-                left: 20vw;
                 padding: 1rem;
                 border-radius: 1rem;
                 background-color: #ffa500;
                 color: whitesmoke;
+                transition: all 100ms linear;
             }
 
-            .threeDbeta {
-                font-family: Quicksand, sans-serif;
+            .twoDurl:hover {
+                scale: 105%;
+                rotate: 1deg;
+                background: linear-gradient(rgba(0, 0, 0, 0.25),rgba(0, 0, 0, 0.25)),#ffa500;
+            }
+
+            .threeDurl {
+                font-family: 'Quicksand', sans-serif;
                 font-weight: 900;
                 text-decoration: none;
                 position: absolute;
-                top: 75vh;
-                right: 20vw;
                 padding: 1rem;
                 border-radius: 1rem;
                 background-color: blueviolet;
                 color: whitesmoke;
+                transition: all 100ms ease-in-out;
+            }
+
+            .threeDurl:hover {
+                scale: 105%;
+                rotate: 1deg;
+                background: linear-gradient(rgba(0, 0, 0, 0.25),rgba(0, 0, 0, 0.25)),blueviolet;
             }
         </style>
     </head>
     <body>
-        <a href="2d">
-            <div class="column" style="background-color:#aaa;">
-                <p class="label" style="background-color: #ffa500;">2D</p>
+        <div class="column" style="background-color: #151515;">
+            <div id="twoDlabel" style="position: absolute; top: 30vh; left: calc(25vw - 7.25rem);">
+                <a class="label" style="background-color: #ffa500; text-decoration: none; width: fit-content; height: fit-content; position: absolute; top: 40%; left: 16.5%;" href="2d">2D</a>
             </div>
-        </a>
-        <a class="twoDbeta" href="2d/beta">BETA VERSION</a>
-        <a href="3d">
-            <div class="column" style="background-color:#bbb;">
-                <p class="label" style="background-color: blueviolet; transform: rotate3d(2, -0.75, 2, 60deg);">3D</p>
+            <a class="twoDurl" style="top: 65vh; left: calc(25vw - 4.5rem);" href="2d/beta">BETA VERSION</a>
+            <a class="twoDurl" style="top: 75vh; left: calc(25vw - 3.75rem);" href="2d/optimised">OPTIMISED</a>
+        </div>
+        <div style="position: absolute; width: 0.25rem; height: 80vh; top: 10vh; left: calc(50vw - 0.125rem); border-radius: 0.25rem; background-color: rgba(255, 255, 255, 0.1);"></div>
+        <div class="column" style="background-color:#151515;">
+            <div id="threeDlabel" style="transform: rotate3d(2, -0.75, 2, 60deg); position: absolute; top: 32vh; right: calc(25vw - 7rem);">
+                <a class="label" id="threeDlabel" style="background-color: blueviolet; text-decoration: none;" href="3d">3D</a>
             </div>
-        </a>
-        <a class="threeDbeta" href="3d/beta">BETA VERSION</a>
+            <a class="threeDurl" style="top: 65vh; right: calc(25vw - 4.5rem);" href="3d/beta">BETA VERSION</a>
+            <a class="threeDurl" style="top: 75vh; right: calc(25vw - 3rem);" href="3d/test">3D TEST</a>
+        </div>
     </body>
 </html>
