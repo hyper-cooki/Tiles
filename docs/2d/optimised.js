@@ -2,8 +2,8 @@ if (localStorage.tiletypes) {
     TILE_TYPES = JSON.parse(localStorage.getItem("tiletypes"))
 } else {
     TILE_TYPES = [
-        { id: 0, colour: 'rgba(0,0,0,0)' },
-        { id: 1, colour: 'rgba(100,100,100,1)' },
+        { id: 0, colour: '#00000000' },
+        { id: 1, colour: '#ffffff' },
     ]
 }
 
@@ -37,18 +37,53 @@ function drawTile(x,y,type) {
         }
     }
 
-    if (tileType != 0) {
+    x *= 64;
+    y *= 64;
+
+    if (tileType.shape == "square" || tileType.shape == undefined) {
         ctx.beginPath();
+        ctx.moveTo(x,y);
+        ctx.lineTo(x+64,y);
+        ctx.lineTo(x+64,y+64);
+        ctx.lineTo(x,y+64);
+        ctx.closePath();
+    } else if (tileType.shape == "triangle") {
+        ctx.beginPath();
+        ctx.moveTo(x,y);
+        ctx.lineTo(x+64,y+64);
+        ctx.lineTo(x,y+64);
+        ctx.closePath();
+    } else if (tileType.shape == "thin-triangle") {
+        ctx.beginPath();
+        ctx.moveTo(x,y);
+        ctx.lineTo(x+32,y+64);
+        ctx.lineTo(x,y+64);
+        ctx.closePath();
+    } else if (tileType.shape == "curve") {
+        ctx.beginPath();
+        ctx.arc(x,y+64,64,1.5*Math.PI,0);
+        ctx.lineTo(x,y+64);
+        ctx.closePath();
+    } else if (tileType.shape == "reverse-curve") {
+        ctx.beginPath();
+        ctx.arc(x+64,y,64,2.5*Math.PI,Math.PI);
+        ctx.lineTo(x,y+64);
+        ctx.closePath();
+    }
+
+    if (tileType.id != 0) {
         ctx.fillStyle = tileType.colour;
-        ctx.moveTo(x*64,y*64);
-        ctx.lineTo(x*64+64,y*64)
-        ctx.lineTo(x*64+64,y*64+64);
-        ctx.lineTo(x*64,y*64+64);
-        ctx.lineTo(x*64,y*64);
         ctx.fill();
+        
     }
     
     if (type == undefined) {
+        ctx.beginPath();
+        ctx.moveTo(x,y);
+        ctx.lineTo(x+64,y)
+        ctx.lineTo(x+64,y+64);
+        ctx.lineTo(x,y+64);
+        ctx.closePath();
         ctx.strokeStyle = "rgba(255,255,255,0.25)";
         ctx.lineWidth = "2";
         ctx.stroke();
@@ -102,11 +137,20 @@ function exportImg() {
 
 function changeTile(x,y) {
     if (document.getElementById("tool").value == "pen") {
-        mapData[y-1][x-1] = 1;
+        mapData[y-1][x-1] = TILE_TYPES.length-1;
     } else if (document.getElementById("tool").value == "eraser") {
         mapData[y-1][x-1] = 0;
     }
     drawLayer(0,0);
+}
+
+const tileColour = document.getElementById("tileColour");
+tileColour.value = TILE_TYPES[TILE_TYPES.length-1].colour;
+
+const tileShape = document.getElementById("shape");
+
+function addTypes(t) {
+    TILE_TYPES[t] = { id: t, colour: tileColour.value, shape: tileShape.value };
 }
 
 var mouseDown = false;

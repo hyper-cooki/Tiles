@@ -16,6 +16,15 @@
         <div id="ui" style="line-height: 1%; line-break: strict;">
 			<p style="padding-top: 1em;">Options</p><br>
             <h5>Tile:</h5>
+            <input type="color" id="tileColour" oninput="addTypes(TILE_TYPES.length)">
+            <select name="shape" id="shape" oninput="addTypes(TILE_TYPES.length)">
+                <option value="square" selected="selected">Square</option>
+                <option value="triangle">Triangle</option>
+                <option value="thin-triangle">Thin Triangle</option>
+                <option value="curve">Curve</option>
+                <option value="reverse-curve">Reverse Curve</option>
+            </select>
+            <br>
             <select name="tool" id="tool">
                 <option value="pen" selected="selected">Pen</option>
                 <option value="eraser">Eraser</option>
