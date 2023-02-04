@@ -127,6 +127,8 @@ function drawLayer(x,y,type) {
         delete dl;
         drawLayer(0,0);
     }
+
+    deleteTileTypes();
 }
 
 drawLayer(0,0);
@@ -212,23 +214,38 @@ c.setAttribute("oncontextmenu","stopCoords()");
 function deleteAll() {
     if (window.confirm("Are you sure?\nAll of your progress saved on this tilemap will be removed.")) {
         localStorage.clear();
-        location.reload();
-        drawLayer(0,0);
 
-        for (let i = 0; i < Math.ceil(window.innerWidth/64); i++) {
-            for (let i2 = 0; i2 < Math.ceil(window.innerHeight/64); i2++) {
+
+        mapData = [];
+        for (let i = 0; i < document.getElementById("gridX").value; i++) {
+            mapData[i] = [];
+            for (let i2 = 0; i2 < document.getElementById("gridY").value; i2++) {
                 mapData[i][i2] = 0;
-                document.getElementById("orthogonal-map").height = document.getElementById("tileSize").value * mapData.length;
-                document.getElementById("orthogonal-map").width = document.getElementById("tileSize").value * mapData[0].length;
             }
         }
 
+        console.log(mapData);
+
         TILE_TYPES = [
-            { id: 0, colour: 'rgba(0,0,0,0)' },
-            { id: 1, colour: 'rgba(100,100,100,1)' },
+            { id: 0, colour: '#00000000' },
+            { id: 1, colour: '#ffffff' },
         ]
 
-        localStorage.setItem("tiletypes",TILE_TYPES);
-        localStorage.setItem("tilemap",mapData);
+        localStorage.setItem("tilemap", JSON.stringify(mapData));
+        localStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
+
+        tileColour.value = TILE_TYPES[TILE_TYPES.length-1].colour;
+
+        drawLayer(0,0);
+    }
+}
+
+function deleteTileTypes() {
+    for (let i = 1; i < TILE_TYPES.length-1;) {
+      if (!(mapData.toString().includes(i))) {      
+        TILE_TYPES.splice(i, 1);
+      } else {
+        i++;
+      }
     }
 }
