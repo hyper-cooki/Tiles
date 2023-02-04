@@ -6,6 +6,7 @@
         <link href='https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700' rel='stylesheet'>
         <style>
             html, body {
+                background-color: #151515;
                 margin: 0;
                 padding: 0;
                 border: 0;
@@ -30,6 +31,7 @@
                 float: left;
                 width: 50%;
                 min-height: 100vh;
+                background-color: #15151525;
             }
 
             #twoDlabel {
@@ -89,18 +91,122 @@
                 rotate: 1deg;
                 background: linear-gradient(rgba(0, 0, 0, 0.25),rgba(0, 0, 0, 0.25)),blueviolet;
             }
+
+            .twoDshapes {
+                z-index: -1;
+                position: absolute;
+                left: 5rem;
+                top: 5rem;
+                opacity: 0%;
+                transition: all 100ms ease-in-out;
+            }
+
+            #square {
+                height: 8em;
+                width: 8rem;
+                background-color: #ff0000;
+                border-radius: 0.5rem;
+            }
+
+            #twoDlabel:hover #square {
+                transition: all 100ms ease-in-out;
+                top: -10rem;
+                left: -10rem;
+                rotate: -95deg;
+                opacity: 100%;
+            }
+
+            #triangle {
+                transition: all 100ms ease-in-out;
+                position: absolute;
+                background-color: #0099ff;
+                text-align: left;
+            }
+
+            #triangle:before,
+            #triangle:after {
+                content: '';
+                position: absolute;
+                background-color: inherit;
+            }
+            #triangle,
+            #triangle:before,
+            #triangle:after {
+                width:  5rem;
+                height: 5rem;
+                border-top-right-radius: 0.5rem;
+            }
+
+            #triangle {
+                transform: rotate(-60deg) skewX(-30deg) scale(1,.866);
+            }
+            #triangle:before {
+                transform: rotate(-135deg) skewX(-45deg) scale(1.414,.707) translate(0,-50%);
+            }
+            #triangle:after {
+                transform: rotate(135deg) skewY(-45deg) scale(.707,1.414) translate(50%);
+            }
+
+            #twoDlabel:hover #triangle {
+                transition: all 100ms ease-in-out;
+                top: 15rem;
+                left: 18rem;
+                rotate: -105deg;
+                opacity: 100%;
+            }
+
+            #curve {
+                transition: all 100ms ease-in-out;
+                height: 5rem;
+                width: 5rem;
+                background-color: #26ff00;
+                border-radius: 0.5rem;
+                border-bottom-right-radius: 100%;
+                opacity: 0%;
+            }
+
+            #twoDlabel:hover #curve {
+                transition: all 100ms ease-in-out;
+                top: 15rem;
+                left: -10rem;
+                rotate: -95deg;
+                opacity: 100%;
+            }
+
+            #circle {
+                transition: all 100ms ease-in-out;
+                height: 5rem;
+                width: 5rem;
+                background-color: #ffe100;
+                border-radius: 50%;
+                border-bottom-right-radius: 1rem;
+                border-top-left-radius: 1rem;
+                opacity: 0%;
+            }
+
+            #twoDlabel:hover #circle {
+                transition: all 100ms ease-in-out;
+                top: -10rem;
+                left: 15rem;
+                rotate: -95deg;
+                opacity: 100%;
+            }
         </style>
     </head>
     <body>
-        <div class="column" style="background-color: #151515;">
+        <div class="column">
             <div id="twoDlabel" style="position: absolute; top: 30vh; left: calc(25vw - 7.25rem);">
                 <a class="label" style="background-color: #ffa500; text-decoration: none; width: fit-content; height: fit-content; position: absolute; top: 40%; left: 16.5%;" href="2d">2D</a>
+                <div class="twoDshapes" id="square"></div>
+                <div class="twoDshapes" id="triangle"></div>
+                <div class="twoDshapes" id="curve"></div>
+                <div class="twoDshapes" id="circle"></div>
             </div>
             <a class="twoDurl" style="top: 65vh; left: calc(25vw - 4.5rem);" href="2d/beta">BETA VERSION</a>
             <a class="twoDurl" style="top: 75vh; left: calc(25vw - 3.75rem);" href="2d/optimised">OPTIMISED</a>
         </div>
         <div style="position: absolute; width: 0.25rem; height: 80vh; top: 10vh; left: calc(50vw - 0.125rem); border-radius: 0.25rem; background-color: rgba(255, 255, 255, 0.1);"></div>
-        <div class="column" style="background-color:#151515;">
+        <div class="column">
             <div id="threeDlabel" style="transform: rotate3d(2, -0.75, 2, 60deg); position: absolute; top: 32vh; right: calc(25vw - 7rem);">
                 <a class="label" id="threeDlabel" style="background-color: blueviolet; text-decoration: none;" href="3d">3D</a>
             </div>
