@@ -41,3 +41,12 @@ html, body {
 .disabled {
     pointer-events: none;
 }
+
+#ui a {
+    text-decoration: none;
+    font-size: x-small;
+    color: whitesmoke;
+    background-color: #ffa500;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
