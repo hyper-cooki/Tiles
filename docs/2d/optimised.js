@@ -29,6 +29,7 @@ c.height = window.innerHeight;
 c.width = window.innerWidth;
 c.setAttribute("id", "canvas");
 document.body.appendChild(c);
+c.style.cursor = "pointer";
 
 function drawTile(x,y,type) {
     for (let i = 0; i < TILE_TYPES[TILE_TYPES.length-1].id+1; i++) {
@@ -127,8 +128,6 @@ function drawLayer(x,y,type) {
         delete dl;
         drawLayer(0,0);
     }
-
-    deleteTileTypes();
 }
 
 drawLayer(0,0);
@@ -139,7 +138,7 @@ function exportImg() {
 
 function changeTile(x,y) {
     if (document.getElementById("tool").value == "pen") {
-        mapData[y-1][x-1] = TILE_TYPES.length-1;
+        mapData[y-1][x-1] = TILE_TYPES[TILE_TYPES.length-1].id;
     } else if (document.getElementById("tool").value == "eraser") {
         mapData[y-1][x-1] = 0;
     }
@@ -151,8 +150,22 @@ tileColour.value = TILE_TYPES[TILE_TYPES.length-1].colour;
 
 const tileShape = document.getElementById("shape");
 
+const tileOpacity = document.getElementById("opacity");
+
 function addTypes(t) {
-    TILE_TYPES[t] = { id: t, colour: tileColour.value, shape: tileShape.value };
+    if (tileShape.value == 'square') {
+        if (tileOpacity.value < 1) {
+            TILE_TYPES[t] = { id: t, colour: tileColour.value+(tileOpacity.value*100) };
+        } else {
+            TILE_TYPES[t] = { id: t, colour: tileColour.value };
+        }
+    } else {
+        if (tileOpacity.value < 1) {
+            TILE_TYPES[t] = { id: t, colour: tileColour.value+(tileOpacity.value*100), shape: tileShape.value };
+        } else {
+            TILE_TYPES[t] = { id: t, colour: tileColour.value, shape: tileShape.value };
+        }
+    }
 }
 
 var mouseDown = false;
@@ -167,6 +180,8 @@ function toggleUI() {
 }
 
 function downCoords(event) {
+    c.style.cursor = "crosshair";
+
     mouseDown = true;
 
     let x = Math.ceil(event.clientX/64);
@@ -176,6 +191,7 @@ function downCoords(event) {
     drawLayer(0,0);
 
     ui.classList.add("disabled");
+    document.getElementById("uiToggle").classList.add("disabled");
 
     localStorage.setItem("tilemap", JSON.stringify(mapData));
     localStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
@@ -183,6 +199,8 @@ function downCoords(event) {
 
 function moveCoords(event) {
     if (mouseDown) {
+        c.style.cursor = "crosshair";
+
         let x = Math.ceil(event.clientX/64);
         let y = Math.ceil(event.clientY/64);
 
@@ -190,6 +208,7 @@ function moveCoords(event) {
         drawLayer(0,0);
 
         ui.classList.add("disabled");
+        document.getElementById("uiToggle").classList.add("disabled");
 
         localStorage.setItem("tilemap", JSON.stringify(mapData));
         localStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
@@ -197,9 +216,14 @@ function moveCoords(event) {
 }
 
 function stopCoords() {
+    c.style.cursor = "pointer";
+
     mouseDown = false
 
+    deleteTileTypes();
+
     ui.classList.remove("disabled");
+    document.getElementById("uiToggle").classList.remove("disabled");
 
     localStorage.setItem("tilemap", JSON.stringify(mapData));
     localStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
@@ -217,14 +241,12 @@ function deleteAll() {
 
 
         mapData = [];
-        for (let i = 0; i < document.getElementById("gridX").value; i++) {
+        for (let i = 0; i < document.getElementById("gridY").value; i++) {
             mapData[i] = [];
-            for (let i2 = 0; i2 < document.getElementById("gridY").value; i2++) {
+            for (let i2 = 0; i2 < document.getElementById("gridX").value; i2++) {
                 mapData[i][i2] = 0;
             }
         }
-
-        console.log(mapData);
 
         TILE_TYPES = [
             { id: 0, colour: '#00000000' },
@@ -241,11 +263,22 @@ function deleteAll() {
 }
 
 function deleteTileTypes() {
-    for (let i = 1; i < TILE_TYPES.length-1;) {
-      if (!(mapData.toString().includes(i))) {      
-        TILE_TYPES.splice(i, 1);
-      } else {
-        i++;
-      }
-    }
+        for (let i = 0; i < TILE_TYPES[TILE_TYPES.length-1].id; i++) {
+            if (!(mapData.toString().includes(TILE_TYPES[i].id))) {   
+                TILE_TYPES.splice(i, 1);
+            } else {
+                i++;
+            }
+        }
 }
+
+var openFile = function(event) {
+    var input = event.target;
+
+    var reader = new FileReader();
+    reader.onload = function() {
+        mapData = JSON.parse(reader.result.substring(reader.result.indexOf("<")+1, reader.result.indexOf(">")));
+        TILE_TYPES = JSON.parse(reader.result.substring(0, reader.result.indexOf("<")));
+    };
+    reader.readAsText(input.files[0]);
+    };

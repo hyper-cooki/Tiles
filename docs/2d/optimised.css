@@ -43,10 +43,37 @@ html, body {
 }
 
 #ui a {
+    position: relative;
+    left: calc(50% - 2rem);
     text-decoration: none;
     font-size: x-small;
     color: whitesmoke;
     background-color: #ffa500;
     padding: 0.5rem;
     border-radius: 0.5rem;
+}
+
+#tileOpacity {
+    transform: perspective(1rem);
+}
+
+input[type="file"] {
+    display: none;
+}
+
+#fileLabel {
+    background-color: #ffa500;
+    padding: 1rem;
+    border-radius: 1rem;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: bold;
+    transition: all 100ms ease-in-out;
+    color: whitesmoke;
+}
+
+#fileLabel:hover {
+    background-color: #ffa50080;
 }

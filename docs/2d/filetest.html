@@ -1,0 +1,36 @@
+<label id="fileLabel" for="file">UPLOAD .CSTILES</label>
+<input type="file" name="file" id="file" accept=".cstiles" onchange="openFile(event)">
+<style>
+    input[type="file"] {
+        display: none;
+    }
+
+    #fileLabel {
+        background-color: #ffa500;
+        padding: 1rem;
+        border-radius: 1rem;
+        display: inline-block;
+        padding: 6px 12px;
+        cursor: pointer;
+        font-family: 'Quicksand', sans-serif;
+        font-weight: bold;
+        transition: all 100ms ease-in-out;
+        color: whitesmoke;
+    }
+
+    #fileLabel:hover {
+        background-color: #ffa50080;
+    }
+</style>
+<script>
+    var openFile = function(event) {
+    var input = event.target;
+
+    var reader = new FileReader();
+    reader.onload = function() {
+        mapData = JSON.parse(reader.result.substring(reader.result.indexOf("<")+1, reader.result.indexOf(">")));
+        TILE_TYPES = JSON.parse(reader.result.substring(0, reader.result.indexOf("<")));
+    };
+    reader.readAsText(input.files[0]);
+    };
+</script>

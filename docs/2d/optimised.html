@@ -15,10 +15,10 @@
         <link rel="stylesheet" href="optimised.css">
     </head>
     <body>
-        <button onclick="toggleUI()" style="position: absolute; z-index: 1;">UI</button>
+        <button onclick="toggleUI()" style="position: absolute; z-index: 1;" id="uiToggle">UI</button>
         <div id="ui" style="line-height: 1%; line-break: strict;">
             <br>
-            <a href="cooki-studios.github.io">GO HOME</a>
+            <a href="//">GO HOME</a>
 			<br><p style="padding-top: 1em;">Options</p><br>
             <h5>Tile:</h5>
             <input type="color" id="tileColour" oninput="addTypes(TILE_TYPES.length)">
@@ -26,6 +26,7 @@
                 <option value="pen" selected="selected">Pen</option>
                 <option value="eraser">Eraser</option>
             </select>
+            <input type="range" value="1" min="0" max="1" step="0.25" id="opacity" oninput="addTypes(TILE_TYPES.length)"><br>
             <select name="shape" id="shape" oninput="addTypes(TILE_TYPES.length)">
                 <option value="square" selected="selected">Square</option>
                 <option value="triangle">Triangle</option>
@@ -46,6 +47,8 @@
                 <option value="cstiles">.cstiles</option>
             </select><br>
 			<button onclick="exportImg()">DOWNLOAD</button>
+            <label id="fileLabel" for="file">UPLOAD .CSTILES</label>
+            <input type="file" name="file" id="file" accept=".cstiles" onchange="openFile(event)">
 		</div>
         <script src="optimised.js"></script>
     </body>
