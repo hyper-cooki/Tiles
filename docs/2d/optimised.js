@@ -220,8 +220,6 @@ function stopCoords() {
 
     mouseDown = false
 
-    deleteTileTypes();
-
     ui.classList.remove("disabled");
     document.getElementById("uiToggle").classList.remove("disabled");
 
@@ -273,12 +271,15 @@ function deleteTileTypes() {
 }
 
 var openFile = function(event) {
-    var input = event.target;
+var input = event.target;
 
-    var reader = new FileReader();
-    reader.onload = function() {
-        mapData = JSON.parse(reader.result.substring(reader.result.indexOf("<")+1, reader.result.indexOf(">")));
-        TILE_TYPES = JSON.parse(reader.result.substring(0, reader.result.indexOf("<")));
-    };
-    reader.readAsText(input.files[0]);
-    };
+var reader = new FileReader();
+reader.onload = function() {
+    delete mapData;
+    mapData = JSON.parse(reader.result.substring(reader.result.indexOf("<")+1, reader.result.indexOf(">")));
+    delete TILE_TYPES;
+    TILE_TYPES = JSON.parse(reader.result.substring(0, reader.result.indexOf("<")));
+    drawLayer(0,0);
+};
+reader.readAsText(input.files[0]);
+};
