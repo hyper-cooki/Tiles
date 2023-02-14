@@ -21,20 +21,22 @@
             <a href="//cooki-studios.github.io">GO HOME</a>
 			<br><p style="padding-top: 1em;">Options</p><br>
             <h5>Tile:</h5>
-            <input type="color" id="tileColour" oninput="addTypes(TILE_TYPES.length)">
+            
             <select name="tool" id="tool">
                 <option value="pen" selected="selected">Pen</option>
                 <option value="eraser">Eraser</option>
             </select>
-            <input type="range" value="1" min="0" max="1" step="0.25" id="opacity" oninput="addTypes(TILE_TYPES.length)"><br>
+            <input type="color" id="tileColour" oninput="addTypes(TILE_TYPES.length)">
             <select name="shape" id="shape" oninput="addTypes(TILE_TYPES.length)">
-                <option value="square" selected="selected">Square</option>
+                <option value="square" selected="selected">Square<img src="img/TilesIcon.png"></option>
                 <option value="triangle">Triangle</option>
                 <option value="thin-triangle">Thin Triangle</option>
                 <option value="curve">Curve</option>
                 <option value="reverse-curve">Reverse Curve</option>
             </select>
             <br>
+            <input type="range" value="1" min="0" max="1" step="0.25" id="opacity" oninput="addTypes(TILE_TYPES.length)"><br>
+            <h5>Tilemap:</h5>
             <button onclick="deleteAll()">DELETE TILEMAP</button>
             <input type="number" id="gridX" value="11" style="max-width: 2rem;" min="1">
             <input type="number" id="gridY" value="9" style="max-width: 2rem;" min="1">
