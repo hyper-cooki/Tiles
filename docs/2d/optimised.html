@@ -21,7 +21,6 @@
             <a href="//cooki-studios.github.io">GO HOME</a>
 			<br><p style="padding-top: 1em;">Options</p><br>
             <h5>Tile:</h5>
-            
             <select name="tool" id="tool">
                 <option value="pen" selected="selected">Pen</option>
                 <option value="eraser">Eraser</option>
@@ -49,7 +48,7 @@
                 <option value="cstiles">.cstiles</option>
             </select><br>
 			<button onclick="exportImg()">DOWNLOAD</button>
-            <label id="fileLabel" for="file">UPLOAD .CSTILES</label>
+            <label id="fileLabel" for="file" tabindex="0">UPLOAD .CSTILES</label>
             <input type="file" name="file" id="file" accept=".cstiles" onchange="openFile(event)">
 		</div>
         <script src="optimised.js"></script>
