@@ -82,7 +82,7 @@ input[type="file"] {
     width: 2.5rem;
     height: 2.5rem;
     border: none;
-    background: url("img/Cog.svg"), rgba(0, 0, 0, 0.5);
+    background: url("img/cog.svg"), rgba(0, 0, 0, 0.5);
     background-position: center;
     background-size: 2rem;
     background-repeat: no-repeat;
