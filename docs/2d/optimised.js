@@ -32,7 +32,7 @@ document.body.appendChild(c);
 c.style.cursor = "pointer";
 
 function drawTile(x,y,type) {
-    for (let i = 0; i < TILE_TYPES[TILE_TYPES.length-1].id+1; i++) {
+    for (let i = 0; i < TILE_TYPES.length; i++) {
         if (i == mapData[y][x]) {
           var tileType = TILE_TYPES[i];
         }
@@ -42,6 +42,7 @@ function drawTile(x,y,type) {
     y *= 64;
 
     if (tileType.shape == "square" || tileType.shape == undefined) {
+        console.log(tileType.shape);
         ctx.beginPath();
         ctx.moveTo(x,y);
         ctx.lineTo(x+64,y);
@@ -270,16 +271,21 @@ function deleteTileTypes() {
         }
 }
 
-var openFile = function(event) {
-var input = event.target;
+function openFile(event) {
+    var input = event.target;
+    var reader = new FileReader();
+    reader.onload = function() {
+        delete mapData;
+        mapData = JSON.parse(reader.result.substring(reader.result.indexOf("<")+1, reader.result.indexOf(">")));
+        delete TILE_TYPES;
+        TILE_TYPES = JSON.parse(reader.result.substring(0, reader.result.indexOf("<")));
+        
+        localStorage.setItem("tilemap", JSON.stringify(mapData));
+        localStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
 
-var reader = new FileReader();
-reader.onload = function() {
-    delete mapData;
-    mapData = JSON.parse(reader.result.substring(reader.result.indexOf("<")+1, reader.result.indexOf(">")));
-    delete TILE_TYPES;
-    TILE_TYPES = JSON.parse(reader.result.substring(0, reader.result.indexOf("<")));
-    drawLayer(0,0);
-};
-reader.readAsText(input.files[0]);
+        tileColour.value = TILE_TYPES[TILE_TYPES.length-1].colour
+        
+        drawLayer(0,0);
+    };
+    reader.readAsText(input.files[0]);
 };

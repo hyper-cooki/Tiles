@@ -63,10 +63,9 @@ input[type="file"] {
 
 #fileLabel {
     background-color: #ffa500;
-    padding: 1rem;
-    border-radius: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
     display: inline-block;
-    padding: 6px 12px;
     cursor: pointer;
     font-family: 'Quicksand', sans-serif;
     font-weight: bold;
@@ -76,4 +75,15 @@ input[type="file"] {
 
 #fileLabel:hover {
     background-color: #ffa50080;
+}
+
+#uiToggle {
+    border-bottom-right-radius: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: none;
+    background: url("img/Cog.svg"), rgba(0, 0, 0, 0.5);
+    background-position: center;
+    background-size: 2rem;
+    background-repeat: no-repeat;
 }

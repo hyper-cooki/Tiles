@@ -15,10 +15,10 @@
         <link rel="stylesheet" href="optimised.css">
     </head>
     <body>
-        <button onclick="toggleUI()" style="position: absolute; z-index: 1;" id="uiToggle">UI</button>
-        <div id="ui" style="line-height: 1%; line-break: strict;">
+        <button onclick="toggleUI()" style="position: absolute; z-index: 1;" id="uiToggle"></button>
+        <div id="ui" class="showUI" style="line-height: 1%; line-break: strict;">
             <br>
-            <a href="//">GO HOME</a>
+            <a href="/">GO HOME</a>
 			<br><p style="padding-top: 1em;">Options</p><br>
             <h5>Tile:</h5>
             <input type="color" id="tileColour" oninput="addTypes(TILE_TYPES.length)">
