@@ -78,6 +78,7 @@ input[type="file"] {
 }
 
 #uiToggle {
+    cursor: pointer;
     border-bottom-right-radius: 1rem;
     width: 2.5rem;
     height: 2.5rem;

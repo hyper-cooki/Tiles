@@ -33,7 +33,7 @@ c.style.cursor = "pointer";
 
 function drawTile(x,y,type) {
     for (let i = 0; i < TILE_TYPES.length; i++) {
-        if (i == mapData[y][x]) {
+        if (TILE_TYPES[i].id == mapData[y][x]) {
           var tileType = TILE_TYPES[i];
         }
     }
@@ -42,7 +42,6 @@ function drawTile(x,y,type) {
     y *= 64;
 
     if (tileType.shape == "square" || tileType.shape == undefined) {
-        console.log(tileType.shape);
         ctx.beginPath();
         ctx.moveTo(x,y);
         ctx.lineTo(x+64,y);
@@ -121,10 +120,19 @@ function drawLayer(x,y,type) {
         dl.href = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString);
         dl.click();
         delete dl;        
-    } else if (type != undefined) {
+    } else if (type != undefined && type != "cstiles") {
         var dl = document.createElement("a");
         dl.download = document.getElementById("filename").value;
         dl.href = c.toDataURL("image/"+type);
+        dl.click();
+        delete dl;
+        drawLayer(0,0);
+    }
+
+    if (type == "cstiles") {
+        var dl = document.createElement("a");
+        dl.download = document.getElementById("filename").value+".cstiles";
+        dl.href = "data:text/plain;utf-8,"+encodeURIComponent(JSON.stringify(TILE_TYPES)+"<"+JSON.stringify(mapData)+">");
         dl.click();
         delete dl;
         drawLayer(0,0);
@@ -275,10 +283,10 @@ function openFile(event) {
     var input = event.target;
     var reader = new FileReader();
     reader.onload = function() {
-        delete mapData;
-        mapData = JSON.parse(reader.result.substring(reader.result.indexOf("<")+1, reader.result.indexOf(">")));
         delete TILE_TYPES;
         TILE_TYPES = JSON.parse(reader.result.substring(0, reader.result.indexOf("<")));
+        delete mapData;
+        mapData = JSON.parse(reader.result.substring(reader.result.indexOf("<")+1, reader.result.indexOf(">")));
         
         localStorage.setItem("tilemap", JSON.stringify(mapData));
         localStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
