@@ -92,10 +92,17 @@ function drawTile(x,y,type) {
 }
 
 function drawLayer(x,y,type) {
-    if (type == "svg") {
-        ctx = new C2S(window.innerWidth,window.innerHeight);
+    if (type == undefined) {
+        ctx = c.getContext("2d");
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+        ctx.clearRect(0,0,c.width,c.height);
+    } else if (type == "svg") {
+        ctx = new C2S(Number(document.getElementById("saveW").value)*64,Number(document.getElementById("saveH").value)*64);
     } else {
         ctx = c.getContext("2d");
+        c.width = Number(document.getElementById("saveW").value)*64;
+        c.height = Number(document.getElementById("saveH").value)*64;
         ctx.clearRect(0,0,c.width,c.height);
     }
 
@@ -119,7 +126,7 @@ function drawLayer(x,y,type) {
         dl.download = document.getElementById("filename").value;
         dl.href = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString);
         dl.click();
-        delete dl;        
+        delete dl;     
     } else if (type != undefined && type != "cstiles") {
         var dl = document.createElement("a");
         dl.download = document.getElementById("filename").value;
@@ -142,7 +149,7 @@ function drawLayer(x,y,type) {
 drawLayer(0,0);
 
 function exportImg() {
-    drawLayer(0,0,document.getElementById("filext").value);
+    drawLayer(Number(document.getElementById("saveX").value)*64,Number(document.getElementById("saveY").value)*64,document.getElementById("filext").value);
 }
 
 function changeTile(x,y) {
