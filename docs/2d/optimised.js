@@ -149,7 +149,7 @@ function drawLayer(x,y,type) {
 drawLayer(0,0);
 
 function exportImg() {
-    drawLayer(Number(document.getElementById("saveX").value)*64,Number(document.getElementById("saveY").value)*64,document.getElementById("filext").value);
+    drawLayer(Number(document.getElementById("saveX").value),Number(document.getElementById("saveY").value),document.getElementById("filext").value);
 }
 
 function changeTile(x,y) {

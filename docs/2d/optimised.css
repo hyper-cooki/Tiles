@@ -17,6 +17,10 @@ html, body {
 }
 
 #ui {
+      
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    overflow: scroll;
     background-color: rgba(0, 0, 0, 0.5);
     position: absolute;
     border-top-right-radius: 1rem;
@@ -28,6 +32,10 @@ html, body {
     left:0;
     transition-timing-function: ease;
     transition: transform 0.5s;
+}
+
+#ui::-webkit-scrollbar {
+    display: none;
 }
 
 #ui.showUI {
@@ -63,9 +71,8 @@ input[type="file"] {
 
 #fileLabel {
     background-color: #ffa500;
-    padding: 0.75rem;
-    border-radius: 0.75rem;
-    display: inline-block;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
     cursor: pointer;
     font-family: 'Quicksand', sans-serif;
     font-weight: bold;
@@ -74,7 +81,7 @@ input[type="file"] {
 }
 
 #fileLabel:hover {
-    background-color: #ffa50080;
+    background-color: #ffa600e4;
 }
 
 #uiToggle {
