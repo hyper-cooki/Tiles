@@ -48,6 +48,24 @@
                 background-color: #15151525;
             }
 
+            @-webkit-keyframes rotating {
+            from {
+                rotate: 360deg;
+            }
+            to {
+                rotate: 0deg;
+            }
+            }
+
+            @keyframes rotating {
+            from {
+                rotate: 360deg;
+            }
+            to {
+                rotate: 0deg;
+            }
+            }
+
             #twoDlabel {
                 transition: all 100ms ease-in-out;
             }
@@ -120,6 +138,7 @@
                 width: 8rem;
                 background-color: #ff0000;
                 border-radius: 0.5rem;
+                scale: 0%;
             }
 
             #twoDlabel:hover #square {
@@ -128,6 +147,12 @@
                 left: -10rem;
                 rotate: -95deg;
                 opacity: 100%;
+                scale: 100%;
+                -webkit-animation: rotating 5s linear infinite;
+                -moz-animation: rotating 5s linear infinite;
+                -ms-animation: rotating 5s linear infinite;
+                -o-animation: rotating 5s linear infinite;
+                animation: rotating 5s linear infinite;
             }
 
             #triangle {
@@ -145,13 +170,13 @@
             #triangle,
             #triangle:before,
             #triangle:after {
-                width:  5rem;
-                height: 5rem;
+                width:  2.5rem;
+                height: 2.5rem;
                 border-top-right-radius: 0.5rem;
             }
 
             #triangle {
-                transform: rotate(-60deg) skewX(-30deg) scale(1,.866);
+                transform: rotate(-225deg) skewX(-30deg) scale(1,.866);
             }
             #triangle:before {
                 transform: rotate(-135deg) skewX(-45deg) scale(1.414,.707) translate(0,-50%);
@@ -166,6 +191,11 @@
                 left: 18rem;
                 rotate: -105deg;
                 opacity: 100%;
+                -webkit-animation: rotating 5s linear infinite;
+                -moz-animation: rotating 5s linear infinite;
+                -ms-animation: rotating 5s linear infinite;
+                -o-animation: rotating 5s linear infinite;
+                animation: rotating 5s linear infinite;
             }
 
             #curve {
@@ -175,6 +205,7 @@
                 border-radius: 0.5rem;
                 border-bottom-right-radius: 100%;
                 opacity: 0%;
+                scale: 0%;
             }
 
             #twoDlabel:hover #curve {
@@ -183,6 +214,12 @@
                 left: -10rem;
                 rotate: -95deg;
                 opacity: 100%;
+                scale: 100%;
+                -webkit-animation: rotating 5s linear infinite;
+                -moz-animation: rotating 5s linear infinite;
+                -ms-animation: rotating 5s linear infinite;
+                -o-animation: rotating 5s linear infinite;
+                animation: rotating 5s linear infinite;
             }
 
             #circle {
@@ -193,6 +230,7 @@
                 border-bottom-right-radius: 1rem;
                 border-top-left-radius: 1rem;
                 opacity: 0%;
+                scale: 0%;
             }
 
             #twoDlabel:hover #circle {
@@ -201,10 +239,17 @@
                 left: 15rem;
                 rotate: -95deg;
                 opacity: 100%;
+                scale: 100%;
+                -webkit-animation: rotating 5s linear infinite reverse;
+                -moz-animation: rotating 5s linear infinite reverse;
+                -ms-animation: rotating 5s linear infinite reverse;
+                -o-animation: rotating 5s linear infinite reverse;
+                animation: rotating 5s linear infinite reverse;
             }
         </style>
     </head>
     <body>
+        <script src="https://raw.githubusercontent.com/Cooki-Studios/cooki-studios.github.io/main/navbar.js"></script>
         <div class="column">
             <div id="twoDlabel" style="position: absolute; top: 30vh; left: calc(25vw - 7.25rem);">
                 <a class="label" style="background-color: #ffa500; text-decoration: none; width: fit-content; height: fit-content; position: absolute; top: 40%; left: 16.5%;" href="2d">2D</a>
