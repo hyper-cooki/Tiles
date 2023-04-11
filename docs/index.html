@@ -26,6 +26,7 @@
                 border: 0;
                 user-select: none;
                 text-decoration: none;
+                overflow: hidden;
             }
 
             .label {
@@ -247,9 +248,19 @@
                 animation: rotating 5s linear infinite reverse;
             }
         </style>
+        <link rel="stylesheet" href="https://cooki-studios.github.io/cooki.css">
     </head>
     <body>
-        <script src="https://raw.githubusercontent.com/Cooki-Studios/cooki-studios.github.io/main/navbar.js"></script>
+        <script src="https://cooki-studios.github.io/navbar.js"></script>
+        <script>
+            addNavLink("Home", false, false, false);
+            addNavLink("Games", false, false, false, "games");
+            addNavLink("Tiles", true, false, false, "tiles");
+            addNavLink("Wallpapers (PRE-ALPHA)", false, false, false, "wallpapers?bg-color=151515&fill-style=ffa500");
+            addNavLink(false, false, true, "https://cooki-studios.github.io/img/WhatsNew.svg", "tiles/2d/whats-new");
+            addNavLink("Random Stuff", false, false, false, "random-stuff");
+            document.body.appendChild(nav);
+          </script>
         <div class="column">
             <div id="twoDlabel" style="position: absolute; top: 30vh; left: calc(25vw - 7.25rem);">
                 <a class="label" style="background-color: #ffa500; text-decoration: none; width: fit-content; height: fit-content; position: absolute; top: 40%; left: 16.5%;" href="2d">2D</a>
