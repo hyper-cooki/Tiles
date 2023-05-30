@@ -73,9 +73,11 @@ function drawTile(x,y,type) {
     }
 
     if (tileType.id != 0) {
+        ctx.translate(x+0.5*(x+64), y+0.5*(y+64)); //translate to center of shape
+        ctx.rotate((Math.PI / 180) * 25); //rotate 25 degrees.
+        ctx.translate(-(x+0.5*(x+64)), -(y+0.5*(y+64))); 
         ctx.fillStyle = tileType.colour;
         ctx.fill();
-        
     }
     
     if (type == undefined) {
@@ -162,24 +164,39 @@ function changeTile(x,y) {
 }
 
 const tileColour = document.getElementById("tileColour");
-tileColour.value = TILE_TYPES[TILE_TYPES.length-1].colour;
+let temp = TILE_TYPES[TILE_TYPES.length-1].colour;
+temp.slice(0, temp.length-2).toString();
+tileColour.value = temp;
+delete temp
 
 const tileShape = document.getElementById("shape");
 
 const tileOpacity = document.getElementById("opacity");
+if (TILE_TYPES[TILE_TYPES.length-1].opacity == undefined) {
+    tileOpacity.value = 100;
+} else {
+    tileOpacity.value = TILE_TYPES[TILE_TYPES.length-1].opacity
+}
+
+const tileRotation = document.getElementById("tileRotation");
+if (TILE_TYPES[TILE_TYPES.length-1].rotation == undefined) {
+    tileRotation.value = 0;
+} else {
+    tileRotation.value = JSON.parse(TILE_TYPES[TILE_TYPES.length-1].rotation);
+}
 
 function addTypes(t) {
     if (tileShape.value == 'square') {
         if (tileOpacity.value < 1) {
-            TILE_TYPES[t] = { id: t, colour: tileColour.value+(tileOpacity.value*100) };
+            TILE_TYPES[t] = { id: t, colour: tileColour.value+(tileOpacity.value*100), rotation: tileRotation.value };
         } else {
-            TILE_TYPES[t] = { id: t, colour: tileColour.value };
+            TILE_TYPES[t] = { id: t, colour: tileColour.value, rotation: tileRotation.value };
         }
     } else {
         if (tileOpacity.value < 1) {
-            TILE_TYPES[t] = { id: t, colour: tileColour.value+(tileOpacity.value*100), shape: tileShape.value };
+            TILE_TYPES[t] = { id: t, colour: tileColour.value+(tileOpacity.value*100), shape: tileShape.value, rotation: tileRotation.value };
         } else {
-            TILE_TYPES[t] = { id: t, colour: tileColour.value, shape: tileShape.value };
+            TILE_TYPES[t] = { id: t, colour: tileColour.value, shape: tileShape.value, rotation: tileRotation.value };
         }
     }
 }
@@ -255,9 +272,9 @@ function deleteAll() {
 
 
         mapData = [];
-        for (let i = 0; i < document.getElementById("gridY").value; i++) {
+        for (let i = 0; i < Math.ceil(window.innerHeight/64); i++) {
             mapData[i] = [];
-            for (let i2 = 0; i2 < document.getElementById("gridX").value; i2++) {
+            for (let i2 = 0; i2 < Math.ceil(window.innerWidth/64); i2++) {
                 mapData[i][i2] = 0;
             }
         }
@@ -271,6 +288,12 @@ function deleteAll() {
         localStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
 
         tileColour.value = TILE_TYPES[TILE_TYPES.length-1].colour;
+
+        if (TILE_TYPES[TILE_TYPES.length-1].opacity == undefined) {
+            tileOpacity.value = 100;
+        } else {
+            tileOpacity.value = TILE_TYPES[TILE_TYPES.length-1].opacity
+        }
 
         drawLayer(0,0);
     }

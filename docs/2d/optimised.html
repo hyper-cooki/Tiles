@@ -14,8 +14,6 @@
     	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     	<link rel="preconnect" href="https://fonts.googleapis.com">
     	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-        <meta name="robots" content="noodp,noydir" />
-        <meta name="description" content="A 2D tilemap and graphic design editor created by Cooki Studios" />
         <title>
             Tiles 2D (Optimised)
         </title>
@@ -23,7 +21,7 @@
         <script src="https://cdn.jsdelivr.net/npm/canvas2svg@1.0.16/canvas2svg.min.js"></script>
         <link rel="stylesheet" href="optimised.css">
     </head>
-    <body>
+    <body onresize="drawLayer(0,0);">
         <button onclick="toggleUI()" style="position: absolute; z-index: 1;" id="uiToggle"></button>
         <div id="ui" class="showUI" style="line-height: 1%; line-break: strict;">
             <br>
@@ -35,18 +33,21 @@
                 <option value="pen" selected="selected">Pen</option>
                 <option value="eraser">Eraser</option>
             </select>
+            <label for="tool">Tool</label>
             <input type="color" id="tileColour" oninput="addTypes(TILE_TYPES.length)">
+            <label for="tileColour">Colour</label>
             <br>
             <select name="shape" id="shape" oninput="addTypes(TILE_TYPES.length)">
-                <option value="square" selected="selected">Square<img src="img/TilesIcon.png"></option>
+                <option value="square" selected="selected">Square</option>
                 <option value="triangle">Triangle</option>
                 <option value="thin-triangle">Thin Triangle</option>
                 <option value="curve">Curve</option>
                 <option value="reverse-curve">Reverse Curve</option>
             </select>
+            <label for="shape">Shape</label>
             <br>
-            <input type="range" value="1" min="0" max="1" step="0.25" id="opacity" oninput="addTypes(TILE_TYPES.length)"><br>
-            <input type="range" min="0" max="360" step="15" id="tileRotaion"><br>
+            <input type="range" value="1" min="0" max="1" step="0.25" id="opacity" oninput="addTypes(TILE_TYPES.length)"><label for="opacity">Opacity</label><br>
+            <input type="range" value="0" min="-360" max="360" step="15" id="tileRotation" oninput="addTypes(TILE_TYPES.length)"><label for="tileRotaion">Rotation</label><br>
             <h5>Tilemap:</h5>
             <button onclick="deleteAll()">DELETE TILEMAP</button>
             <input type="number" id="gridX" value="11" style="max-width: 2rem;" min="1">
