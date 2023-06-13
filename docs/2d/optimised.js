@@ -74,10 +74,13 @@ function drawTile(x,y,type) {
 
     if (tileType.id != 0) {
         ctx.fillStyle = tileType.colour;
+        ctx.translate(x+(x+64)/2, y+(y+64)/2); //translate to center of shape
+        ctx.rotate((Math.PI / 180) * 45); //rotate 25 degrees.
+        ctx.translate(-(x+(x+64)/2), -(y+(y+64)/2)); 
         ctx.fill();
-        ctx.translate(x+0.5*(x+64), y+0.5*(y+64)); //translate to center of shape
-        ctx.rotate((Math.PI / 180) * 25); //rotate 25 degrees.
-        ctx.translate(-(x+0.5*(x+64)), -(y+0.5*(y+64))); 
+        ctx.translate(x+(x+64)/2, y+(y+64)/2); //translate to center of shape
+        ctx.rotate((Math.PI / 180) * -45); //rotate 25 degrees.
+        ctx.translate(-(x+(x+64)/2), -(y+(y+64)/2)); 
     }
     
     if (type == undefined) {
