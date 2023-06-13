@@ -96,3 +96,39 @@ input[type="file"] {
     background-size: 2rem;
     background-repeat: no-repeat;
 }
+
+.layout {
+    width: 100vw;
+    height: 100vh;
+
+    display: grid;
+    grid:
+        "header header header" auto
+        "leftSide body rightSide" 1fr
+        "leftSide footer rightSide" 1fr
+        / auto 1fr auto;
+    gap: 0.1rem;
+}
+
+.header { grid-area: header; }
+.leftSide { grid-area: leftSide; }
+.body { grid-area: body; }
+.rightSide { grid-area: rightSide; }
+.footer { grid-area: footer; }
+
+.headerLayout {
+    width: 100%;
+
+    display: flex;
+    gap: 16px;
+}
+
+.toolLayout {
+    width: 100%;
+
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.marginLeft { margin-left: auto; }
