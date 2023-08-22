@@ -1,65 +1,121 @@
 <!DOCTYPE html>
-<html id="windowHTML">
-  <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-92E1LN1KG9"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<html>
+    <head>
+	<!-- Google tag (gtag.js) -->
+    	<script async src="https://www.googletagmanager.com/gtag/js?id=G-92E1LN1KG9"></script>
+    	<script>
+     		window.dataLayer = window.dataLayer || [];
+     		function gtag(){dataLayer.push(arguments);}
+     		gtag('js', new Date());
 
-      gtag('config', 'G-92E1LN1KG9');
-    </script>
-    <script type="text/javascript"> (function() { var css = document.createElement('link'); css.href = 'https://use.fontawesome.com/releases/v5.1.0/css/all.css'; css.rel = 'stylesheet'; css.type = 'text/css'; document.getElementsByTagName('head')[0].appendChild(css); })(); </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <title>
-      Tiles 2D (Beta)
-    </title>
-    <link rel="icon" type="image/png" href="img/TilesIcon.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <script src="https://cdn.jsdelivr.net/npm/canvas2svg@1.0.16/canvas2svg.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <a href="https://github.com/Cooki-Studios/tiles" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#ffa500; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
-    <link rel="stylesheet" href="style.css">
-    <script defer src="TilesBetaScripts/map.js"></script>
-    <script defer src="TilesBetaScripts/tileChange.js"></script>
-  </head>
-  <body>
-    <div id="draggable" style="pointer-events: all;">
-      <div>
-        <div id="minimise-bar" onclick="toggleUI()"></div><br>
-      </div>
-      <div id="ui-stuff">
-        <p>Tile Visuals</p>
-        <input type="color" id="tileColour" value="#ffffff" style="border: 0; border-radius: 0.1em; padding: 0;">
-        <select name="tileImageSelect" id="tileImageSelect">
-          <option value="square">Square</option>
-          <option value="tri">Triangle</option>
-          <option value="thin-tri">Thin Triangle</option>
-          <option value="curve">Curve</option>
-          <option value="-curve">Reverse Curve</option>
-        </select>
-        <input type="range" value="1" min="0" max="1" step="0.5" id="tileOpacity"><br>
-        <button id="mode" onclick="toggleMode()">MODE: PEN</button><br><br>
-        <button id="resetButton" onclick="resetTiles(0)">RESET</button><br>
-        <button onclick="resetTiles(1)">FILL</button>
-        <p>File</p>
-        <input type="text" id="fileNameInput" value="TilesPixelArt">
-        <button id="exportPngButton">Export to PNG</button><br>
-        <button id="exportSvgButton">Export to SVG</button><br>
-        <p>Other</p>
-        <button onclick="deleteTileTypes()">DELETE TYPES (BUG-FULL)</button><br>
-        <button id="draw">DRAW</button><br>
-        <input type="range" value="64" min="16" max="128" step="16" id="tileSize"><br>
-        <button onclick="clickCounter()">SAVE TEST</button>
-        <p id="result"></p>
-      </div>
-    </div>
-  <canvas id="orthogonal-map" class="canvas-map" width="0" height="0" onmousemove="mousePos(event)"></canvas>
-</div>
-</body>
+     		gtag('config', 'G-92E1LN1KG9');
+    	</script>
+    	<link rel="preconnect" href="https://fonts.googleapis.com">
+    	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    	<link rel="preconnect" href="https://fonts.googleapis.com">
+    	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+        <title>
+            Tiles 2D (Beta)
+        </title>
+        <link rel="icon" type="image/png" href="img/TilesIcon.png">
+        <script src="https://gliffy.github.io/canvas2svg/canvas2svg.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
+        <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
+        <link rel="stylesheet" href="beta.css">
+    </head>
+    <body onmouseleave="upCoords(event);" onmouseup="upCoords(event);" onresize="c.height = window.innerHeight; c.width = window.innerWidth; drawLayer(0,0,true,true); " oncontextmenu="return false" onkeypress="if(event.key=='r'){resetTiles()}else if(event.key=='s'){setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select')}else if(event.key=='p'){setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen')}else if(event.key=='e'){setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser')}else if(event.key=='f'){setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill')}else if(event.key=='d'){setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper')}">
+        <dialog id="aboutDialog">
+            <form>
+                <h2>Tiles 2D</h2>
+                <br>
+                <h1>By <a href="https://cooki-studios.github.io" style="font-weight: bold;">Cooki Studios</a></h1>
+                <br>
+                <button formmethod="dialog">Close</button>
+            </form>
+        </dialog>
+        <section class="layout">
+            <div class="header">
+                <section class="headerLayout">
+                    <div><a href="https://cooki-studios.github.io/tiles">⬅</a></div>
+                    <div id="tiles2dButton" class="dropdown button" tabindex=0>
+                        <a>Tiles 2D</a>
+                        <div class="dropdown-content">
+                            <a onclick="document.getElementById('aboutDialog').showModal();" onkeypress="if(event.key=='Enter'){document.getElementById('aboutDialog').showModal()}" tabindex=0>About</a>
+                        </div>
+                    </div>
+                    <div id="tiles2dButton" class="dropdown button" tabindex=0>
+                        <a>File</a>
+                        <div class="dropdown-content">
+                            <a class="button" for="file" onclick="document.getElementById('import').click()" onkeypress="if(event.key=='Enter'){document.getElementById('import').click()}" tabindex="0">UPLOAD</a>
+                            <input type="file" id="import" accept=".cstiles" onchange="importFile(event)">
+                        </div>
+                    </div>
+                    <div class="button disabled" title="Coming Soon..." onclick="comingSoon(event);">Edit</div>
+                    <div class="button disabled" title="Coming Soon..." onclick="comingSoon(event);">View</div>
+                    <div id="nav-info" class="marginLeft">Loading...</div>
+                </section>
+            </div>
+            <div class="leftSide">
+                <section class="toolsLayout">
+                    <h1>Tools</h1>
+                    <div id="select tool" class="button" onclick="setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select');" onkeypress="if(event.key=='Enter'){setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select')}" tabindex=0><b>S</b>elect</div>
+                    <div id="pen tool" class="button" onclick="setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen');" onkeypress="if(event.key=='Enter'){setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen')}" tabindex=0><b>P</b>en</div>
+                    <div id="eraser tool" class="button" onclick="setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser');" onkeypress="if(event.key=='Enter'){setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser')}" tabindex=0><b>E</b>raser</div>
+                    <div id="fill tool" class="button" onclick="setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill');" onkeypress="if(event.key=='Enter'){setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill')}" tabindex=0><b>F</b>ill</div>
+                    <div id="dropper tool" class="button" onclick="setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper');" onkeypress="if(event.key=='Enter'){setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper')}" tabindex=0><b>D</b>ropper</div>      
+                    <div class="button" onclick="resetTiles()" onkeypress="if(event.key='Enter'){resetTiles()}" tabindex=0><b>R</b>eset</div>
+                </section>
+            </div>
+            <div id="canvasContainer"></div>
+            <div class="rightSide">
+                <section class="headerLayout">
+                    <h1 class="button windowLabel">Options</h1>
+                    <h1 class="button disabled windowLabel" title="Coming Soon..." onclick="comingSoon(event)">Layers</h1>
+                </section><br>
+                <section class="headerLayout">
+                    <p style="margin: 0; padding: 0.1rem 0.25rem 0.1rem;" class="disabled">Transfrom</p>
+                </section>
+                <label class="disabled">X: </label><input type="number" class="disabled" disabled id="tileX" value="0" onblur="if(value<0) {value=0} else if(value=='') value=0;"><br>
+                <label class="disabled">Y: </label><input type="number" class="disabled" disabled id="tileY" value="0" onblur="if(value<0) {value=0} else if(value=='') value=0;"><br>
+                <label class="disabled">Deg: </label><input type="number" id="tileDeg" class="disabled" disabled value="0" onblur="if(value<0) {value=0} else if(value=='') value=0;"><br>
+                <button id="flipY" class="disabled" tabindex="-1">Flip X</button><button id="flipY" class="disabled" tabindex="-1">Flip Y</button>
+                <br><br>
+                <section class="headerLayout">
+                    <p style="margin: 0; padding: 0.1rem 0.25rem 0.1rem;">Appearance</p>
+                </section>
+                <label>Fill: </label><input type="color" onclick="return false" data-coloris value="#ffffff" id="tileColour" oninput="createTileType()" onblur="deleteTileTypes()"><br>
+                <label>Outline: </label><input type="checkbox" id="outlineCheck" onchange="if(!this.checked){tileOutline.classList.add('disabled');tileOutline.setAttribute('disabled', '');}else{tileOutline.classList.remove('disabled');tileOutline.removeAttribute('disabled')};createTileType()"><input type="color" onclick="return false" data-coloris value="#000000" id="tileOutline" oninput="createTileType()" onblur="deleteTileTypes()"><br>
+                <label >Opacity: </label><input id="tileOpacity" type="number" min="0" max="100" step="25" value="100" oninput="createTileType()" onblur="deleteTileTypes();if(value<0) {value=0} else if(value>100) {value=100} else if(value=='') value=0;" id="tileOpacity"><br>
+                <label>Shape: </label>
+                <select id="tileShape" onchange="createTileType()">
+                    <option value="square" selected="selected">Square</option>
+                    <option value="triangle">Triangle</option>
+                    <option value="thin-triangle">Thin Triangle</option>
+                    <option value="curve">Curve</option>
+                    <option value="reverse-curve">Reverse Curve</option>
+                </select><br><br>
+                <section class="headerLayout">
+                    <p style="margin: 0; padding: 0.1rem 0.25rem 0.1rem;">Export</p>
+                </section>
+                <input type="text" name="filename" id="filename" value="Tilemap" tabindex="0">
+                <select name="filext" id="filext">
+                    <option value="png" selected="selected">.png</option>
+                    <option value="svg">.svg</option>
+                    <option value="jpeg">.jpeg</option>
+                    <option value="cstiles">.cstiles</option>
+                </select><br>
+                <label>X: </label><input type="number" id="filex" value="0" onblur="if(value<0) {value=0} else if(value=='') value=0;"><br>
+                <label>Y: </label><input type="number" id="filey" value="0" onblur="if(value<0) {value=0} else if(value=='') value=0;"><br>
+                <label>Width: </label><input type="number" id="filew" value="10" onblur="if(value<0) {value=0} else if(value=='') value=0;"><br>
+                <label>Height: </label><input type="number" id="fileh" value="10" onblur="if(value<0) {value=0} else if(value=='') value=0;"><br>
+                <button id="downloadButton" class="button" tabindex="0" onclick="exportTilemap(document.getElementById('filext').value,document.getElementById('filex').value,document.getElementById('filey').value,document.getElementById('filew').value,document.getElementById('fileh').value)">Download</button>
+            </div>
+            <div class="footer">
+                <section class="headerLayout">
+                    <h1 class="disabled windowLabel" title="Coming Soon..." onclick="comingSoon(event);">Animation</h1>
+                </section>
+            </div>
+        </section>
+    </body>
+    <script src="beta.js"></script>
 </html>
