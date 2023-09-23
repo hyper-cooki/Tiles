@@ -190,6 +190,7 @@ function drawGridTile(x,y) {
 
 var mouseDown = false;
 var rightMouseDown = false;
+var lastPoint;
 
 if (localStorage.getItem("tool") == undefined) {
     var tool = "pen";
@@ -211,10 +212,16 @@ function getMousePosition(event) {
     return { x, y };
 }
 
+var oldX;
+var oldY;
+
 function downCoords(event) {
     mouseDown = true;
     
     var { x, y } = getMousePosition(event);
+
+    oldX = x*64+32;
+    oldY = y*64+32;
 
     if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
         c.style.cursor = "pointer";
@@ -253,80 +260,154 @@ function downCoords(event) {
     }
 }
 
-var o = 0;
-
-function moveCoords(event) {
-    var bounds = c.getBoundingClientRect();
-
-    var scaleX = c.width / bounds.width;
-    var scaleY = c.height / bounds.height;
-
-    var x = Math.floor((event.clientX - bounds.left) * scaleX / 64);
-    var y = Math.floor((event.clientY - bounds.top) * scaleY / 64);
-
-    var { x, y } = getMousePosition(event);
-
-    if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
-        c.style.cursor = "pointer";
-    } else {
-        c.style.cursor = "default";
+function getPixelsOnLine(startX, startY, endX, endY){
+    const pixelCols = [];
+    const getPixel = (x,y) => {
+        x = Math.floor(x / 64);
+        y = Math.floor(y / 64);
+        return { x, y };
     }
 
-    if (rightMouseDown) {
+    var x = Math.floor(startX);
+    var y = Math.floor(startY);
+    const xx = Math.floor(endX);
+    const yy = Math.floor(endY);
+    const dx = Math.abs(xx - x); 
+    const sx = x < xx ? 1 : -1;
+    const dy = -Math.abs(yy - y);
+    const sy = y < yy ? 1 : -1;
+    var err = dx + dy;
+    var e2;
+    var end = false;
+    while (!end) {
+        pixelCols.push(getPixel(x,y));
+        if ((x === xx && y === yy)) {
+            end = true;
+        } else {
+            e2 = 2 * err;
+            if (e2 >= dy) {
+                err += dy;
+                x += sx;
+            }
+            if (e2 <= dx) {
+                err += dx;
+                y += sy;
+            }
+        }
+    }
+    return pixelCols;
+}
+
+function deletePixels(pixels) {
+    for (let i2 = 0; i2 < pixels.length-1; i2++) {
+        for (let i = 0; i < pixels.length-1; i++) {
+            if (pixels[i].x == pixels[i2].x && pixels[i].y == pixels[i2].y) {
+                pixels.splice(i, 1);
+            }
+        }
+    }
+}
+
+function moveCoords(event) {
+    let events = event.getCoalescedEvents();
+
+    for(let event of events) {
+        var { x, y } = getMousePosition(event);
+
         if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
+            c.style.cursor = "pointer";
+        } else {
+            c.style.cursor = "default";
+        }
+
+        if (rightMouseDown) {
+            if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
+                if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
+                    c.style.cursor = "crosshair";
+
+                    if (tool == "pen") {
+                        var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                        deletePixels(pixels);
+                        for (let i = 0; i < pixels.length; i++) {
+                            if ( mapData[pixels[i].y][pixels[i].x] != 0) {
+                                mapData[pixels[i].y][pixels[i].x] = 0;
+                            }
+                        }
+
+                        drawLayer(0,0,true,true);
+                        oldX = x*64+32;
+                        oldY = y*64+32;
+                    } else if (tool == "eraser") {
+                        if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                            var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                            deletePixels(pixels);
+                            for (let i = 0; i < pixels.length; i++) {
+                                if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                                    mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
+                                }
+                            }
+
+                            drawLayer(0,0,true,true);
+                            oldX = x*64+32;
+                            oldY = y*64+32;
+                        }
+                    }
+                }
+            }
+        } else if (mouseDown) {
             if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
                 c.style.cursor = "crosshair";
 
                 if (tool == "pen") {
-                    if (mapData[y][x] != 0) {
-                        mapData[y][x] = 0;
+                    if (selectRange.length != 0) {
+                        selectRange.length = 0;
+                    }
+
+                    if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                        var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                        deletePixels(pixels);
+                        for (let i = 0; i < pixels.length; i++) {
+                            if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                                mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
+                            }
+                        }
                         drawLayer(0,0,true,true);
+                        oldX = x*64+32;
+                        oldY = y*64+32;
                     }
                 } else if (tool == "eraser") {
-                    if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
-                        mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                        drawLayer(0,0,true,true);
+                    if (selectRange.length != 0) {
+                        selectRange.length = 0;
                     }
-                }
-            }
-        }
-    } else if (mouseDown) {
-        if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
-            c.style.cursor = "crosshair";
 
-            if (tool == "pen") {
-                if (selectRange.length != 0) {
-                    selectRange.length = 0;
-                }
+                    if (mapData[y][x] != 0) {
+                        var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                        deletePixels(pixels);
+                        for (let i = 0; i < pixels.length; i++) {
+                            if ( mapData[pixels[i].y][pixels[i].x] != 0) {
+                                mapData[pixels[i].y][pixels[i].x] = 0;
+                            }
+                        }
+                        drawLayer(0,0,true,true);
+                        oldX = x*64+32;
+                        oldY = y*64+32;
+                    }
+                } else if (tool == "select") {
+                    selectRange[2] = x;
+                    selectRange[3] = y;
+                    
+                    if (selectRange[0]<=selectRange[2]&&selectRange[1]<=selectRange[3]) {
+                        filew.value = selectRange[2] - selectRange[0] + 1;
+                        fileh.value = selectRange[3] - selectRange[1] + 1;
+                    } else {
+                        filex.value = selectRange[2];
+                        filey.value = selectRange[3];
+                        filew.value = selectRange[0] - selectRange[2] + 1;
+                        fileh.value = selectRange[1] - selectRange[3] + 1;
+                    }
 
-                if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
-                    mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
                     drawLayer(0,0,true,true);
                 }
-            } else if (tool == "eraser") {
-                if (selectRange.length != 0) {
-                    selectRange.length = 0;
-                }
-
-                if (mapData[y][x] != 0) {
-                    mapData[y][x] = 0;
-                    drawLayer(0,0,true,true);
-                }
-            } else if (tool == "select") {
-                selectRange[2] = x;
-                selectRange[3] = y;
-                
-                if (selectRange[0]<=selectRange[2]&&selectRange[1]<=selectRange[3]) {
-                    filew.value = selectRange[2] - selectRange[0] + 1;
-                    fileh.value = selectRange[3] - selectRange[1] + 1;
-                } else {
-                    filex.value = selectRange[2];
-                    filey.value = selectRange[3];
-                    filew.value = selectRange[0] - selectRange[2] + 1;
-                    fileh.value = selectRange[1] - selectRange[3] + 1;
-                }
-
-                drawLayer(0,0,true,true);
             }
         }
     }
@@ -508,9 +589,9 @@ c.addEventListener('contextmenu', function(event) {
     }
 });
 
-c.addEventListener('mousedown', downCoords);
-c.addEventListener('mousemove', moveCoords);
-c.addEventListener('mouseup', upCoords);
+c.addEventListener('pointerdown', downCoords);
+c.addEventListener('pointermove', moveCoords);
+c.addEventListener('pointerup', upCoords);
 
 drawLayer(0,0,true,true);
 

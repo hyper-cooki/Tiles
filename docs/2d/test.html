@@ -1,0 +1,31 @@
+<canvas id="canvas" style="touch-action:none; width:100vw; height:100vh; position:fixed; top:0; left:0; right:0; bottom:0;"></canvas>
+
+<script>
+  let mouseIsDown = false;
+
+  let ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+
+  window.addEventListener("pointerdown", function(e) {
+    ctx.beginPath();
+    ctx.moveTo(e.pageX, e.pageY);
+    mouseIsDown = true;
+  });
+  window.addEventListener("pointerup", function(e) {
+    mouseIsDown = false;
+  });
+  window.addEventListener("pointermove", function(event) {
+   if(mouseIsDown) {
+      let events = event.getCoalescedEvents();
+      console.log(events);
+      for(let e of events) {
+        ctx.lineTo(e.pageX, e.pageY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(e.pageX, e.pageY);
+      }
+   }
+  });
+</script>
