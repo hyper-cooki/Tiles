@@ -4,7 +4,8 @@ var ctx = c.getContext("2d");
 c.height = window.innerHeight;
 c.width = window.innerWidth;
 c.setAttribute("id", "canvas");
-document.body.appendChild(c);
+document.getElementById("canvasContainer").appendChild(c);
+c.style.cursor = "pointer";
 
 if (localStorage.tiletypes) {
     TILE_TYPES = JSON.parse(localStorage.getItem("tiletypes"))
@@ -216,38 +217,33 @@ var oldY;
 
 function downCoords(event) {
     mouseDown = true;
-
-    document.getElementsByClassName("layout")[0].style.pointerEvents = "none";
-    document.getElementsByClassName("layout")[0].style.opacity = "50%";
     
     var { x, y } = getMousePosition(event);
 
     oldX = x*64+32;
     oldY = y*64+32;
 
-    if (mapData[y] == undefined && mapData[y][x] == undefined) {
-        c.style.cursor = "url(img/cursors/Select-32.png), auto";
+    if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
+        c.style.cursor = "pointer";
+    } else {
+        c.style.cursor = "default";
     }
 
     if (mouseDown) {
-        if (mapData[y] != undefined && mapData[y][x] != undefined) {
-            if (tool == "pen") {
-                c.style.cursor = "url(img/cursors/PaintDown-32.png), auto";
+        if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
+            c.style.cursor = "crosshair";
 
+            if (tool == "pen") {
                 if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
                     drawLayer(0,0,true,true);
                 }
             } else if (tool == "eraser") {
-                c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
-
                 if (mapData[y][x] != 0) {
                     mapData[y][x] = 0;
                     drawLayer(0,0,true,true);
                 }
             } else if (tool == "select") {
-                c.style.cursor = "url(img/cursors/Select-32.png), auto";
-
                 selectRange[0] = x;
                 selectRange[1] = y;
                 selectRange.length = 2;
@@ -318,16 +314,18 @@ function moveCoords(event) {
     for(let event of events) {
         var { x, y } = getMousePosition(event);
 
-        if (mapData[y] == undefined && mapData[y][x] == undefined) {
-            c.style.cursor = "url(img/cursors/Select-32.png), auto";
+        if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
+            c.style.cursor = "pointer";
+        } else {
+            c.style.cursor = "default";
         }
 
         if (rightMouseDown) {
             if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
                 if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
-                    if (tool == "pen") {
-                        c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
+                    c.style.cursor = "crosshair";
 
+                    if (tool == "pen") {
                         var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
                         deletePixels(pixels);
                         for (let i = 0; i < pixels.length; i++) {
@@ -340,8 +338,6 @@ function moveCoords(event) {
                         oldX = x*64+32;
                         oldY = y*64+32;
                     } else if (tool == "eraser") {
-                        c.style.cursor = "url(img/cursors/PaintDown-32.png), auto";
-
                         if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                             var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
                             deletePixels(pixels);
@@ -360,9 +356,9 @@ function moveCoords(event) {
             }
         } else if (mouseDown) {
             if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
-                if (tool == "pen") {
-                    c.style.cursor = "url(img/cursors/PaintDown-32.png), auto";
+                c.style.cursor = "crosshair";
 
+                if (tool == "pen") {
                     if (selectRange.length != 0) {
                         selectRange.length = 0;
                     }
@@ -380,8 +376,6 @@ function moveCoords(event) {
                         oldY = y*64+32;
                     }
                 } else if (tool == "eraser") {
-                    c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
-
                     if (selectRange.length != 0) {
                         selectRange.length = 0;
                     }
@@ -399,8 +393,6 @@ function moveCoords(event) {
                         oldY = y*64+32;
                     }
                 } else if (tool == "select") {
-                    c.style.cursor = "url(img/cursors/Select-32.png), auto";
-
                     selectRange[2] = x;
                     selectRange[3] = y;
                     
@@ -417,39 +409,20 @@ function moveCoords(event) {
                     drawLayer(0,0,true,true);
                 }
             }
-        } else {
-            if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
-                if (tool == "pen") {
-                    c.style.cursor = "url(img/cursors/Paint-32.png), auto";
-                } else if (tool == "eraser") {
-                    c.style.cursor = "url(img/cursors/Eraser-32.png), auto";
-                } else if (tool == "select") {
-                    c.style.cursor = "url(img/cursors/Select-32.png), auto";
-                }
-            }
         }
     }
 }
 
 function upCoords(event) {
-    document.getElementsByClassName("layout")[0].style.pointerEvents = "all";
-    document.getElementsByClassName("layout")[0].style.opacity = "100%";
-
     mouseDown = false;
     rightMouseDown = false;
 
     var { x, y } = getMousePosition(event);
 
-    if (mapData[y] == undefined && mapData[y][x] == undefined) {
-        c.style.cursor = "url(img/cursors/Select-32.png), auto";
-    }
-
-    if (tool == "pen") {
-        c.style.cursor = "url(img/cursors/Paint-32.png), auto";
-    } else if (tool == "eraser") {
-        c.style.cursor = "url(img/cursors/Eraser-32.png), auto";
-    } else if (tool == "select") {
-        c.style.cursor = "url(img/cursors/Select-32.png), auto";
+    if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
+        c.style.cursor = "pointer";
+    } else {
+        c.style.cursor = "default";
     }
 
     saveTilemap();
@@ -592,28 +565,25 @@ function exportTilemap(type,x,y,w,h) {
 }
 
 c.addEventListener('contextmenu', function(event) {
+    c.style.cursor = "crosshair";
     rightMouseDown = true;
 
     var { x, y } = getMousePosition(event);
 
     if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
         if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
-            if (tool == "pen") {
-                c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
+            c.style.cursor = "crosshair";
 
+            if (tool == "pen") {
                 if (mapData[y][x] != 0) {
                     mapData[y][x] = 0;
                     drawLayer(0,0,true,true);
                 }
             } else if (tool == "eraser") {
-                c.style.cursor = "url(img/cursors/PaintDown-32.png), auto";
-
                 if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
                     drawLayer(0,0,true,true);
                 }
-            } else if (tool == "select") {
-                c.style.cursor = "url(img/cursors/Select-32.png), auto";
             }
         }
     }

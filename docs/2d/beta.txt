@@ -1,41 +1,4 @@
-<!DOCTYPE html>
-<html>
-    <head>
-	<!-- Google tag (gtag.js) -->
-    	<script async src="https://www.googletagmanager.com/gtag/js?id=G-92E1LN1KG9"></script>
-    	<script>
-     		window.dataLayer = window.dataLayer || [];
-     		function gtag(){dataLayer.push(arguments);}
-     		gtag('js', new Date());
-
-     		gtag('config', 'G-92E1LN1KG9');
-    	</script>
-    	<link rel="preconnect" href="https://fonts.googleapis.com">
-    	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    	<link rel="preconnect" href="https://fonts.googleapis.com">
-    	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-        <title>
-            Tiles 2D (Beta)
-        </title>
-        <link rel="icon" type="image/png" href="img/TilesIcon.png">
-        <link rel="preload" as="image" href="img/cursors/Select.png" imagesrcset="img/cursors/Select-16.png, img/cursors/Select-32.png, img/cursors/Select-64.png"/>
-        <link rel="preload" as="image" href="img/cursors/Paint.png" imagesrcset="img/cursors/Paint-16.png, img/cursors/Paint-32.png, img/cursors/Paint-64.png"/>
-        <link rel="preload" as="image" href="img/cursors/PaintDown.png" imagesrcset="img/cursors/PaintDown-16.png, img/cursors/PaintDown-32.png, img/cursors/PaintDown-64.png"/>
-        <link rel="preload" as="image" href="img/cursors/Eraser.png" imagesrcset="img/cursors/Eraser-16.png, img/cursors/Eraser-32.png, img/cursors/Eraser-64.png"/>
-        <link rel="preload" as="image" href="img/cursors/EraserDown.png" imagesrcset="img/cursors/EraserDown-16.png, img/cursors/EraserDown-32.png, img/cursors/EraserDown-64.png"/>
-        <link rel="preload" as="image" href="img/cursors/Fill.png" imagesrcset="img/cursors/Fill-16.png, img/cursors/Fill-32.png, img/cursors/Fill-64.png"/>
-        <link rel="preload" as="image" href="img/cursors/FillDown.png" imagesrcset="img/cursors/FillDown-16.png, img/cursors/FillDown-32.png, img/cursors/FillDown-64.png"/>
-        <link rel="preload" as="image" href="img/cursors/Eyedropper.png" imagesrcset="img/cursors/Eyedropper-16.png, img/cursors/Eyedropper-32.png, img/cursors/Eyedropper-64.png"/>
-        <link rel="preload" as="image" href="img/cursors/EyedropperDown.png" imagesrcset="img/cursors/EyedropperDown-16.png, img/cursors/EyedropperDown-32.png, img/cursors/EyedropperDown-64.png"/>
-        <link rel="preload" as="image" href="img/cursors/Reset.png" imagesrcset="img/cursors/Reset-16.png, img/cursors/Reset-32.png, img/cursors/Reset-64.png"/>
-        <link rel="preload" as="image" href="img/cursors/ResetDown.png" imagesrcset="img/cursors/ResetDown-16.png, img/cursors/ResetDown-32.png, img/cursors/ResetDown-64.png"/>
-        <script src="https://gliffy.github.io/canvas2svg/canvas2svg.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
-        <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
-        <link rel="stylesheet" href="test.css">
-    </head>
-    <body onmouseleave="upCoords(event);" onmouseup="upCoords(event);" onresize="c.height = window.innerHeight; c.width = window.innerWidth; drawLayer(0,0,true,true); " oncontextmenu="return false" onkeypress="if(event.key=='r'){resetTiles()}else if(event.key=='s'){setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select')}else if(event.key=='p'){setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen')}else if(event.key=='e'){setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser')}else if(event.key=='f'){setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill')}else if(event.key=='d'){setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper')}">
-        <dialog id="aboutDialog">
+<dialog id="aboutDialog">
             <form>
                 <h2>Tiles 2D</h2>
                 <br>
@@ -126,6 +89,3 @@
             </section>
         </div>
         </section>
-    </body>
-    <script src="test.js"></script>
-</html>
