@@ -1,0 +1,287 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    color: whitesmoke;
+    background-color: #151515;
+    user-select: none;
+    accent-color: #ffa500;
+    cursor: url(img/cursors/Select-32.png), default
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Rubik', sans-serif;
+    font-weight: 600;
+    color: whitesmoke;
+    margin: 0;
+}
+
+h1 {
+    font-size: 1.25rem;
+}
+
+p, ul, li, a, div {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6, ul, li, li a p, footer {
+    text-decoration: none;
+}
+
+a {
+    text-decoration: none;
+    color: whitesmoke;
+}
+
+.button {
+    cursor: pointer;
+    text-align: center;
+    border-radius: 0.25rem;
+}
+
+.disabled {
+    opacity: 50% !important;
+    cursor: default !important;
+    user-select: none !important;
+}
+
+.layout {
+    width: 100vw;
+    height: 100vh;
+
+    display: grid;
+    grid:
+        "header header header" auto
+        "leftSide body rightSide" 1fr
+        "leftSide footer rightSide" 1fr
+        / auto 1fr auto;
+    gap: 0.1rem;
+
+    z-index: 1;
+}
+
+.header {
+    grid-area: header;
+    z-index: 1;
+    background-color: #33333390;
+    border-radius: 0.25rem;
+    filter: drop-shadow(0 0 0.5rem black);
+}
+
+.leftSide {
+    grid-area: leftSide;
+    z-index: 1;
+    background-color: #33333390;
+    border-radius: 0.25rem;
+    filter: drop-shadow(0 0 0.5rem black);
+}
+
+.body {
+    grid-area: body;
+    z-index: 1;
+    background-color: #33333390;
+    border-radius: 0.25rem;
+    filter: drop-shadow(0 0 0.5rem black);
+}
+
+.rightSide {
+    grid-area: rightSide;
+    z-index: 1;
+    background-color: #33333390;
+    border-radius: 0.25rem;
+    filter: drop-shadow(0 0 0.5rem black);
+}
+
+.footer {
+    grid-area: footer;
+    z-index: 1;
+    max-height: 50%;
+    position: relative;
+    bottom: -50%;
+    background-color: #33333390;
+    border-radius: 0.25rem;
+    filter: drop-shadow(0 0 0.5rem black);
+    user-select: none;
+}
+
+.headerLayout {
+    width: 100%;
+
+    display: flex;
+    gap: 16px;
+}
+
+.headerLayout :not(.marginLeft) {
+    padding-left: 0.5rem;
+}
+
+.headerLayout .marginLeft {
+    padding-right: 0.5rem;
+}
+
+.headerLayout :not(:last-child).windowLabel {
+    border-right: 0.1rem rgba(245, 245, 245, 0.25) solid;
+    padding-left: 1rem;
+}
+
+.headerLayout .windowLabel {
+    padding-right: 1rem;
+    border-radius: 0 !important;
+}
+
+.toolsLayout {
+    width: fit-content;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.tool {
+    width: 5rem;
+    height: 4.5rem;
+    padding-top: 0.5rem;
+    margin-top: 2rem;
+    image-resolution: 16px;
+}
+
+.marginLeft { margin-left: auto; }
+
+#canvas {
+    touch-action:none;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+} 
+
+.header div {
+    height: 2rem;
+    line-height: 2rem;
+}
+
+.headerLayout {
+    border-bottom: 0.1rem rgba(245, 245, 245, 0.5) solid;
+}
+
+.dropdown {
+    display: inline-block;
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    width: 5rem;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0.1rem whitesmoke solid;
+    border-top: 0.1rem whitesmoke solid;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:focus .dropdown-content {
+    display: block;
+}
+
+.dropdown:focus-within .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    color: whitesmoke;
+    text-decoration: none;
+    text-align: center;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.dropdown-content a:hover {
+    color: rgba(245, 245, 245, 0.75);
+}
+
+dialog {
+    border-radius: 1rem;
+    background-color: #151515;
+    border: 0.1rem whitesmoke solid;
+    user-select: none;
+}
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.25);
+}
+
+button {
+    cursor: pointer;
+    color: whitesmoke;
+    background-color: #151515;
+    border: #ffa500 0.1rem solid;
+    border-radius: 1rem;
+}
+
+input {
+    color: whitesmoke;
+    background-color: #151515;
+    border: #ffa500 0.1rem solid;
+    border-radius: 1rem;
+}
+
+input[type="color"] {
+    border: 0;
+    cursor: pointer;
+    background-color: transparent !important;
+    padding: 0;
+    padding-block: 0;
+    padding-inline: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: #ffa500 0.1rem solid;
+    border-radius: 1rem;
+}
+
+input[type="file"]::after {
+    display: none;
+}
+
+.clr-dark {
+    background-color: #151515 !important;
+}
+
+.clr-field button {
+    display: none;
+}
+
+input[type="color"]::-moz-color-swatch {
+    border: #ffa500 0.1rem solid;
+    border-radius: 1rem;
+}
+
+input[type="number"]::-webkit-outer-spin-button, 
+input[type="number"]::-webkit-inner-spin-button {
+    opacity: 0;
+}
+
+input[type="number"]:not(.disabled):hover::-webkit-outer-spin-button, 
+input[type="number"]:not(.disabled):hover::-webkit-inner-spin-button {
+    appearance: none;
+    background: #ffa500 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAAXNSR0IArs4c6QAAAHJJREFUKFNtUIENwCAIKz/A/wfCDywFdLqMmGhKaYsCCCDJg4TAVDPCiaCRZhQJCZhZ8k4Bwl2G95JULYWM6nR5uHD+Utrd9RiTJo03dZbFObCVJlb1eqzrCm5qje9YCY+omJ/ttCDyfrdb+vwG5/qH7wOwDjoOD+rUtwAAAABJRU5ErkJgggAA) no-repeat center center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1em;
+    opacity: 1;
+}
+
+input[type="file"] {
+    display: none;
+}
