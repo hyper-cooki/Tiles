@@ -6,7 +6,8 @@ body {
     background-color: #151515;
     user-select: none;
     accent-color: #ffa500;
-    cursor: url(img/cursors/Select-32.png), default
+    cursor: url(img/cursors/Select-32.png), default;
+    user-select: none;
 }
 
 h1, h2, h3, h4, h5, h6 {

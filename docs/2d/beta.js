@@ -312,11 +312,20 @@ function deletePixels(pixels) {
     }
 }
 
+const lolx = document.createElement("h1");
+document.body.appendChild(lolx);
+lolx.style.zIndex = 100;
+lolx.style.position = "absolute";
+lolx.style.top = 0;
+lolx.style.left = 0;
+
 function moveCoords(event) {
     let events = event.getCoalescedEvents();
 
     for(let event of events) {
         var { x, y } = getMousePosition(event);
+
+        lolx.innerText = x+", "+y;
 
         if (mapData[y] == undefined && mapData[y][x] == undefined) {
             c.style.cursor = "url(img/cursors/Select-32.png), auto";
