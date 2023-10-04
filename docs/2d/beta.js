@@ -6,22 +6,30 @@ c.width = window.innerWidth;
 c.setAttribute("id", "canvas");
 document.body.appendChild(c);
 
-if (localStorage.tiletypes) {
-    TILE_TYPES = JSON.parse(localStorage.getItem("tiletypes"))
+if (sessionStorage.tiletypes) {
+    TILE_TYPES = JSON.parse(sessionStorage.getItem("tiletypes"));
 } else {
-    TILE_TYPES = [
-        { id: 1, colour: '#ffffff' },
-    ]
+    if (localStorage.tiletypes) {
+        TILE_TYPES = JSON.parse(localStorage.getItem("tiletypes"));
+    } else {
+        TILE_TYPES = [
+            { id: 1, colour: '#ffffff' },
+        ];
+    }
 }
 
-if (localStorage.tilemap) {
-    mapData = JSON.parse(localStorage.getItem("tilemap"))
+if (sessionStorage.tilemap) {
+    mapData = JSON.parse(sessionStorage.getItem("tilemap"));
 } else {
-    mapData = [];
-    for (let i = 0; i < Math.ceil(c.height/64); i++) {
-        mapData[i] = [];
-        for (let i2 = 0; i2 < Math.ceil(c.width/64); i2++) {
-            mapData[i][i2] = 0;
+    if (localStorage.tilemap) {
+        mapData = JSON.parse(localStorage.getItem("tilemap"));
+    } else {
+        mapData = [];
+        for (let i = 0; i < Math.ceil(c.height/64); i++) {
+            mapData[i] = [];
+            for (let i2 = 0; i2 < Math.ceil(c.width/64); i2++) {
+                mapData[i][i2] = 0;
+            }
         }
     }
 }
@@ -29,6 +37,8 @@ if (localStorage.tilemap) {
 function saveTilemap() {
     localStorage.setItem("tilemap", JSON.stringify(mapData));
     localStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
+    sessionStorage.setItem("tilemap", JSON.stringify(mapData));
+    sessionStorage.setItem("tiletypes", JSON.stringify(TILE_TYPES));
 }
 
 const tileColour = document.getElementById("tileColour"); tileColour.value = TILE_TYPES[TILE_TYPES.length-1].colour;
@@ -84,6 +94,10 @@ function setTool(tool) {
 
 if (!localStorage.tool) {
     setTool("pen");
+} else {
+    if (!sessionStorage.tool) {
+        setTool("pen");
+    }
 }
 
 function createTileType() {
@@ -192,7 +206,13 @@ var rightMouseDown = false;
 var lastPoint;
 
 if (localStorage.getItem("tool") == undefined) {
-    var tool = "pen";
+    if (sessionStorage.getItem("tool") == undefined) {
+        var tool = "pen";
+    } else {
+        var tool = sessionStorage.getItem("tool");
+        document.getElementById(sessionStorage.getItem("tool")+" tool").style.backgroundColor = "#ffa500";
+        document.getElementById(sessionStorage.getItem("tool")+" tool").style.borderRadius = "0.1rem";
+    }
 } else {
     var tool = localStorage.getItem("tool");
     document.getElementById(localStorage.getItem("tool")+" tool").style.backgroundColor = "#ffa500";
@@ -208,6 +228,14 @@ function getMousePosition(event) {
     var x = Math.floor((event.clientX - bounds.left) * scaleX / 64);
     var y = Math.floor((event.clientY - bounds.top) * scaleY / 64);
 
+    if (x == -1) {
+        x = 0;
+    }
+
+    if (y == -1) {
+        y = 0;
+    }
+
     return { x, y };
 }
 
@@ -219,6 +247,10 @@ function downCoords(event) {
 
     document.getElementsByClassName("layout")[0].style.pointerEvents = "none";
     document.getElementsByClassName("layout")[0].style.opacity = "50%";
+    document.getElementsByClassName("layout")[0].style.zIndex = 2;
+    document.getElementsByClassName("layout")[0].style.position = "fixed";
+    document.getElementById("scrollX").style.opacity = "0%";
+    document.getElementById("scrollY").style.opacity = "0%";
     
     var { x, y } = getMousePosition(event);
 
@@ -312,20 +344,11 @@ function deletePixels(pixels) {
     }
 }
 
-const lolx = document.createElement("h1");
-document.body.appendChild(lolx);
-lolx.style.zIndex = 100;
-lolx.style.position = "absolute";
-lolx.style.top = 0;
-lolx.style.left = 0;
-
 function moveCoords(event) {
     let events = event.getCoalescedEvents();
 
     for(let event of events) {
         var { x, y } = getMousePosition(event);
-
-        lolx.innerText = x+", "+y;
 
         if (mapData[y] == undefined && mapData[y][x] == undefined) {
             c.style.cursor = "url(img/cursors/Select-32.png), auto";
@@ -337,32 +360,64 @@ function moveCoords(event) {
                     if (tool == "pen") {
                         c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
 
-                        var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
-                        deletePixels(pixels);
-                        for (let i = 0; i < pixels.length; i++) {
-                            if ( mapData[pixels[i].y][pixels[i].x] != 0) {
-                                mapData[pixels[i].y][pixels[i].x] = 0;
-                            }
+                        if (selectRange.length != 0) {
+                            selectRange.length = 0;
                         }
 
-                        drawLayer(0,0,true,true);
-                        oldX = x*64+32;
-                        oldY = y*64+32;
+                        if (mapData[y][x] != 0) {
+                            if (oldX == null && oldY == null) {
+                                if ( mapData[y][x] != 0) {
+                                    mapData[y][x] = 0;
+                                    oldX = x*64+32;
+                                    oldY = y*64+32;
+                                }
+                            } else {
+                                var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                                deletePixels(pixels);
+                                for (let i = 0; i < pixels.length; i++) {
+                                    if ( mapData[pixels[i].y][pixels[i].x] != 0) {
+                                        mapData[pixels[i].y][pixels[i].x] = 0;
+                                        oldX = x*64+32;
+                                        oldY = y*64+32;
+                                    }
+                                }
+                            }
+    
+                            drawLayer(0,0,true,true);
+                        } else {
+                            oldX = null;
+                            oldY = null;
+                        }
                     } else if (tool == "eraser") {
                         c.style.cursor = "url(img/cursors/PaintDown-32.png), auto";
 
+                        if (selectRange.length != 0) {
+                            selectRange.length = 0;
+                        }
+
                         if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
-                            var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
-                            deletePixels(pixels);
-                            for (let i = 0; i < pixels.length; i++) {
-                                if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
-                                    mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
+                            if (oldX == null && oldY == null) {
+                                if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                                    mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
+                                    oldX = x*64+32;
+                                    oldY = y*64+32;
+                                }
+                            } else {
+                                var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                                deletePixels(pixels);
+                                for (let i = 0; i < pixels.length; i++) {
+                                    if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                                        mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
+                                        oldX = x*64+32;
+                                        oldY = y*64+32;
+                                    }
                                 }
                             }
-
+    
                             drawLayer(0,0,true,true);
-                            oldX = x*64+32;
-                            oldY = y*64+32;
+                        } else {
+                            oldX = null;
+                            oldY = null;
                         }
                     }
                 }
@@ -377,16 +432,28 @@ function moveCoords(event) {
                     }
 
                     if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
-                        var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
-                        deletePixels(pixels);
-                        for (let i = 0; i < pixels.length; i++) {
-                            if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
-                                mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
+                        if (oldX == null && oldY == null) {
+                            if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                                mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
+                                oldX = x*64+32;
+                                oldY = y*64+32;
+                            }
+                        } else {
+                            var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                            deletePixels(pixels);
+                            for (let i = 0; i < pixels.length; i++) {
+                                if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                                    mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
+                                    oldX = x*64+32;
+                                    oldY = y*64+32;
+                                }
                             }
                         }
+
                         drawLayer(0,0,true,true);
-                        oldX = x*64+32;
-                        oldY = y*64+32;
+                    } else {
+                        oldX = null;
+                        oldY = null;
                     }
                 } else if (tool == "eraser") {
                     c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
@@ -396,16 +463,28 @@ function moveCoords(event) {
                     }
 
                     if (mapData[y][x] != 0) {
-                        var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
-                        deletePixels(pixels);
-                        for (let i = 0; i < pixels.length; i++) {
-                            if ( mapData[pixels[i].y][pixels[i].x] != 0) {
-                                mapData[pixels[i].y][pixels[i].x] = 0;
+                        if (oldX == null && oldY == null) {
+                            if ( mapData[y][x] != 0) {
+                                mapData[y][x] = 0;
+                                oldX = x*64+32;
+                                oldY = y*64+32;
+                            }
+                        } else {
+                            var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                            deletePixels(pixels);
+                            for (let i = 0; i < pixels.length; i++) {
+                                if ( mapData[pixels[i].y][pixels[i].x] != 0) {
+                                    mapData[pixels[i].y][pixels[i].x] = 0;
+                                    oldX = x*64+32;
+                                    oldY = y*64+32;
+                                }
                             }
                         }
+
                         drawLayer(0,0,true,true);
-                        oldX = x*64+32;
-                        oldY = y*64+32;
+                    } else {
+                        oldX = null;
+                        oldY = null;
                     }
                 } else if (tool == "select") {
                     c.style.cursor = "url(img/cursors/Select-32.png), auto";
@@ -441,8 +520,12 @@ function moveCoords(event) {
 }
 
 function upCoords(event) {
-    document.getElementsByClassName("layout")[0].style.pointerEvents = "all";
+    document.getElementsByClassName("layout")[0].style.pointerEvents = "auto";
     document.getElementsByClassName("layout")[0].style.opacity = "100%";
+    document.getElementsByClassName("layout")[0].style.zIndex = "";
+    document.getElementsByClassName("layout")[0].style.position = "";
+    document.getElementById("scrollX").style.opacity = "100%";
+    document.getElementById("scrollY").style.opacity = "100%";
 
     mouseDown = false;
     rightMouseDown = false;

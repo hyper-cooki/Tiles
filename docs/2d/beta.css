@@ -7,7 +7,6 @@ body {
     user-select: none;
     accent-color: #ffa500;
     cursor: url(img/cursors/Select-32.png), default;
-    user-select: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -54,12 +53,10 @@ a {
     display: grid;
     grid:
         "header header header" auto
-        "leftSide body rightSide" 1fr
+        "leftSide body rightSide" 2fr
         "leftSide footer rightSide" 1fr
         / auto 1fr auto;
     gap: 0.1rem;
-
-    z-index: 1;
 }
 
 .header {
@@ -78,12 +75,22 @@ a {
     filter: drop-shadow(0 0 0.5rem black);
 }
 
-.body {
-    grid-area: body;
-    z-index: 1;
-    background-color: #33333390;
-    border-radius: 0.25rem;
-    filter: drop-shadow(0 0 0.5rem black);
+.scrollbar {
+    z-index: 3;
+    position: absolute;
+}
+
+#scrollX {
+    top: 65.25%;
+    left: 9%;
+    width: 64%;
+}
+
+#scrollY {
+    top: 34%;
+    left: 46.5%;
+    width: 54%;
+    rotate: 90deg;
 }
 
 .rightSide {
@@ -97,9 +104,6 @@ a {
 .footer {
     grid-area: footer;
     z-index: 1;
-    max-height: 50%;
-    position: relative;
-    bottom: -50%;
     background-color: #33333390;
     border-radius: 0.25rem;
     filter: drop-shadow(0 0 0.5rem black);
@@ -183,6 +187,7 @@ a {
     padding: 0 !important;
     border: 0.1rem whitesmoke solid;
     border-top: 0.1rem whitesmoke solid;
+    z-index: 4;
 }
 
 .dropdown:hover .dropdown-content {
