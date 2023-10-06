@@ -75,6 +75,21 @@ const filew = document.getElementById('filew');
 const fileh = document.getElementById('fileh');
 const downloadButton = document.getElementById("downloadButton");
 
+const scrollbarX = document.getElementById("scrollX");
+const scrollbarY = document.getElementById("scrollY");
+
+scrollbarX.style.width = "calc("+document.getElementsByClassName("body")[0].getBoundingClientRect().width+"px - 0.25rem";
+document.getElementsByClassName("body")[0].style.width = 0;
+
+const dialogBox = document.getElementById("dialog");
+
+function showDialogBox(content) {
+    if (content == "about") {
+        dialogBox.innerHTML='<form><h2>Tiles 2D</h2><br><h1>By <a href="https://cooki-studios.github.io" style="font-weight: bold;">Cooki Studios</a></h1><br><button formmethod="dialog">Close</button></form>'
+        dialogBox.showModal();
+    }
+}
+
 const selectRange = [];
 
 function setTool(tool) {
@@ -244,6 +259,8 @@ var oldY;
 
 function downCoords(event) {
     mouseDown = true;
+
+    canvas.setPointerCapture(1);
 
     document.getElementsByClassName("layout")[0].style.pointerEvents = "none";
     document.getElementsByClassName("layout")[0].style.opacity = "50%";
@@ -520,6 +537,8 @@ function moveCoords(event) {
 }
 
 function upCoords(event) {
+    canvas.releasePointerCapture(1);
+
     document.getElementsByClassName("layout")[0].style.pointerEvents = "auto";
     document.getElementsByClassName("layout")[0].style.opacity = "100%";
     document.getElementsByClassName("layout")[0].style.zIndex = "";
@@ -545,6 +564,13 @@ function upCoords(event) {
     }
 
     saveTilemap();
+}
+
+function scrollCoords(event) {
+    scrollbarX.value = parseInt(scrollbarX.value) + Math.ceil(event.deltaX);
+    scrollbarY.value = parseInt(scrollbarY.value) + Math.ceil(event.deltaY);
+    scrollbarX.max = mapData[0].length;
+    scrollbarY.max = mapData.length;
 }
 
 function resetTiles() {
@@ -712,6 +738,7 @@ c.addEventListener('contextmenu', function(event) {
 });
 
 c.addEventListener('pointerdown', downCoords);
+c.addEventListener('wheel', scrollCoords, {passive: true});
 c.addEventListener('pointermove', moveCoords);
 c.addEventListener('pointerup', upCoords);
 

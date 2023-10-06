@@ -75,22 +75,54 @@ a {
     filter: drop-shadow(0 0 0.5rem black);
 }
 
+.body {
+    z-index: 3;
+}
+
 .scrollbar {
     z-index: 3;
-    position: absolute;
+    -webkit-appearance: none;
+    appearance: none; 
+    width: 100%;
+    cursor: pointer;
+    outline: none;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: none;
 }
 
 #scrollX {
-    top: 65.25%;
-    left: 9%;
-    width: 64%;
+    position: relative;
+    top: calc(100% - 1.5rem);
 }
 
 #scrollY {
-    top: 34%;
-    left: 46.5%;
-    width: 54%;
-    rotate: 90deg;
+    position: relative;
+    width: 10rem;
+    right: calc(100% - 1.5rem);
+}
+
+.scrollbar::-webkit-slider-runnable-track {
+    height: 1rem;
+    background: darkgrey;
+    border-radius: 16px;
+}
+
+.scrollbar:hover::-webkit-slider-runnable-track {
+    background: blue;
+}
+
+.scrollbar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none; 
+    height: 1rem;
+    width: 1rem;
+    background: grey;
+    border-radius: 50%;
+}
+
+.scrollbar:hover::-webkit-slider-thumb {
+    background: pink;
 }
 
 .rightSide {
@@ -188,6 +220,8 @@ a {
     border: 0.1rem whitesmoke solid;
     border-top: 0.1rem whitesmoke solid;
     z-index: 4;
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 0.25rem;
 }
 
 .dropdown:hover .dropdown-content {
