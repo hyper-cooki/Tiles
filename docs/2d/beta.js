@@ -355,7 +355,6 @@ function deletePixels(pixels) {
 
 function moveCoords(event) {
     if (event.getCoalescedEvents) {
-        console.log("YES")
         var { x, y } = getMousePosition(event);
 
             if (mapData[y] == undefined && mapData[y][x] == undefined) {

@@ -1,3 +1,7 @@
+html, body {
+    overscroll-behavior: none;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -81,8 +85,9 @@ a {
 }
 
 .body {
-    z-index: 3;
     overflow: scroll;
+    position: relative;
+    z-index: 3;
     pointer-events: none;
 }
 
