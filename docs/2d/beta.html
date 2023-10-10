@@ -77,9 +77,10 @@
                 <div class="tool button" onclick="resetTiles()" onkeypress="if(event.key='Enter'){resetTiles()}" tabindex=0><img src="img/cursors/Reset-64.png" width="32px"><br><b>R</b>eset</div>
             </section>
         </div>
-        <div class="body">
-            <input type="range" name="scrollX" id="scrollX" class="scrollbar" value="0" step="0.1">
-            <input type="range" name="scrollY" id="scrollY" class="scrollbar" value="0" step="0.1">
+        <div class="body" id="scroll-container">
+            <div id="scroll">
+
+            </div>
         </div>
         <div class="rightSide">
             <section class="headerLayout">

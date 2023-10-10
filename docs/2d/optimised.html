@@ -15,58 +15,123 @@
     	<link rel="preconnect" href="https://fonts.googleapis.com">
     	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
         <title>
-            Tiles 2D (Optimised)
+            Tiles 2D (Beta)
         </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <link rel="icon" type="image/png" href="img/TilesIcon.png">
-        <script src="https://cdn.jsdelivr.net/npm/canvas2svg@1.0.16/canvas2svg.min.js"></script>
-        <link rel="stylesheet" href="optimised.css">
+        <link rel="preload" as="image" href="img/cursors/Select-64.png" fetchpriority="high">
+        <link rel="preload" as="image" href="img/cursors/Paint-64.png" fetchpriority="high">
+        <link rel="preload" as="image" href="img/cursors/Eraser-64.png" fetchpriority="high">
+        <link rel="preload" as="image" href="img/cursors/Fill-64.png" fetchpriority="high">
+        <link rel="preload" as="image" href="img/cursors/Eyedropper-64.png" fetchpriority="high">
+        <link rel="preload" as="image" href="img/cursors/Reset-64.png" fetchpriority="high">
+        <link rel="preload" as="image" href="img/cursors/Select-32.png"/>
+        <link rel="preload" as="image" href="img/cursors/Paint-32.png"/>
+        <link rel="preload" as="image" href="img/cursors/PaintDown-32.png"/>
+        <link rel="preload" as="image" href="img/cursors/Eraser-32.png"/>
+        <link rel="preload" as="image" href="img/cursors/EraserDown-32.png"/>
+        <link rel="preload" as="image" href="img/cursors/Fill-32.png"/>
+        <link rel="preload" as="image" href="img/cursors/FillDown-32.png"/>
+        <link rel="preload" as="image" href="img/cursors/Eyedropper-32.png"/>
+        <link rel="preload" as="image" href="img/cursors/EyedropperDown-32.png"/>
+        <link rel="preload" as="image" href="img/cursors/Reset-32.png"/>
+        <script src="https://gliffy.github.io/canvas2svg/canvas2svg.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
+        <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
+        <link rel="stylesheet" href="beta.css">
     </head>
-    <body onresize="drawLayer(0,0);">
-        <button onclick="toggleUI()" style="position: absolute; z-index: 1;" id="uiToggle"></button>
-        <div id="ui" class="showUI" style="line-height: 1%; line-break: strict;">
-            <br>
-            <a href="//cooki-studios.github.io">GO HOME</a>
-	    <br>
-	    <p style="padding-top: 1em;">Options</p><br>
-            <h5>Tile:</h5>
-            <select name="tool" id="tool">
-                <option value="pen" selected="selected">Pen</option>
-                <option value="eraser">Eraser</option>
-            </select>
-            <label for="tool">Tool</label>
-            <input type="color" id="tileColour" style="cursor: pointer;" oninput="addTypes(TILE_TYPES.length)">
-            <label for="tileColour" style="cursor: pointer;">Colour</label>
-            <br>
-            <select name="shape" id="shape" oninput="addTypes(TILE_TYPES.length)">
-                <option value="square" selected="selected">Square</option>
-                <option value="triangle">Triangle</option>
-                <option value="thin-triangle">Thin Triangle</option>
-                <option value="curve">Curve</option>
-                <option value="reverse-curve">Reverse Curve</option>
-            </select>
-            <label for="shape">Shape</label>
-            <br>
-            <input type="range" value="1" min="0" max="1" step="0.25" id="opacity" oninput="addTypes(TILE_TYPES.length)"><label for="opacity">Opacity</label><br>
-            <input type="range" value="0" min="-360" max="360" step="15" id="tileRotation" oninput="addTypes(TILE_TYPES.length)"><label for="tileRotaion">Rotation</label><br>
-            <h5>Tilemap:</h5>
-            <button onclick="deleteAll()">DELETE TILEMAP</button>
-            <input type="number" id="gridX" value="11" style="max-width: 2rem;" min="1">
-            <input type="number" id="gridY" value="9" style="max-width: 2rem;" min="1">
-            <h5>Export:</h5>
-            <input type="text" name="filename" id="filename" value="Tilemap">
+    <body onmouseleave="upCoords(event);" onmouseup="upCoords(event);" onresize="c.height = window.innerHeight; c.width = window.innerWidth; drawLayer(0,0,true,true); " oncontextmenu="return false" onkeypress="if(event.key=='r'){resetTiles()}else if(event.key=='s'){setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select')}else if(event.key=='p'){setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen')}else if(event.key=='e'){setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser')}else if(event.key=='f'){setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill')}else if(event.key=='d'){setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper')}">
+        <dialog id="dialog">
+            
+        </dialog>
+        <section class="layout">
+        <div class="header">
+            <section class="headerLayout">
+                <div><a href="https://cooki-studios.github.io/tiles">⬅</a></div>
+                <div id="tiles2dButton" class="dropdown button" tabindex=0>
+                    <a>Tiles 2D</a>
+                    <div class="dropdown-content">
+                        <a onclick="showDialogBox('about')" onkeypress="if(event.key=='Enter'){document.getElementById('aboutDialog').showModal()}" tabindex=0>About</a>
+                    </div>
+                </div>
+                <div id="tiles2dButton" class="dropdown button" tabindex=0>
+                    <a>File</a>
+                    <div class="dropdown-content">
+                        <a class="button" for="file" onclick="document.getElementById('import').click()" onkeypress="if(event.key=='Enter'){document.getElementById('import').click()}" tabindex="0">UPLOAD</a>
+                        <input type="file" id="import" accept=".cstiles" onchange="importFile(event)">
+                    </div>
+                </div>
+                <div class="button disabled" title="Coming Soon..." onclick="comingSoon(event);">Edit</div>
+                <div class="button disabled" title="Coming Soon..." onclick="comingSoon(event);">View</div>
+                <div id="nav-info" class="marginLeft">Loading...</div>
+            </section>
+        </div>
+        <div class="leftSide">
+            <section class="toolsLayout">
+                <h1>Tools</h1>
+                <div id="select tool" class="tool button" onclick="setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select'); sessionStorage.setItem('tool', 'select');" onkeypress="if(event.key=='Enter'){setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select'); sessionStorage.setItem('tool', 'select');}" tabindex=0><img src="img/cursors/Select-64.png" width="32px"><br><b>S</b>elect</div>
+                <div id="pen tool" class="tool button" onclick="setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen'); sessionStorage.setItem('tool', 'pen');" onkeypress="if(event.key=='Enter'){setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen'); sessionStorage.setItem('tool', 'pen');}" tabindex=0><img src="img/cursors/Paint-64.png" width="32px"><br><b>P</b>en</div>
+                <div id="eraser tool" class="tool button" onclick="setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser'); sessionStorage.setItem('tool', 'eraser');" onkeypress="if(event.key=='Enter'){setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser'); sessionStorage.setItem('tool', 'eraser');}" tabindex=0><img src="img/cursors/Eraser-64.png" width="32px"><br><b>E</b>raser</div>
+                <div id="fill tool" class="tool button" onclick="setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill'); sessionStorage.setItem('tool', 'fill');" onkeypress="if(event.key=='Enter'){setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill'); sessionStorage.setItem('tool', 'fill');}" tabindex=0><img src="img/cursors/Fill-64.png" width="32px"><br><b>F</b>ill</div>
+                <div id="dropper tool" class="tool button" onclick="setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper'); sessionStorage.setItem('tool', 'dropper');" onkeypress="if(event.key=='Enter'){setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper'); sessionStorage.setItem('tool', 'dropper');}" tabindex=0><img src="img/cursors/Eyedropper-64.png" width="32px"><br><b>D</b>ropper</div>      
+                <div class="tool button" onclick="resetTiles()" onkeypress="if(event.key='Enter'){resetTiles()}" tabindex=0><img src="img/cursors/Reset-64.png" width="32px"><br><b>R</b>eset</div>
+            </section>
+        </div>
+        <div class="body">
+            <input type="range" name="scrollX" id="scrollX" class="scrollbar" value="0" step="0.1">
+            <input type="range" name="scrollY" id="scrollY" class="scrollbar" value="0" step="0.1">
+        </div>
+        <div class="rightSide">
+            <section class="headerLayout">
+                <h1 class="button windowLabel">Options</h1>
+                <h1 class="button disabled windowLabel" title="Coming Soon..." onclick="comingSoon(event)">Layers</h1>
+            </section><br>
+            <section class="headerLayout">
+                <p style="margin: 0; padding: 0.1rem 0.25rem 0.1rem;" class="disabled">Transfrom</p>
+            </section>
+            <label class="disabled">X: <input type="number" class="disabled" disabled id="tileX" value="0" onblur="if(value<0) {value=0} else if(value=='') value=0;"></label><br>
+            <label class="disabled">Y: <input type="number" class="disabled" disabled id="tileY" value="0" onblur="if(value<0) {value=0} else if(value=='') value=0;"></label><br>
+            <label class="disabled">Deg: <input type="number" id="tileDeg" class="disabled" disabled value="0" onblur="if(value<0) {value=0} else if(value=='') value=0;"></label><br>
+            <button id="flipY" class="disabled" tabindex="-1">Flip X</button><button id="flipY" class="disabled" tabindex="-1">Flip Y</button>
+            <br><br>
+            <section class="headerLayout">
+                <p style="margin: 0; padding: 0.1rem 0.25rem 0.1rem;">Appearance</p>
+            </section>
+            <label>Fill: <input type="color" onclick="return false" data-coloris value="#ffffff" id="tileColour" oninput="createTileType()" onblur="deleteTileTypes()"></label><br>
+            <label>Outline: <input type="checkbox" id="outlineCheck" onchange="if(!this.checked){tileOutline.classList.add('disabled');tileOutline.setAttribute('disabled', '');}else{tileOutline.classList.remove('disabled');tileOutline.removeAttribute('disabled')};createTileType()"><input type="color" onclick="return false" data-coloris value="#000000" id="tileOutline" oninput="createTileType()" onblur="deleteTileTypes()"></label><br>
+            <label >Opacity: <input id="tileOpacity" type="number" min="0" max="100" step="25" value="100" oninput="createTileType()" onblur="deleteTileTypes();if(value<0) {value=0} else if(value>100) {value=100} else if(value=='') value=0;" id="tileOpacity"></label><br>
+            <label>Shape: 
+                <select id="tileShape" onchange="createTileType()">
+                    <option value="square" selected="selected">Square</option>
+                    <option value="triangle">Triangle</option>
+                    <option value="thin-triangle">Thin Triangle</option>
+                    <option value="curve">Curve</option>
+                    <option value="reverse-curve">Reverse Curve</option>
+                </select>
+            </label>
+            <br><br>
+            <section class="headerLayout">
+                <p style="margin: 0; padding: 0.1rem 0.25rem 0.1rem;">Export</p>
+            </section>
+            <input type="text" name="filename" id="filename" value="Tilemap" tabindex="0">
             <select name="filext" id="filext">
-                <option value="svg" selected="selected">.svg</option>
-                <option value="png">.png</option>
+                <option value="png" selected="selected">.png</option>
+                <option value="svg">.svg</option>
                 <option value="jpeg">.jpeg</option>
                 <option value="cstiles">.cstiles</option>
-            </select>
-            <br>
-            <input style="margin-top: 0.25rem;" type="number" id="saveX" min="0" step="1" value="0"><input type="number" id="saveY" min="0" step="1" value="0"><br><input type="number" id="saveW" min="1" step="1" value="11"><input type="number" id="saveH" min="1" step="1" value="9">
-            <br>
-			<button style="margin-top: 0.25rem;" onclick="exportImg()">DOWNLOAD</button>
-            <label id="fileLabel" for="file" tabindex="0">UPLOAD .CSTILES</label>
-            <input type="file" id="file" accept=".cstiles" onchange="openFile(event)">
-		</div>
-        <script src="optimised.js"></script>
+            </select><br>
+            <label>X: <input type="number" id="filex" value="0" onblur="if(value<0) {value=0} else if(value=='') value=0;"></label><br>
+            <label>Y: <input type="number" id="filey" value="0" onblur="if(value<0) {value=0} else if(value=='') value=0;"></label><br>
+            <label>Width: <input type="number" id="filew" value="10" onblur="if(value<0) {value=0} else if(value=='') value=0;"></label><br>
+            <label>Height: <input type="number" id="fileh" value="10" onblur="if(value<0) {value=0} else if(value=='') value=0;"></label><br>
+            <button id="downloadButton" class="button" tabindex="0" onclick="exportTilemap(document.getElementById('filext').value,document.getElementById('filex').value,document.getElementById('filey').value,document.getElementById('filew').value,document.getElementById('fileh').value)">Download</button>
+        </div>
+        <div class="footer">
+            <section class="headerLayout">
+                <h1 class="disabled windowLabel" title="Coming Soon..." onclick="comingSoon(event);">Animation</h1>
+            </section>
+        </div>
+        </section>
     </body>
+    <script src="beta.js"></script>
 </html>

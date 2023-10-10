@@ -75,12 +75,6 @@ const filew = document.getElementById('filew');
 const fileh = document.getElementById('fileh');
 const downloadButton = document.getElementById("downloadButton");
 
-const scrollbarX = document.getElementById("scrollX");
-const scrollbarY = document.getElementById("scrollY");
-
-scrollbarX.style.width = "calc("+document.getElementsByClassName("body")[0].getBoundingClientRect().width+"px - 0.25rem";
-document.getElementsByClassName("body")[0].style.width = 0;
-
 const dialogBox = document.getElementById("dialog");
 
 function showDialogBox(content) {
@@ -266,8 +260,6 @@ function downCoords(event) {
     document.getElementsByClassName("layout")[0].style.opacity = "50%";
     document.getElementsByClassName("layout")[0].style.zIndex = 2;
     document.getElementsByClassName("layout")[0].style.position = "fixed";
-    document.getElementById("scrollX").style.opacity = "0%";
-    document.getElementById("scrollY").style.opacity = "0%";
     
     var { x, y } = getMousePosition(event);
 
@@ -362,9 +354,177 @@ function deletePixels(pixels) {
 }
 
 function moveCoords(event) {
-    let events = event.getCoalescedEvents();
+    if (event.getCoalescedEvents) {
+        console.log("YES")
+        var { x, y } = getMousePosition(event);
 
-    for(let event of events) {
+            if (mapData[y] == undefined && mapData[y][x] == undefined) {
+                c.style.cursor = "url(img/cursors/Select-32.png), auto";
+            }
+
+            if (rightMouseDown) {
+                if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
+                    if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
+                        if (tool == "pen") {
+                            c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
+
+                            if (selectRange.length != 0) {
+                                selectRange.length = 0;
+                            }
+
+                            if (mapData[y][x] != 0) {
+                                if (oldX == null && oldY == null) {
+                                    if ( mapData[y][x] != 0) {
+                                        mapData[y][x] = 0;
+                                        oldX = x*64+32;
+                                        oldY = y*64+32;
+                                    }
+                                } else {
+                                    var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                                    deletePixels(pixels);
+                                    for (let i = 0; i < pixels.length; i++) {
+                                        if ( mapData[pixels[i].y][pixels[i].x] != 0) {
+                                            mapData[pixels[i].y][pixels[i].x] = 0;
+                                            oldX = x*64+32;
+                                            oldY = y*64+32;
+                                        }
+                                    }
+                                }
+        
+                                drawLayer(0,0,true,true);
+                            } else {
+                                oldX = null;
+                                oldY = null;
+                            }
+                        } else if (tool == "eraser") {
+                            c.style.cursor = "url(img/cursors/PaintDown-32.png), auto";
+
+                            if (selectRange.length != 0) {
+                                selectRange.length = 0;
+                            }
+
+                            if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                                if (oldX == null && oldY == null) {
+                                    if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                                        mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
+                                        oldX = x*64+32;
+                                        oldY = y*64+32;
+                                    }
+                                } else {
+                                    var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                                    deletePixels(pixels);
+                                    for (let i = 0; i < pixels.length; i++) {
+                                        if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                                            mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
+                                            oldX = x*64+32;
+                                            oldY = y*64+32;
+                                        }
+                                    }
+                                }
+        
+                                drawLayer(0,0,true,true);
+                            } else {
+                                oldX = null;
+                                oldY = null;
+                            }
+                        }
+                    }
+                }
+            } else if (mouseDown) {
+                if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
+                    if (tool == "pen") {
+                        c.style.cursor = "url(img/cursors/PaintDown-32.png), auto";
+
+                        if (selectRange.length != 0) {
+                            selectRange.length = 0;
+                        }
+
+                        if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                            if (oldX == null && oldY == null) {
+                                if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                                    mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
+                                    oldX = x*64+32;
+                                    oldY = y*64+32;
+                                }
+                            } else {
+                                var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                                deletePixels(pixels);
+                                for (let i = 0; i < pixels.length; i++) {
+                                    if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                                        mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
+                                        oldX = x*64+32;
+                                        oldY = y*64+32;
+                                    }
+                                }
+                            }
+
+                            drawLayer(0,0,true,true);
+                        } else {
+                            oldX = null;
+                            oldY = null;
+                        }
+                    } else if (tool == "eraser") {
+                        c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
+
+                        if (selectRange.length != 0) {
+                            selectRange.length = 0;
+                        }
+
+                        if (mapData[y][x] != 0) {
+                            if (oldX == null && oldY == null) {
+                                if ( mapData[y][x] != 0) {
+                                    mapData[y][x] = 0;
+                                    oldX = x*64+32;
+                                    oldY = y*64+32;
+                                }
+                            } else {
+                                var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                                deletePixels(pixels);
+                                for (let i = 0; i < pixels.length; i++) {
+                                    if ( mapData[pixels[i].y][pixels[i].x] != 0) {
+                                        mapData[pixels[i].y][pixels[i].x] = 0;
+                                        oldX = x*64+32;
+                                        oldY = y*64+32;
+                                    }
+                                }
+                            }
+
+                            drawLayer(0,0,true,true);
+                        } else {
+                            oldX = null;
+                            oldY = null;
+                        }
+                    } else if (tool == "select") {
+                        c.style.cursor = "url(img/cursors/Select-32.png), auto";
+
+                        selectRange[2] = x;
+                        selectRange[3] = y;
+                        
+                        if (selectRange[0]<=selectRange[2]&&selectRange[1]<=selectRange[3]) {
+                            filew.value = selectRange[2] - selectRange[0] + 1;
+                            fileh.value = selectRange[3] - selectRange[1] + 1;
+                        } else {
+                            filex.value = selectRange[2];
+                            filey.value = selectRange[3];
+                            filew.value = selectRange[0] - selectRange[2] + 1;
+                            fileh.value = selectRange[1] - selectRange[3] + 1;
+                        }
+
+                        drawLayer(0,0,true,true);
+                    }
+                }
+            } else {
+                if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
+                    if (tool == "pen") {
+                        c.style.cursor = "url(img/cursors/Paint-32.png), auto";
+                    } else if (tool == "eraser") {
+                        c.style.cursor = "url(img/cursors/Eraser-32.png), auto";
+                    } else if (tool == "select") {
+                        c.style.cursor = "url(img/cursors/Select-32.png), auto";
+                    }
+                }
+            }
+    } else {
         var { x, y } = getMousePosition(event);
 
         if (mapData[y] == undefined && mapData[y][x] == undefined) {
@@ -540,11 +700,9 @@ function upCoords(event) {
     canvas.releasePointerCapture(1);
 
     document.getElementsByClassName("layout")[0].style.pointerEvents = "auto";
+    document.getElementsByClassName("layout")[0].style.position = "";
     document.getElementsByClassName("layout")[0].style.opacity = "100%";
     document.getElementsByClassName("layout")[0].style.zIndex = "";
-    document.getElementsByClassName("layout")[0].style.position = "";
-    document.getElementById("scrollX").style.opacity = "100%";
-    document.getElementById("scrollY").style.opacity = "100%";
 
     mouseDown = false;
     rightMouseDown = false;
@@ -567,10 +725,8 @@ function upCoords(event) {
 }
 
 function scrollCoords(event) {
-    scrollbarX.value = parseInt(scrollbarX.value) + Math.ceil(event.deltaX);
-    scrollbarY.value = parseInt(scrollbarY.value) + Math.ceil(event.deltaY);
-    scrollbarX.max = mapData[0].length;
-    scrollbarY.max = mapData.length;
+    document.getElementById("scroll-container").scrollLeft += event.deltaX;
+    document.getElementById("scroll-container").scrollTop += event.deltaY;
 }
 
 function resetTiles() {
