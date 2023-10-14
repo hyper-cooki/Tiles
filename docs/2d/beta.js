@@ -125,20 +125,41 @@ function createTileType() {
     }
 }
 
-function drawLayer(lx,ly,grid,showSelect) {
+function drawLayer(lx,ly,lw,lh,grid,showSelect) {
     ctx.clearRect(0,0,c.width,c.height);
 
-    for (let y = 0; y < mapData.length; y++) {
-        for (let x = 0; x < mapData[0].length; x++) {
-            drawTile(x,y,lx,ly,showSelect);
-            if (grid) {
-                drawGridTile(x+lx,y+ly,0,0,showSelect);
+    if (lw && lh) {
+        for (let y = 0; y < lh; y++) {
+            for (let x = 0; x < lw; x++) {
+                drawTile(x+lx,y+ly,showSelect);
+            }
+        }
+
+        if (grid) {
+            for (let y = 0; y < lh; y++) {
+                for (let x = 0; x < lw; x++) {
+                    drawGridTile(x+lx,y+ly);
+                }
+            }
+        }
+    } else {
+        for (let y = 0; y < mapData.length; y++) {
+            for (let x = 0; x < mapData[0].length; x++) {
+                drawTile(x+lx,y+ly,showSelect);
+            }
+        }
+
+        if (grid) {
+            for (let y = 0; y < mapData.length; y++) {
+                for (let x = 0; x < mapData[0].length; x++) {
+                    drawGridTile(x+lx,y+ly);
+                }
             }
         }
     }
 }
 
-function drawTile(x,y,offsetX,offsetY,showSelect) {
+function drawTile(x,y,showSelect) {
     if (mapData[y][x] != 0) {
         for (let i = 0; i < TILE_TYPES.length; i++) {
             if (TILE_TYPES[i].id == mapData[y][x]) {
@@ -149,33 +170,33 @@ function drawTile(x,y,offsetX,offsetY,showSelect) {
                 }
 
                 if (!TILE_TYPES[i].shape) {
-                    ctx.fillRect((x+offsetX)*64,(y+offsetY)*64,64,64);
+                    ctx.fillRect(x*64,y*64,64,64);
                 } else if (TILE_TYPES[i].shape == "triangle") {
                     ctx.beginPath();
-                    ctx.moveTo(((x+offsetX)*64)+64, (y+offsetY)*64);
-                    ctx.lineTo(((x+offsetX)*64)+64, ((y+offsetY)*64)+64);
-                    ctx.lineTo((x+offsetX)*64, ((y+offsetY)*64)+64);
+                    ctx.moveTo((x*64)+64,y*64);
+                    ctx.lineTo((x*64)+64,(y*64)+64);
+                    ctx.lineTo(x*64, (y*64)+64);
                     ctx.closePath();
                     ctx.fill();
                 } else if (TILE_TYPES[i].shape == "thin-triangle") {
                     ctx.beginPath();
-                    ctx.moveTo(((x+offsetX)*64)+64, (y+offsetY)*64);
-                    ctx.lineTo(((x+offsetX)*64)+64, ((y+offsetY)*64)+64);
-                    ctx.lineTo(((x+offsetX)*64)+32, ((y+offsetY)*64)+64);
+                    ctx.moveTo((x*64)+64, (y*64));
+                    ctx.lineTo((x*64)+64, (y*64)+64);
+                    ctx.lineTo((x*64)+32, (y*64)+64);
                     ctx.closePath();
                     ctx.fill();
                 } else if (TILE_TYPES[i].shape == "curve") {
                     ctx.beginPath();
-                    ctx.arc(((x+offsetX)*64)+64, ((y+offsetY)*64)+64, 64, 1 * Math.PI, 1.5 * Math.PI);
-                    ctx.lineTo(((x+offsetX)*64)+64, ((y+offsetY)*64)+64);
-                    ctx.lineTo(((x+offsetX)*64), ((y+offsetY)*64)+64);
+                    ctx.arc((x*64)+64, (y*64)+64, 64, 1 * Math.PI, 1.5 * Math.PI);
+                    ctx.lineTo((x*64)+64, (y*64)+64);
+                    ctx.lineTo((x*64), (y*64)+64);
                     ctx.closePath();
                     ctx.fill();
                 } else if (TILE_TYPES[i].shape == "reverse-curve") {
                     ctx.beginPath();
-                    ctx.arc(((x+offsetX)*64), ((y+offsetY)*64), 64, 0 * Math.PI, 0.5 * Math.PI);
-                    ctx.lineTo(((x+offsetX)*64)+64, ((y+offsetY)*64)+64);
-                    ctx.lineTo(((x+offsetX)*64)+64, ((y+offsetY)*64)+64);
+                    ctx.arc((x*64), (y*64), 64, 0 * Math.PI, 0.5 * Math.PI);
+                    ctx.lineTo((x*64)+64, (y*64)+64);
+                    ctx.lineTo((x*64)+64, (y*64)+64);
                     ctx.closePath();
                     ctx.fill();
                 }
@@ -186,7 +207,7 @@ function drawTile(x,y,offsetX,offsetY,showSelect) {
                     if (selectRange[0]==x&&selectRange[1]==y||((x>=selectRange[0]&&x<=selectRange[2])||(x<=selectRange[0]&&x>=selectRange[2]))&&((y>=selectRange[1]&&y<=selectRange[3])||(y<=selectRange[1]&&y>=selectRange[3]))) {
                         ctx.globalAlpha = 0.25;
                         ctx.fillStyle = "#4287f5";
-                        ctx.fillRect((x+offsetX)*64,(y+offsetY)*64,64,64);
+                        ctx.fillRect(x*64,y*64,64,64);
                 
                         ctx.globalAlpha = 1;
                     }
@@ -194,7 +215,7 @@ function drawTile(x,y,offsetX,offsetY,showSelect) {
 
                 if (TILE_TYPES[i].outline) {
                     ctx.strokeStyle = TILE_TYPES[i].outline;
-                    ctx.strokeRect((x+offsetX)*64,(y+offsetY)*64,64,64);
+                    ctx.strokeRect(x*64,y*64,64,64);
                 }
             }
         }
@@ -277,14 +298,14 @@ function downCoords(event) {
 
                 if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                    drawLayer(0,0,true,true);
+                    drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                 }
             } else if (tool == "eraser") {
                 c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
 
                 if (mapData[y][x] != 0) {
                     mapData[y][x] = 0;
-                    drawLayer(0,0,true,true);
+                    drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                 }
             } else if (tool == "select") {
                 c.style.cursor = "url(img/cursors/Select-32.png), auto";
@@ -299,7 +320,7 @@ function downCoords(event) {
                 fileh.value = 1;
                 downloadButton.innerText = "Download Selected";
 
-                drawLayer(0,0,true,true);
+                drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
             }
         }
     }
@@ -390,7 +411,7 @@ function moveCoords(event) {
                                     }
                                 }
         
-                                drawLayer(0,0,true,true);
+                                drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                             } else {
                                 oldX = null;
                                 oldY = null;
@@ -421,7 +442,7 @@ function moveCoords(event) {
                                     }
                                 }
         
-                                drawLayer(0,0,true,true);
+                                drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                             } else {
                                 oldX = null;
                                 oldY = null;
@@ -457,7 +478,7 @@ function moveCoords(event) {
                                 }
                             }
 
-                            drawLayer(0,0,true,true);
+                            drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                         } else {
                             oldX = null;
                             oldY = null;
@@ -488,7 +509,7 @@ function moveCoords(event) {
                                 }
                             }
 
-                            drawLayer(0,0,true,true);
+                            drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                         } else {
                             oldX = null;
                             oldY = null;
@@ -509,7 +530,7 @@ function moveCoords(event) {
                             fileh.value = selectRange[1] - selectRange[3] + 1;
                         }
 
-                        drawLayer(0,0,true,true);
+                        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                     }
                 }
             } else {
@@ -559,7 +580,7 @@ function moveCoords(event) {
                                 }
                             }
     
-                            drawLayer(0,0,true,true);
+                            drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                         } else {
                             oldX = null;
                             oldY = null;
@@ -590,7 +611,7 @@ function moveCoords(event) {
                                 }
                             }
     
-                            drawLayer(0,0,true,true);
+                            drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                         } else {
                             oldX = null;
                             oldY = null;
@@ -626,7 +647,7 @@ function moveCoords(event) {
                             }
                         }
 
-                        drawLayer(0,0,true,true);
+                        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                     } else {
                         oldX = null;
                         oldY = null;
@@ -657,7 +678,7 @@ function moveCoords(event) {
                             }
                         }
 
-                        drawLayer(0,0,true,true);
+                        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                     } else {
                         oldX = null;
                         oldY = null;
@@ -678,7 +699,7 @@ function moveCoords(event) {
                         fileh.value = selectRange[1] - selectRange[3] + 1;
                     }
 
-                    drawLayer(0,0,true,true);
+                    drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                 }
             }
         } else {
@@ -751,7 +772,7 @@ function resetTiles() {
         tileOpacity.value = 100;
         tileShape.value = "square";
 
-        drawLayer(0,0,true,true);
+        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
     }
 }
 
@@ -790,8 +811,8 @@ function importFile(event) {
         mapData = JSON.parse(reader.result.split('~')[1]);
         saveTilemap();
 
-        drawLayer(0,0,true,true);
-    },false,);
+        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+    },false);
 
     if (file) {
         reader.readAsText(file);
@@ -849,7 +870,7 @@ function exportTilemap(type,x,y,w,h) {
         delete dl;
         c.height = window.innerHeight;
         c.width = window.innerWidth;
-        drawLayer(0,0,true,true);
+        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
     }
 
     if (type == "cstiles") {
@@ -860,7 +881,7 @@ function exportTilemap(type,x,y,w,h) {
         delete dl;
         c.height = window.innerHeight;
         c.width = window.innerWidth;
-        drawLayer(0,0,true,true);
+        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
     }
 }
 
@@ -876,14 +897,14 @@ c.addEventListener('contextmenu', function(event) {
 
                 if (mapData[y][x] != 0) {
                     mapData[y][x] = 0;
-                    drawLayer(0,0,true,true);
+                    drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                 }
             } else if (tool == "eraser") {
                 c.style.cursor = "url(img/cursors/PaintDown-32.png), auto";
 
                 if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                    drawLayer(0,0,true,true);
+                    drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
                 }
             } else if (tool == "select") {
                 c.style.cursor = "url(img/cursors/Select-32.png), auto";
@@ -897,7 +918,7 @@ c.addEventListener('wheel', scrollCoords, {passive: true});
 c.addEventListener('pointermove', moveCoords);
 c.addEventListener('pointerup', upCoords);
 
-drawLayer(0,0,true,true);
+drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
 
 var date = new Date()
 document.getElementById("nav-info").innerText = date.toLocaleString('default', { date: '' });

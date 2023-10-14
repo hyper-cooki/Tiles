@@ -86,8 +86,8 @@ a {
 
 .body {
     overflow: scroll;
-    position: relative;
     z-index: 3;
+    cursor: default;
     pointer-events: none;
 }
 
@@ -95,6 +95,34 @@ a {
     width: 200%;
     height: 200%;
     pointer-events: none;
+    scrollbar-width: 1rem;
+    scrollbar-color: #33333390, darkgrey;
+}
+
+.body::-webkit-scrollbar {
+    width: 1rem;
+}
+
+.body::-webkit-scrollbar-track {
+    background-color: #33333390;
+    filter: drop-shadow(0 0 0.5rem black);
+    border-radius: 0.5rem 0.5rem;
+}
+
+.body::-webkit-scrollbar-track:horizontal {
+    background-color: #33333390;
+    filter: drop-shadow(0 0 0.5rem black);
+    border-radius: 0.5rem;
+}
+
+.body::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    filter: drop-shadow(0 0 0.5rem black);
+    border-radius: 0.5rem;
+}
+
+.body::-webkit-scrollbar-corner {
+    background: none;
 }
 
 .rightSide {

@@ -40,7 +40,7 @@
         <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
         <link rel="stylesheet" href="beta.css">
     </head>
-    <body onmouseleave="upCoords(event);" onmouseup="upCoords(event);" onresize="c.height = window.innerHeight; c.width = window.innerWidth; drawLayer(0,0,true,true); " oncontextmenu="return false" onkeypress="if(event.key=='r'){resetTiles()}else if(event.key=='s'){setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select')}else if(event.key=='p'){setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen')}else if(event.key=='e'){setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser')}else if(event.key=='f'){setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill')}else if(event.key=='d'){setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper')}">
+    <body onmouseleave="upCoords(event);" onmouseup="upCoords(event);" onresize="c.height = window.innerHeight; c.width = window.innerWidth; drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);" oncontextmenu="return false" onkeypress="if(event.key=='r'){resetTiles()}else if(event.key=='s'){setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select')}else if(event.key=='p'){setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen')}else if(event.key=='e'){setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser')}else if(event.key=='f'){setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill')}else if(event.key=='d'){setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper')}">
         <dialog id="dialog">
             
         </dialog>
