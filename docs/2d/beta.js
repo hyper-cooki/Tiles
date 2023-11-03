@@ -131,7 +131,7 @@ function drawLayer(lx,ly,lw,lh,grid,showSelect) {
     if (lw && lh) {
         for (let y = 0; y < lh; y++) {
             for (let x = 0; x < lw; x++) {
-                drawTile(x+lx,y+ly,showSelect);
+                drawTile(x,y,lx,ly,showSelect);
             }
         }
 
@@ -145,7 +145,7 @@ function drawLayer(lx,ly,lw,lh,grid,showSelect) {
     } else {
         for (let y = 0; y < mapData.length; y++) {
             for (let x = 0; x < mapData[0].length; x++) {
-                drawTile(x+lx,y+ly,showSelect);
+                drawTile(x,y,lx,ly,showSelect);
             }
         }
 
@@ -159,10 +159,14 @@ function drawLayer(lx,ly,lw,lh,grid,showSelect) {
     }
 }
 
-function drawTile(x,y,showSelect) {
+function drawTile(x,y,lx,ly,showSelect) {
     if (mapData[y][x] != 0) {
         for (let i = 0; i < TILE_TYPES.length; i++) {
             if (TILE_TYPES[i].id == mapData[y][x]) {
+
+                x += lx;
+                y += ly;
+
                 ctx.fillStyle = TILE_TYPES[i].colour;
 
                 if (TILE_TYPES[i].opacity) {
@@ -170,33 +174,33 @@ function drawTile(x,y,showSelect) {
                 }
 
                 if (!TILE_TYPES[i].shape) {
-                    ctx.fillRect(x*64,y*64,64,64);
+                    ctx.fillRect(Math.ceil(x*64),Math.ceil(y*64),64,64);
                 } else if (TILE_TYPES[i].shape == "triangle") {
                     ctx.beginPath();
-                    ctx.moveTo((x*64)+64,y*64);
-                    ctx.lineTo((x*64)+64,(y*64)+64);
-                    ctx.lineTo(x*64, (y*64)+64);
+                    ctx.moveTo((Math.ceil(x*64))+64,Math.ceil(y*64));
+                    ctx.lineTo((Math.ceil(x*64))+64,(Math.ceil(y*64))+64);
+                    ctx.lineTo(Math.ceil(x*64), (Math.ceil(y*64))+64);
                     ctx.closePath();
                     ctx.fill();
                 } else if (TILE_TYPES[i].shape == "thin-triangle") {
                     ctx.beginPath();
-                    ctx.moveTo((x*64)+64, (y*64));
-                    ctx.lineTo((x*64)+64, (y*64)+64);
-                    ctx.lineTo((x*64)+32, (y*64)+64);
+                    ctx.moveTo((Math.ceil(x*64))+64, (Math.ceil(y*64)));
+                    ctx.lineTo((Math.ceil(x*64))+64, (Math.ceil(y*64))+64);
+                    ctx.lineTo((Math.ceil(x*64))+32, (Math.ceil(y*64))+64);
                     ctx.closePath();
                     ctx.fill();
                 } else if (TILE_TYPES[i].shape == "curve") {
                     ctx.beginPath();
-                    ctx.arc((x*64)+64, (y*64)+64, 64, 1 * Math.PI, 1.5 * Math.PI);
-                    ctx.lineTo((x*64)+64, (y*64)+64);
-                    ctx.lineTo((x*64), (y*64)+64);
+                    ctx.arc((Math.ceil(x*64))+64, (Math.ceil(y*64))+64, 64, 1 * Math.PI, 1.5 * Math.PI);
+                    ctx.lineTo((Math.ceil(x*64))+64, (Math.ceil(y*64))+64);
+                    ctx.lineTo((Math.ceil(x*64)), (Math.ceil(y*64))+64);
                     ctx.closePath();
                     ctx.fill();
                 } else if (TILE_TYPES[i].shape == "reverse-curve") {
                     ctx.beginPath();
-                    ctx.arc((x*64), (y*64), 64, 0 * Math.PI, 0.5 * Math.PI);
-                    ctx.lineTo((x*64)+64, (y*64)+64);
-                    ctx.lineTo((x*64)+64, (y*64)+64);
+                    ctx.arc((Math.ceil(x*64)), (Math.ceil(y*64)), 64, 0 * Math.PI, 0.5 * Math.PI);
+                    ctx.lineTo((Math.ceil(x*64))+64, (Math.ceil(y*64))+64);
+                    ctx.lineTo((Math.ceil(x*64))+64, (Math.ceil(y*64))+64);
                     ctx.closePath();
                     ctx.fill();
                 }
@@ -207,7 +211,7 @@ function drawTile(x,y,showSelect) {
                     if (selectRange[0]==x&&selectRange[1]==y||((x>=selectRange[0]&&x<=selectRange[2])||(x<=selectRange[0]&&x>=selectRange[2]))&&((y>=selectRange[1]&&y<=selectRange[3])||(y<=selectRange[1]&&y>=selectRange[3]))) {
                         ctx.globalAlpha = 0.25;
                         ctx.fillStyle = "#4287f5";
-                        ctx.fillRect(x*64,y*64,64,64);
+                        ctx.fillRect(Math.ceil(x*64),Math.ceil(y*64),64,64);
                 
                         ctx.globalAlpha = 1;
                     }
@@ -215,7 +219,7 @@ function drawTile(x,y,showSelect) {
 
                 if (TILE_TYPES[i].outline) {
                     ctx.strokeStyle = TILE_TYPES[i].outline;
-                    ctx.strokeRect(x*64,y*64,64,64);
+                    ctx.strokeRect(Math.ceil(x*64),Math.ceil(y*64),64,64);
                 }
             }
         }
@@ -284,8 +288,8 @@ function downCoords(event) {
     
     var { x, y } = getMousePosition(event);
 
-    oldX = x*64+32;
-    oldY = y*64+32;
+    oldX = Math.ceil(x*64)+32;
+    oldY = Math.ceil(y*64)+32;
 
     if (mapData[y] == undefined && mapData[y][x] == undefined) {
         c.style.cursor = "url(img/cursors/Select-32.png), auto";
@@ -298,14 +302,22 @@ function downCoords(event) {
 
                 if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                    drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                    drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                 }
             } else if (tool == "eraser") {
                 c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
 
                 if (mapData[y][x] != 0) {
                     mapData[y][x] = 0;
-                    drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                    drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                 }
             } else if (tool == "select") {
                 c.style.cursor = "url(img/cursors/Select-32.png), auto";
@@ -320,7 +332,11 @@ function downCoords(event) {
                 fileh.value = 1;
                 downloadButton.innerText = "Download Selected";
 
-                drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
             }
         }
     }
@@ -396,22 +412,26 @@ function moveCoords(event) {
                                 if (oldX == null && oldY == null) {
                                     if ( mapData[y][x] != 0) {
                                         mapData[y][x] = 0;
-                                        oldX = x*64+32;
-                                        oldY = y*64+32;
+                                        oldX = Math.ceil(x*64)+32;
+                                        oldY = Math.ceil(y*64)+32;
                                     }
                                 } else {
-                                    var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                                    var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
                                     deletePixels(pixels);
                                     for (let i = 0; i < pixels.length; i++) {
                                         if ( mapData[pixels[i].y][pixels[i].x] != 0) {
                                             mapData[pixels[i].y][pixels[i].x] = 0;
-                                            oldX = x*64+32;
-                                            oldY = y*64+32;
+                                            oldX = Math.ceil(x*64)+32;
+                                            oldY = Math.ceil(y*64)+32;
                                         }
                                     }
                                 }
         
-                                drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                                drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                             } else {
                                 oldX = null;
                                 oldY = null;
@@ -427,22 +447,26 @@ function moveCoords(event) {
                                 if (oldX == null && oldY == null) {
                                     if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                         mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                        oldX = x*64+32;
-                                        oldY = y*64+32;
+                                        oldX = Math.ceil(x*64)+32;
+                                        oldY = Math.ceil(y*64)+32;
                                     }
                                 } else {
-                                    var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                                    var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
                                     deletePixels(pixels);
                                     for (let i = 0; i < pixels.length; i++) {
                                         if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                             mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                            oldX = x*64+32;
-                                            oldY = y*64+32;
+                                            oldX = Math.ceil(x*64)+32;
+                                            oldY = Math.ceil(y*64)+32;
                                         }
                                     }
                                 }
         
-                                drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                                drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                             } else {
                                 oldX = null;
                                 oldY = null;
@@ -463,22 +487,26 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                    oldX = x*64+32;
-                                    oldY = y*64+32;
+                                    oldX = Math.ceil(x*64)+32;
+                                    oldY = Math.ceil(y*64)+32;
                                 }
                             } else {
-                                var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
                                 deletePixels(pixels);
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                         mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                        oldX = x*64+32;
-                                        oldY = y*64+32;
+                                        oldX = Math.ceil(x*64)+32;
+                                        oldY = Math.ceil(y*64)+32;
                                     }
                                 }
                             }
 
-                            drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                            drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                         } else {
                             oldX = null;
                             oldY = null;
@@ -494,22 +522,26 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != 0) {
                                     mapData[y][x] = 0;
-                                    oldX = x*64+32;
-                                    oldY = y*64+32;
+                                    oldX = Math.ceil(x*64)+32;
+                                    oldY = Math.ceil(y*64)+32;
                                 }
                             } else {
-                                var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
                                 deletePixels(pixels);
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != 0) {
                                         mapData[pixels[i].y][pixels[i].x] = 0;
-                                        oldX = x*64+32;
-                                        oldY = y*64+32;
+                                        oldX = Math.ceil(x*64)+32;
+                                        oldY = Math.ceil(y*64)+32;
                                     }
                                 }
                             }
 
-                            drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                            drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                         } else {
                             oldX = null;
                             oldY = null;
@@ -530,7 +562,11 @@ function moveCoords(event) {
                             fileh.value = selectRange[1] - selectRange[3] + 1;
                         }
 
-                        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                        drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                     }
                 }
             } else {
@@ -565,22 +601,26 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != 0) {
                                     mapData[y][x] = 0;
-                                    oldX = x*64+32;
-                                    oldY = y*64+32;
+                                    oldX = Math.ceil(x*64)+32;
+                                    oldY = Math.ceil(y*64)+32;
                                 }
                             } else {
-                                var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
                                 deletePixels(pixels);
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != 0) {
                                         mapData[pixels[i].y][pixels[i].x] = 0;
-                                        oldX = x*64+32;
-                                        oldY = y*64+32;
+                                        oldX = Math.ceil(x*64)+32;
+                                        oldY = Math.ceil(y*64)+32;
                                     }
                                 }
                             }
     
-                            drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                            drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                         } else {
                             oldX = null;
                             oldY = null;
@@ -596,22 +636,26 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                    oldX = x*64+32;
-                                    oldY = y*64+32;
+                                    oldX = Math.ceil(x*64)+32;
+                                    oldY = Math.ceil(y*64)+32;
                                 }
                             } else {
-                                var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
                                 deletePixels(pixels);
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                         mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                        oldX = x*64+32;
-                                        oldY = y*64+32;
+                                        oldX = Math.ceil(x*64)+32;
+                                        oldY = Math.ceil(y*64)+32;
                                     }
                                 }
                             }
     
-                            drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                            drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                         } else {
                             oldX = null;
                             oldY = null;
@@ -632,22 +676,26 @@ function moveCoords(event) {
                         if (oldX == null && oldY == null) {
                             if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                 mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                oldX = x*64+32;
-                                oldY = y*64+32;
+                                oldX = Math.ceil(x*64)+32;
+                                oldY = Math.ceil(y*64)+32;
                             }
                         } else {
-                            var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                            var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
                             deletePixels(pixels);
                             for (let i = 0; i < pixels.length; i++) {
                                 if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                     mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                    oldX = x*64+32;
-                                    oldY = y*64+32;
+                                    oldX = Math.ceil(x*64)+32;
+                                    oldY = Math.ceil(y*64)+32;
                                 }
                             }
                         }
 
-                        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                        drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                     } else {
                         oldX = null;
                         oldY = null;
@@ -663,22 +711,26 @@ function moveCoords(event) {
                         if (oldX == null && oldY == null) {
                             if ( mapData[y][x] != 0) {
                                 mapData[y][x] = 0;
-                                oldX = x*64+32;
-                                oldY = y*64+32;
+                                oldX = Math.ceil(x*64)+32;
+                                oldY = Math.ceil(y*64)+32;
                             }
                         } else {
-                            var pixels = getPixelsOnLine(oldX,oldY,x*64+32,y*64+32);
+                            var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
                             deletePixels(pixels);
                             for (let i = 0; i < pixels.length; i++) {
                                 if ( mapData[pixels[i].y][pixels[i].x] != 0) {
                                     mapData[pixels[i].y][pixels[i].x] = 0;
-                                    oldX = x*64+32;
-                                    oldY = y*64+32;
+                                    oldX = Math.ceil(x*64)+32;
+                                    oldY = Math.ceil(y*64)+32;
                                 }
                             }
                         }
 
-                        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                        drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                     } else {
                         oldX = null;
                         oldY = null;
@@ -699,7 +751,11 @@ function moveCoords(event) {
                         fileh.value = selectRange[1] - selectRange[3] + 1;
                     }
 
-                    drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                    drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                 }
             }
         } else {
@@ -745,8 +801,16 @@ function upCoords(event) {
 }
 
 function scrollCoords(event) {
-    document.getElementById("scroll-container").scrollLeft += event.deltaX;
-    document.getElementById("scroll-container").scrollTop += event.deltaY;
+    if (event.srcElement == canvas) {
+        document.getElementById("scroll-container").scrollLeft -= event.deltaX;
+        document.getElementById("scroll-container").scrollTop -= event.deltaY;
+    }
+
+    drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
 }
 
 function resetTiles() {
@@ -772,7 +836,11 @@ function resetTiles() {
         tileOpacity.value = 100;
         tileShape.value = "square";
 
-        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+        drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
     }
 }
 
@@ -811,7 +879,11 @@ function importFile(event) {
         mapData = JSON.parse(reader.result.split('~')[1]);
         saveTilemap();
 
-        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+        drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
     },false);
 
     if (file) {
@@ -870,7 +942,11 @@ function exportTilemap(type,x,y,w,h) {
         delete dl;
         c.height = window.innerHeight;
         c.width = window.innerWidth;
-        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+        drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
     }
 
     if (type == "cstiles") {
@@ -881,7 +957,11 @@ function exportTilemap(type,x,y,w,h) {
         delete dl;
         c.height = window.innerHeight;
         c.width = window.innerWidth;
-        drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+        drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
     }
 }
 
@@ -897,14 +977,22 @@ c.addEventListener('contextmenu', function(event) {
 
                 if (mapData[y][x] != 0) {
                     mapData[y][x] = 0;
-                    drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                    drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                 }
             } else if (tool == "eraser") {
                 c.style.cursor = "url(img/cursors/PaintDown-32.png), auto";
 
                 if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                    drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+                    drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    );
                 }
             } else if (tool == "select") {
                 c.style.cursor = "url(img/cursors/Select-32.png), auto";
@@ -918,13 +1006,137 @@ c.addEventListener('wheel', scrollCoords, {passive: true});
 c.addEventListener('pointermove', moveCoords);
 c.addEventListener('pointerup', upCoords);
 
-drawLayer(0,0,Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);
+/*
+ * Gamepad API Test
+ * Written in 2013 by Ted Mielczarek <ted@mielczarek.org>
+ *
+ * To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
+ *
+ * You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+ */
+var haveEvents = 'GamepadEvent' in window;
+var haveWebkitEvents = 'WebKitGamepadEvent' in window;
+var controllers = {};
+var rAF = window.mozRequestAnimationFrame ||
+  window.webkitRequestAnimationFrame ||
+  window.requestAnimationFrame;
+
+function connecthandler(e) {
+  addgamepad(e.gamepad);
+}
+function addgamepad(gamepad) {
+  controllers[gamepad.index] = gamepad; var d = document.createElement("div");
+  d.setAttribute("id", "controller" + gamepad.index);
+  var t = document.createElement("h1");
+  t.appendChild(document.createTextNode("gamepad: " + gamepad.id));
+  d.appendChild(t);
+  var b = document.createElement("div");
+  b.className = "buttons";
+  for (var i=0; i<gamepad.buttons.length; i++) {
+    var e = document.createElement("span");
+    e.className = "button";
+    //e.id = "b" + i;
+    e.innerHTML = i;
+    b.appendChild(e);
+  }
+  d.appendChild(b);
+  var a = document.createElement("div");
+  a.className = "axes";
+  for (i=0; i<gamepad.axes.length; i++) {
+    e = document.createElement("meter");
+    e.className = "axis";
+    //e.id = "a" + i;
+    e.setAttribute("min", "-1");
+    e.setAttribute("max", "1");
+    e.setAttribute("value", "0");
+    e.innerHTML = i;
+    a.appendChild(e);
+  }
+  d.appendChild(a);
+  document.getElementById("start").style.display = "none";
+  document.body.appendChild(d);
+  rAF(updateStatus);
+}
+
+function disconnecthandler(e) {
+  removegamepad(e.gamepad);
+}
+
+function removegamepad(gamepad) {
+  var d = document.getElementById("controller" + gamepad.index);
+  document.body.removeChild(d);
+  delete controllers[gamepad.index];
+}
+
+function updateStatus() {
+  scangamepads();
+  for (j in controllers) {
+    var controller = controllers[j];
+    var d = document.getElementById("controller" + j);
+    var buttons = d.getElementsByClassName("button");
+    for (var i=0; i<controller.buttons.length; i++) {
+      var b = buttons[i];
+      var val = controller.buttons[i];
+      var pressed = val == 1.0;
+      var touched = false;
+      if (typeof(val) == "object") {
+        pressed = val.pressed;
+        if ('touched' in val) {
+          touched = val.touched;
+        }
+        val = val.value;
+      }
+      var pct = Math.round(val * 100) + "%";
+      b.style.backgroundSize = pct + " " + pct;
+      b.className = "button";
+      if (pressed) {
+        b.className += " pressed";
+      }
+      if (touched) {
+        b.className += " touched";
+      }
+    }
+
+    var axes = d.getElementsByClassName("axis");
+    for (var i=0; i<controller.axes.length; i++) {
+      var a = axes[i];
+      a.innerHTML = i + ": " + controller.axes[i].toFixed(4);
+      a.setAttribute("value", controller.axes[i]);
+    }
+  }
+  rAF(updateStatus);
+}
+
+function scangamepads() {
+  var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
+  for (var i = 0; i < gamepads.length; i++) {
+    if (gamepads[i] && (gamepads[i].index in controllers)) {
+      controllers[gamepads[i].index] = gamepads[i];
+    }
+  }
+}
+
+if (haveEvents) {
+  window.addEventListener("gamepadconnected", connecthandler);
+  window.addEventListener("gamepaddisconnected", disconnecthandler);
+} else if (haveWebkitEvents) {
+  window.addEventListener("webkitgamepadconnected", connecthandler);
+  window.addEventListener("webkitgamepaddisconnected", disconnecthandler);
+} else {
+  setInterval(scangamepads, 500);
+}
+
+drawLayer(
+        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
+        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
+        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+);
 
 var date = new Date()
 document.getElementById("nav-info").innerText = date.toLocaleString('default', { date: '' });
 
 function getTime() {
-    var date = new Date()
+    date = new Date();
     document.getElementById("nav-info").innerText = date.toLocaleString('default', { date: '' });
 }
 
