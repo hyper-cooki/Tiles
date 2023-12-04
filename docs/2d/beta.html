@@ -40,7 +40,7 @@
         <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
         <link rel="stylesheet" href="beta.css">
     </head>
-    <body onmouseup="upCoords(event);" onresize="c.height = window.innerHeight; c.width = window.innerWidth; drawLayer(Math.ceil(canvas.width/64)*(document.getElementById('scroll-container').scrollLeft/document.getElementById('scroll-container').clientWidth),Math.ceil(canvas.height/64)*(document.getElementById('scroll-container').scrollTop/document.getElementById('scroll-container').clientHeight),Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true);" oncontextmenu="return false" onkeypress="keypress(event)" onkeydown="keydown(event)">
+    <body onmouseup="upCoords(event);" onresize="c.height = window.innerHeight; c.width = window.innerWidth; drawLayer(Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById('tileScale').value),true,true);" oncontextmenu="return false" onkeypress="keypress(event)" onkeydown="keydown(event)">
         <dialog id="dialog">
             
         </dialog>
@@ -69,20 +69,27 @@
         <div class="leftSide">
             <section class="toolsLayout">
                 <h1>Tools</h1>
-                <div id="select tool" class="tool button" onclick="setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select'); sessionStorage.setItem('tool', 'select');" onkeypress="if(event.key=='Enter'){setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select'); sessionStorage.setItem('tool', 'select');}" tabindex=0><img src="img/cursors/Select-64.png" width="32px"><br><b>S</b>elect</div>
-                <div id="pen tool" class="tool button" onclick="setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen'); sessionStorage.setItem('tool', 'pen');" onkeypress="if(event.key=='Enter'){setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen'); sessionStorage.setItem('tool', 'pen');}" tabindex=0><img src="img/cursors/Paint-64.png" width="32px"><br><b>P</b>en</div>
-                <div id="eraser tool" class="tool button" onclick="setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser'); sessionStorage.setItem('tool', 'eraser');" onkeypress="if(event.key=='Enter'){setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser'); sessionStorage.setItem('tool', 'eraser');}" tabindex=0><img src="img/cursors/Eraser-64.png" width="32px"><br><b>E</b>raser</div>
-                <div id="fill tool" class="tool button" onclick="setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill'); sessionStorage.setItem('tool', 'fill');" onkeypress="if(event.key=='Enter'){setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill'); sessionStorage.setItem('tool', 'fill');}" tabindex=0><img src="img/cursors/Fill-64.png" width="32px"><br><b>F</b>ill</div>
-                <div id="dropper tool" class="tool button" onclick="setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper'); sessionStorage.setItem('tool', 'dropper');" onkeypress="if(event.key=='Enter'){setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper'); sessionStorage.setItem('tool', 'dropper');}" tabindex=0><img src="img/cursors/Eyedropper-64.png" width="32px"><br><b>D</b>ropper</div>      
-                <div class="tool button" onclick="resetTiles()" onkeypress="if(event.key='Enter'){resetTiles()}" tabindex=0><img src="img/cursors/Reset-64.png" width="32px"><br><b>R</b>eset</div>
+                <div id="select tool" class="tool button" onclick="setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select'); sessionStorage.setItem('tool', 'select');" onkeypress="if(event.key=='Enter'){setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select'); sessionStorage.setItem('tool', 'select');}" tabindex=0><img src="img/cursors/Select-64.png" width="32px"><br>Select</div>
+                <div id="pen tool" class="tool button" onclick="setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen'); sessionStorage.setItem('tool', 'pen');" onkeypress="if(event.key=='Enter'){setTool('pen'); tool = 'pen'; localStorage.setItem('tool', 'pen'); sessionStorage.setItem('tool', 'pen');}" tabindex=0><img src="img/cursors/Paint-64.png" width="32px"><br>Pen</div>
+                <div id="eraser tool" class="tool button" onclick="setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser'); sessionStorage.setItem('tool', 'eraser');" onkeypress="if(event.key=='Enter'){setTool('eraser'); tool = 'eraser'; localStorage.setItem('tool', 'eraser'); sessionStorage.setItem('tool', 'eraser');}" tabindex=0><img src="img/cursors/Eraser-64.png" width="32px"><br>Eraser</div>
+                <div id="fill tool" class="tool button" onclick="setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill'); sessionStorage.setItem('tool', 'fill');" onkeypress="if(event.key=='Enter'){setTool('fill'); tool = 'fill'; localStorage.setItem('tool', 'fill'); sessionStorage.setItem('tool', 'fill');}" tabindex=0><img src="img/cursors/FillIcon-64.png" width="32px"><br>Fill</div>
+                <div id="dropper tool" class="tool button" onclick="setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper'); sessionStorage.setItem('tool', 'dropper');" onkeypress="if(event.key=='Enter'){setTool('dropper'); tool = 'dropper'; localStorage.setItem('tool', 'dropper'); sessionStorage.setItem('tool', 'dropper');}" tabindex=0><img src="img/cursors/Eyedropper-64.png" width="32px"><br>Dropper</div>      
+                <div id="reset" class="tool button" onclick="resetTiles()" onkeypress="if(event.key='Enter'){resetTiles()}" tabindex=0><img src="img/cursors/Reset-64.png" width="32px"><br><b>R</b>eset</div>
             </section>
         </div>
-        <div class="body" id="scroll-container" onscroll="scrollCoords(event)">
-            <div id="scroll">
-
+        <div class="body" style="z-index: -1;" tabindex="0">
+            <div id="scrollx-container" class="scroll-container" onscroll="scrollCoords(event)" tabindex="0">
+                <div id="scrollx">
+                </div>
+            </div>
+            <div id="scrolly-container" class="scroll-container" onscroll="scrollCoords(event)" tabindex="0">
+                <div id="scrolly">
+                </div>
             </div>
         </div>
         <div class="rightSide">
+            <label style="pointer-events: all; background-color: #33333390; filter: drop-shadow(0 0 0.1rem black); position: absolute; top:58.5vh; right: 27rem; width: max-content; padding-left: 0.5rem; border-radius: 1rem;">Grid: <input style="width: max-content" type="checkbox"></label>
+            <label style="pointer-events: all; background-color: #33333390; filter: drop-shadow(0 0 0.1rem black); position: absolute; top:58.5vh; right: 17.9rem; width: max-content; padding-left: 0.5rem; border-radius: 1rem;">Scale (px): <input style="width: 3rem" type="number" id="tileScale" value="64" onblur="if(value<1) {value=1} else if(value=='') {value=1}; if(window.innerWidth>window.innerHeight){if(value>window.innerWidth){value=window.innerWidth}}else{if(value>window.innerHeight){value=window.innerHeight}}" oninput="if(value<1) {value=1} else if(value=='') value=1; drawLayer(Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),this.value,true,true);"></label>
             <section class="headerLayout">
                 <h1 class="button windowLabel">Options</h1>
                 <h1 class="button disabled windowLabel" title="Coming Soon..." onclick="comingSoon(event)">Layers</h1>
@@ -123,8 +130,9 @@
             </select><br>
             <label>X: <input type="number" id="filex" value="0" onblur="if(value<0) {value=0} else if(value=='') value=0;"></label><br>
             <label>Y: <input type="number" id="filey" value="0" onblur="if(value<0) {value=0} else if(value=='') value=0;"></label><br>
-            <label>Width: <input type="number" id="filew" value="10" onblur="if(value<0) {value=0} else if(value=='') value=0;"></label><br>
-            <label>Height: <input type="number" id="fileh" value="10" onblur="if(value<0) {value=0} else if(value=='') value=0;"></label><br>
+            <label>Width: <input type="number" id="filew" value="10" onblur="if(value<1) {value=1} else if(value=='') value=1;"></label><br>
+            <label>Height: <input type="number" id="fileh" value="10" onblur="if(value<1) {value=1} else if(value=='') value=1;"></label><br>
+            <label>Tile Scale (px): <input type="number" id="files" value="64" onblur="if(value<1) {value=1} else if(value=='') value=1;"></label><br>
             <button id="downloadButton" class="button" tabindex="0" onclick="exportTilemap(document.getElementById('filext').value,document.getElementById('filex').value,document.getElementById('filey').value,document.getElementById('filew').value,document.getElementById('fileh').value)">Download</button>
         </div>
         <div class="footer">

@@ -14,12 +14,13 @@ var ctx = c.getContext("2d");
 // Set size of canvas
 c.height = window.innerHeight;
 c.width = window.innerWidth;
+c.style.opacity = "100%";
 
 // Give canvas "canvas" id
 c.setAttribute("id", "canvas");
 
-// Add canvas to html <body>
-document.body.appendChild(c);
+// Add canvas to layout body
+document.getElementsByClassName("body")[0].appendChild(c);
 
 // Get stored TILE_TYPES or create new TILE_TYPES variable
 if (sessionStorage.tiletypes) {
@@ -43,9 +44,9 @@ if (sessionStorage.tilemap) {
     } else {
         // Create tilemap with max width and height possible in window size
         mapData = [];
-        for (let i = 0; i < Math.ceil(c.height/64); i++) {
+        for (let i = 0; i < Math.ceil(c.height/tileScale); i++) {
             mapData[i] = [];
-            for (let i2 = 0; i2 < Math.ceil(c.width/64); i2++) {
+            for (let i2 = 0; i2 < Math.ceil(c.width/tileScale); i2++) {
                 mapData[i][i2] = 0;
             }
         }
@@ -113,15 +114,62 @@ const filew = document.getElementById('filew');
 const fileh = document.getElementById('fileh');
 const downloadButton = document.getElementById("downloadButton");
 
+const tileScale = JSON.parse(document.getElementById("tileScale").value);
+
 // Dialog box for pop-up info
 const dialogBox = document.getElementById("dialog");
 
 // Use the same dialog box but change the content inside
 function showDialogBox(content) {
     if (content == "about") {
-        dialogBox.innerHTML='<form><h2>Tiles 2D</h2><br><h1>By <a href="https://cooki-studios.github.io" style="font-weight: bold;">Cooki Studios</a></h1><br><button formmethod="dialog">Close</button></form>'
+        dialogBox.innerHTML='<form><h2>Tiles 2D</h2><br><h1>By <a href="https://cooki-studios.github.io" style="font-weight: bold;">Cooki Studios</a></h1><br><button autofocus formmethod="dialog" onkeypress="if(event.key=\""Enter\""){this.click()}>Close</button></form>'
+        dialogBox.showModal();
+    } else if (content == "reset") {
+        dialogBox.innerHTML='<form><h2>Hold up!<br>Are you sure you want to reset?</h2><br><h1>All progress will be lost unless saved as a .cstiles file.</h1><br><button style="background-color: #ffa500; border-color: whitesmoke;" autofocus formmethod="dialog" value="cancel" onkeypress="if(event.key=\'Enter\'){this.click()}">Cancel</button><button style="margin-left: 2rem;" formmethod="dialog" value="confirm" onkeypress="if(event.key=\'Enter\'){this.click()}">Yes</button></form>'
         dialogBox.showModal();
     }
+
+    dialogBox.addEventListener("close", () => {
+        // If user confirms to everything being reset
+        if (dialogBox.returnValue == "confirm") {
+            // Reset TILE_TYPES to just id:1 tile
+            TILE_TYPES = [
+                { id: 1, colour: '#ffffff' },
+            ]
+
+            // Set mapData to empty array
+            mapData = [];
+
+            // Create tilemap for the size of the canvas
+            for (let i = 0; i < Math.ceil(c.height/tileScale); i++) {
+                mapData[i] = [];
+                for (let i2 = 0; i2 < Math.ceil(c.width/tileScale); i2++) {
+                    mapData[i][i2] = 0;
+                }
+            }
+
+            // Save tilemap to storage
+            saveTilemap();
+
+            // Reset tile options
+            tileColour.value = TILE_TYPES[TILE_TYPES.length-1].colour;
+            document.getElementById('outlineCheck').checked = false;
+            tileOutline.classList.add('disabled');
+            tileOutline.setAttribute('disabled', '');
+            tileOpacity.value = 100;
+            tileShape.value = "square";
+
+            // Update canvas
+            drawLayer(
+                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+            );
+
+            document.getElementById("reset").style.backgroundColor = "";
+            document.getElementById("reset").style.fontWeight = "";
+        }
+    });
 }
 
 // Initialise variable for storing selected x and y
@@ -131,7 +179,8 @@ const selectRange = [];
 function setTool(tool) {
     // Set all buttons background colour to none
     document.querySelectorAll(".toolsLayout .button").forEach(button => {
-        button.style.backgroundColor = '';
+        button.style.backgroundColor = "";
+        button.style.fontWeight = "";
     });
 
     // Set tool input to tool element
@@ -140,8 +189,10 @@ function setTool(tool) {
     // Set selected tool to have orange background
     if (tool.srcElement == undefined) {
         tool.style.backgroundColor = "#ffa500";
+        tool.style.fontWeight = "bold";
     } else {
         tool.srcElement.style.backgroundColor = "#ffa500";
+        tool.style.fontWeight = "bold";
     }
     
 }
@@ -179,7 +230,7 @@ function createTileType() {
 }
 
 // Function for drawing the layer with x and y pos, width, height whether to show grid and whether to show selection box
-function drawLayer(lx,ly,lw,lh,grid,showSelect) {
+function drawLayer(lx,ly,lw,lh,scale,grid,showSelect) {
     // Wipe canvas clean
     ctx.clearRect(0,0,c.width,c.height);
     
@@ -187,15 +238,17 @@ function drawLayer(lx,ly,lw,lh,grid,showSelect) {
         // Draw tiles for the set size of the layer
         for (let y = 0; y < lh; y++) {
             for (let x = 0; x < lw; x++) {
-                drawTile(x,y,lx,ly,showSelect);
+                drawTile(x,y,lx,ly,scale,showSelect);
             }
         }
 
         // Draw grid tiles for the set size of the layer
         if (grid) {
-            for (let y = 0; y < lh; y++) {
-                for (let x = 0; x < lw; x++) {
-                    drawGridTile(x+lx,y+ly);
+            if (scale > 5) {
+                for (let y = 0; y < lh; y++) {
+                    for (let x = 0; x < lw; x++) {
+                        drawGridTile(x+lx,y+ly,scale);
+                    }
                 }
             }
         }
@@ -203,15 +256,17 @@ function drawLayer(lx,ly,lw,lh,grid,showSelect) {
         // Draw tiles for the max size of mapData (oh no i gotta fix this one to not draw off-screen)
         for (let y = 0; y < mapData.length; y++) {
             for (let x = 0; x < mapData[0].length; x++) {
-                drawTile(x,y,lx,ly,showSelect);
+                drawTile(x,y,lx,ly,scale,showSelect);
             }
         }
 
         // Draw grid tiles for the max size of mapData (oh no i gotta fix this one to not draw off-screen)
         if (grid) {
-            for (let y = 0; y < mapData.length; y++) {
-                for (let x = 0; x < mapData[0].length; x++) {
-                    drawGridTile(x+lx,y+ly);
+            if (scale > 5) {
+                for (let y = 0; y < mapData.length; y++) {
+                    for (let x = 0; x < mapData[0].length; x++) {
+                        drawGridTile(x+lx,y+ly,scale);
+                    }
                 }
             }
         }
@@ -219,7 +274,7 @@ function drawLayer(lx,ly,lw,lh,grid,showSelect) {
 }
 
 // Function for drawing a single tile at x and y, offset x and y and whether to show selection box
-function drawTile(x,y,lx,ly,showSelect) {
+function drawTile(x,y,lx,ly,scale,showSelect) {
     // If tile is not blank tile (should change this later for opacity:0)
     if (mapData[y][x] != 0) {
         // Loop over all of TILE_TYPES
@@ -240,37 +295,37 @@ function drawTile(x,y,lx,ly,showSelect) {
 
                 // If there is no set shape then draw a square with fillRect
                 if (!TILE_TYPES[i].shape) {
-                    ctx.fillRect(Math.ceil(x*64),Math.ceil(y*64),64,64);
+                    ctx.fillRect(Math.ceil(x*scale),Math.ceil(y*scale),scale,scale);
                 } else if (TILE_TYPES[i].shape == "triangle") {
                     // Draw a custom shape starting at the top right, then bottom right, then bottom left, then join up with the start
                     ctx.beginPath();
-                    ctx.moveTo((Math.ceil(x*64))+64,Math.ceil(y*64));
-                    ctx.lineTo((Math.ceil(x*64))+64,(Math.ceil(y*64))+64);
-                    ctx.lineTo(Math.ceil(x*64), (Math.ceil(y*64))+64);
+                    ctx.moveTo((Math.ceil(x*scale))+scale,Math.ceil(y*scale));
+                    ctx.lineTo((Math.ceil(x*scale))+scale,(Math.ceil(y*scale))+scale);
+                    ctx.lineTo(Math.ceil(x*scale), (Math.ceil(y*scale))+scale);
                     ctx.closePath();
                     ctx.fill();
                 } else if (TILE_TYPES[i].shape == "thin-triangle") {
                     // Draw a custom shape same as triangle but bottom left is only half way
                     ctx.beginPath();
-                    ctx.moveTo((Math.ceil(x*64))+64, (Math.ceil(y*64)));
-                    ctx.lineTo((Math.ceil(x*64))+64, (Math.ceil(y*64))+64);
-                    ctx.lineTo((Math.ceil(x*64))+32, (Math.ceil(y*64))+64);
+                    ctx.moveTo((Math.ceil(x*scale))+scale, (Math.ceil(y*scale)));
+                    ctx.lineTo((Math.ceil(x*scale))+scale, (Math.ceil(y*scale))+scale);
+                    ctx.lineTo((Math.ceil(x*scale))+32, (Math.ceil(y*scale))+scale);
                     ctx.closePath();
                     ctx.fill();
                 } else if (TILE_TYPES[i].shape == "curve") {
                     // Draw a custom shape that is a quarter circle then add the two other sides
                     ctx.beginPath();
-                    ctx.arc((Math.ceil(x*64))+64, (Math.ceil(y*64))+64, 64, 1 * Math.PI, 1.5 * Math.PI);
-                    ctx.lineTo((Math.ceil(x*64))+64, (Math.ceil(y*64))+64);
-                    ctx.lineTo((Math.ceil(x*64)), (Math.ceil(y*64))+64);
+                    ctx.arc((Math.ceil(x*scale))+scale, (Math.ceil(y*scale))+scale, scale, 1 * Math.PI, 1.5 * Math.PI);
+                    ctx.lineTo((Math.ceil(x*scale))+scale, (Math.ceil(y*scale))+scale);
+                    ctx.lineTo((Math.ceil(x*scale)), (Math.ceil(y*scale))+scale);
                     ctx.closePath();
                     ctx.fill();
                 } else if (TILE_TYPES[i].shape == "reverse-curve") {
                     // Draw a custom shape same as curve but the quarter circle is the other direction
                     ctx.beginPath();
-                    ctx.arc((Math.ceil(x*64)), (Math.ceil(y*64)), 64, 0 * Math.PI, 0.5 * Math.PI);
-                    ctx.lineTo((Math.ceil(x*64))+64, (Math.ceil(y*64))+64);
-                    ctx.lineTo((Math.ceil(x*64))+64, (Math.ceil(y*64))+64);
+                    ctx.arc((Math.ceil(x*scale)), (Math.ceil(y*scale)), scale, 0 * Math.PI, 0.5 * Math.PI);
+                    ctx.lineTo((Math.ceil(x*scale))+scale, (Math.ceil(y*scale))+scale);
+                    ctx.lineTo((Math.ceil(x*scale))+scale, (Math.ceil(y*scale))+scale);
                     ctx.closePath();
                     ctx.fill();
                 }
@@ -285,7 +340,7 @@ function drawTile(x,y,lx,ly,showSelect) {
                         // Set transparency to 0.25, set colour to light blue and draw a rectangle at the tile's position
                         ctx.globalAlpha = 0.25;
                         ctx.fillStyle = "#4287f5";
-                        ctx.fillRect(Math.ceil(x*64),Math.ceil(y*64),64,64);
+                        ctx.fillRect(Math.ceil(x*scale),Math.ceil(y*scale),scale,scale);
                 
                         // Set opacity back to 1
                         ctx.globalAlpha = 1;
@@ -295,7 +350,7 @@ function drawTile(x,y,lx,ly,showSelect) {
                 // If there is an outline then draw the outline with the colour from TILE_TYPES (currently only square)
                 if (TILE_TYPES[i].outline) {
                     ctx.strokeStyle = TILE_TYPES[i].outline;
-                    ctx.strokeRect(Math.ceil(x*64),Math.ceil(y*64),64,64);
+                    ctx.strokeRect(Math.ceil(x*scale),Math.ceil(y*scale),scale,scale);
                 }
             }
         }
@@ -303,15 +358,15 @@ function drawTile(x,y,lx,ly,showSelect) {
 }
 
 // Same as drawTile function but for drawing a grid tile
-function drawGridTile(x,y) {
-    // Multiply the x and y by 64 because each tile is 64x64
-    x *= 64;
-    y *= 64;
+function drawGridTile(x,y,scale) {
+    // Multiply the x and y by tileScale because each tile is tileScalextileScale
+    x *= scale;
+    y *= scale;
 
     // Draw white outline with 0.25 transparency and a width of 2 pixels
     ctx.strokeStyle = "rgba(255,255,255,0.25)";
     ctx.lineWidth = "2";
-    ctx.strokeRect(x,y,64,64);
+    ctx.strokeRect(x,y,scale,scale);
 }
 
 // Init variables for when the mouse is down
@@ -342,15 +397,15 @@ if (localStorage.getItem("tool") == undefined) {
 
 // Function for gettng mouse position
 function getMousePosition(event) {
-    // gGt position of canvas
+    // Get position of canvas
     var bounds = c.getBoundingClientRect();
 
     var scaleX = c.width / bounds.width;
     var scaleY = c.height / bounds.height;
 
-    // Get mouse position divided by 64 for the tile size and use Math.floor to round the numbers
-    var x = Math.floor((event.clientX - bounds.left) * scaleX / 64);
-    var y = Math.floor((event.clientY - bounds.top) * scaleY / 64);
+    // Get mouse position divided by tileScale for the tile size and use Math.floor to round the numbers
+    var x = Math.floor((event.clientX - bounds.left) * scaleX / JSON.parse(tileScale));
+    var y = Math.floor((event.clientY - bounds.top) * scaleY / JSON.parse(tileScale));
 
     // Fix for when x is read as -1 instaed of 0
     if (x == -1) {
@@ -372,7 +427,7 @@ var oldY;
 
 // Function for drawing tiles when the left mouse button is pressed down
 function downCoords(event) {
-    // Middle click -v
+    // Middle click
     console.log(event.which == 2 || event.button == 4);
 
     mouseDown = true;
@@ -390,8 +445,8 @@ function downCoords(event) {
     var { x, y } = getMousePosition(event);
 
     // Set oldX and oldY to current position on tilemap
-    oldX = Math.ceil(x*64)+32;
-    oldY = Math.ceil(y*64)+32;
+    oldX = Math.ceil(x*tileScale)+32;
+    oldY = Math.ceil(y*tileScale)+32;
 
     // Set cursor to select if there are no tiles there (will likely be removed after infinite update)
     if (mapData[y] == undefined && mapData[y][x] == undefined) {
@@ -411,15 +466,14 @@ function downCoords(event) {
 
                     // Update canvas
                     drawLayer(
-                                Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                                Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                                Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
-                            );
+                        Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                        Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                        Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(tileScale),true,true
+                    );
                 }
             } else if (tool == "eraser") {
                 // Set cursor to eraser pressed down
-                // Set cursor to eraser pressed down
-                        c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
+                c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
 
                 if (mapData[y][x] != 0) {
                     // Set tile at cursor position to a blank tile
@@ -427,10 +481,10 @@ function downCoords(event) {
 
                     // Update canvas
                     drawLayer(
-                                Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                                Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                                Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
-                            );
+                        Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                        Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                        Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(tileScale),true,true
+                    );
                 }
             } else if (tool == "select") {
                 // Set the cursor select
@@ -452,9 +506,9 @@ function downCoords(event) {
 
                 // Update canvas
                 drawLayer(
-                    Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                    Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                    Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                    Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                    Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                    Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                 );
             }
         }
@@ -469,8 +523,8 @@ function getPixelsOnLine(startX, startY, endX, endY){
 
     // Set x and y value to tile position value
     const getPixel = (x,y) => {
-        x = Math.floor(x / 64);
-        y = Math.floor(y / 64);
+        x = Math.floor(x / JSON.parse(tileScale));
+        y = Math.floor(y / JSON.parse(tileScale));
         return { x, y };
     }
 
@@ -577,29 +631,29 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != 0) {
                                     mapData[y][x] = 0;
-                                    oldX = Math.ceil(x*64)+32;
-                                    oldY = Math.ceil(y*64)+32;
+                                    oldX = Math.ceil(x*tileScale)+32;
+                                    oldY = Math.ceil(y*tileScale)+32;
                                 }
                             } else {
                                 // Use the oldX and oldY to get the pixels on the line and fill in the gaps
-                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
                                 deletePixels(pixels);
 
                                 // Set tiles in pixels variable to blank tiles
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != 0) {
                                         mapData[pixels[i].y][pixels[i].x] = 0;
-                                        oldX = Math.ceil(x*64)+32;
-                                        oldY = Math.ceil(y*64)+32;
+                                        oldX = Math.ceil(x*tileScale)+32;
+                                        oldY = Math.ceil(y*tileScale)+32;
                                     }
                                 }
                             }
     
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                                Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                                Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                             );
                         } else {
                             // Set oldX and oldY to null if mapData[y][x] is already 0
@@ -621,29 +675,29 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                    oldX = Math.ceil(x*64)+32;
-                                    oldY = Math.ceil(y*64)+32;
+                                    oldX = Math.ceil(x*tileScale)+32;
+                                    oldY = Math.ceil(y*tileScale)+32;
                                 }
                             } else {
                                 // Use the oldX and oldY to get the pixels on the line and fill in the gaps
-                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
                                 deletePixels(pixels);
 
                                 // Set tiles in pixels variable to latest tile type
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                         mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                        oldX = Math.ceil(x*64)+32;
-                                        oldY = Math.ceil(y*64)+32;
+                                        oldX = Math.ceil(x*tileScale)+32;
+                                        oldY = Math.ceil(y*tileScale)+32;
                                     }
                                 }
                             }
     
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                                Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                                Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                             );
                         } else {
                             // Set oldX and oldY to null if mapData[y][x] is already the latest tile type
@@ -672,29 +726,29 @@ function moveCoords(event) {
                         if (oldX == null && oldY == null) {
                             if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                 mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                oldX = Math.ceil(x*64)+32;
-                                oldY = Math.ceil(y*64)+32;
+                                oldX = Math.ceil(x*tileScale)+32;
+                                oldY = Math.ceil(y*tileScale)+32;
                             }
                         } else {
                             // Use the oldX and oldY variables to get the pixels on the line and fill in the gaps
-                            var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
+                            var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
                             deletePixels(pixels);
 
                             // Set tiles to latest tile type
                             for (let i = 0; i < pixels.length; i++) {
                                 if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                     mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                    oldX = Math.ceil(x*64)+32;
-                                    oldY = Math.ceil(y*64)+32;
+                                    oldX = Math.ceil(x*tileScale)+32;
+                                    oldY = Math.ceil(y*tileScale)+32;
                                 }
                             }
                             }
 
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                                Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                                Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                             );
                         } else {
                             // Set oldX and oldY variables to null if mapData[y][x] is already the latest tile type
@@ -716,29 +770,29 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != 0) {
                                     mapData[y][x] = 0;
-                                    oldX = Math.ceil(x*64)+32;
-                                    oldY = Math.ceil(y*64)+32;
+                                    oldX = Math.ceil(x*tileScale)+32;
+                                    oldY = Math.ceil(y*tileScale)+32;
                                 }
                             } else {
                                 // Use the oldX and oldY to get the pixels on the line and fill in the gaps
-                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
                                 deletePixels(pixels);
 
                                 // Set tiles to blank
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != 0) {
                                         mapData[pixels[i].y][pixels[i].x] = 0;
-                                        oldX = Math.ceil(x*64)+32;
-                                        oldY = Math.ceil(y*64)+32;
+                                        oldX = Math.ceil(x*tileScale)+32;
+                                        oldY = Math.ceil(y*tileScale)+32;
                                     }
                                 }
                             }
 
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                                Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                                Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                             );
                         } else {
                             // Set oldX and oldY to null if mapData[y][x] is already blank
@@ -774,9 +828,9 @@ function moveCoords(event) {
 
                         // Update canvas
                         drawLayer(
-                            Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                            Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                            Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                            Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                            Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                         );
                     }
                 }
@@ -824,29 +878,29 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != 0) {
                                     mapData[y][x] = 0;
-                                    oldX = Math.ceil(x*64)+32;
-                                    oldY = Math.ceil(y*64)+32;
+                                    oldX = Math.ceil(x*tileScale)+32;
+                                    oldY = Math.ceil(y*tileScale)+32;
                                 }
                             } else {
                                 // Use the oldX and oldY to get the pixels on the line and fill in the gaps
-                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
                                 deletePixels(pixels);
 
                                 // Set tiles in pixels variable to blank tiles
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != 0) {
                                         mapData[pixels[i].y][pixels[i].x] = 0;
-                                        oldX = Math.ceil(x*64)+32;
-                                        oldY = Math.ceil(y*64)+32;
+                                        oldX = Math.ceil(x*tileScale)+32;
+                                        oldY = Math.ceil(y*tileScale)+32;
                                     }
                                 }
                             }
     
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                                Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                                Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                             );
                         } else {
                             // Set oldX and oldY to null if mapData[y][x] is already 0
@@ -868,29 +922,29 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                    oldX = Math.ceil(x*64)+32;
-                                    oldY = Math.ceil(y*64)+32;
+                                    oldX = Math.ceil(x*tileScale)+32;
+                                    oldY = Math.ceil(y*tileScale)+32;
                                 }
                             } else {
                                 // Use the oldX and oldY to get the pixels on the line and fill in the gaps
-                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
                                 deletePixels(pixels);
 
                                 // Set tiles in pixels variable to latest tile type
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                         mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                        oldX = Math.ceil(x*64)+32;
-                                        oldY = Math.ceil(y*64)+32;
+                                        oldX = Math.ceil(x*tileScale)+32;
+                                        oldY = Math.ceil(y*tileScale)+32;
                                     }
                                 }
                             }
     
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                                Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                                Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                             );
                         } else {
                             // Set oldX and oldY to null if mapData[y][x] is already the latest tile type
@@ -919,29 +973,29 @@ function moveCoords(event) {
                         if (oldX == null && oldY == null) {
                             if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                 mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                oldX = Math.ceil(x*64)+32;
-                                oldY = Math.ceil(y*64)+32;
+                                oldX = Math.ceil(x*tileScale)+32;
+                                oldY = Math.ceil(y*tileScale)+32;
                             }
                         } else {
                             // Use the oldX and oldY variables to get the pixels on the line and fill in the gaps
-                            var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
+                            var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
                             deletePixels(pixels);
 
                             // Set tiles to latest tile type
                             for (let i = 0; i < pixels.length; i++) {
                                 if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                     mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                    oldX = Math.ceil(x*64)+32;
-                                    oldY = Math.ceil(y*64)+32;
+                                    oldX = Math.ceil(x*tileScale)+32;
+                                    oldY = Math.ceil(y*tileScale)+32;
                                 }
                             }
                             }
 
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                                Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                                Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                             );
                         } else {
                             // Set oldX and oldY variables to null if mapData[y][x] is already the latest tile type
@@ -963,29 +1017,29 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != 0) {
                                     mapData[y][x] = 0;
-                                    oldX = Math.ceil(x*64)+32;
-                                    oldY = Math.ceil(y*64)+32;
+                                    oldX = Math.ceil(x*tileScale)+32;
+                                    oldY = Math.ceil(y*tileScale)+32;
                                 }
                             } else {
                                 // Use the oldX and oldY to get the pixels on the line and fill in the gaps
-                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*64)+32,Math.ceil(y*64)+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
                                 deletePixels(pixels);
 
                                 // Set tiles to blank
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != 0) {
                                         mapData[pixels[i].y][pixels[i].x] = 0;
-                                        oldX = Math.ceil(x*64)+32;
-                                        oldY = Math.ceil(y*64)+32;
+                                        oldX = Math.ceil(x*tileScale)+32;
+                                        oldY = Math.ceil(y*tileScale)+32;
                                     }
                                 }
                             }
 
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                                Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                                Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                             );
                         } else {
                             // Set oldX and oldY to null if mapData[y][x] is already blank
@@ -1021,9 +1075,9 @@ function moveCoords(event) {
 
                         // Update canvas
                         drawLayer(
-                            Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                            Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                            Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                            Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                            Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                         );
                     }
                 }
@@ -1093,27 +1147,27 @@ function keypress(event) {
         if(event.key == 'r'){
             // Reset the whole tilemap and tile types
             resetTiles();
-        } else if(event.key == 's'){
+        } else if(event.key == '1'){
             // Set tool to select and save to storage
             setTool('select');
             tool = 'select';
             localStorage.setItem('tool', 'select')
-        } else if(event.key == 'p'){
+        } else if(event.key == '2'){
             // Set tool to pen and save to storage
             setTool('pen');
             tool = 'pen';
             localStorage.setItem('tool', 'pen')
-        } else if(event.key == 'e'){
+        } else if(event.key == '3'){
             // Set tool to eraser and save to storage
             setTool('eraser');
             tool = 'eraser';
             localStorage.setItem('tool', 'eraser')
-        } else if(event.key == 'f'){
+        } else if(event.key == '4'){
             // Set tool to fill and save to storage
             setTool('fill');
             tool = 'fill';
             localStorage.setItem('tool', 'fill')
-        } else if(event.key == 'd'){
+        } else if(event.key == '5'){
             // Set tool to eyedropper and save to storage
             setTool('dropper');
             tool = 'dropper';
@@ -1137,18 +1191,118 @@ function keydown(event) {
             document.getElementById('filew').value,
             document.getElementById('fileh').value
         )
+    } else if (event.metaKey && event.key == '=' && event.shiftKey) {
+        // Stop default result of the command
+        event.preventDefault();
+
+        // Increase the view scale of the tiles
+        document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) + 10;
+
+        if(document.getElementById("tileScale").value < 1) {
+            document.getElementById("tileScale").value = 1
+        } else if(document.getElementById("tileScale").value == '') {
+            document.getElementById("tileScale").value = 1;
+        }
+
+        if(window.innerWidth > window.innerHeight){
+            if(document.getElementById("tileScale").value > window.innerWidth){
+                document.getElementById("tileScale").value = window.innerWidth;
+            }
+        } else {
+            if(document.getElementById("tileScale").value > window.innerHeight){
+                document.getElementById("tileScale").value = window.innerHeight;
+            }
+        }
+
+        drawLayer(
+            Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+            Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true
+        );
+    } else if (event.metaKey && event.key == '-' && event.shiftKey) {
+        // Stop default result of the command
+        event.preventDefault();
+
+        // Decrease the view scale of the tiles
+        document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) - 10;
+        
+        if(document.getElementById("tileScale").value < 1) {
+            document.getElementById("tileScale").value = 1
+        } else if(document.getElementById("tileScale").value == '') {
+            document.getElementById("tileScale").value = 1;
+        }
+
+        if(window.innerWidth > window.innerHeight){
+            if(document.getElementById("tileScale").value > window.innerWidth){
+                document.getElementById("tileScale").value = window.innerWidth;
+            }
+        } else {
+            if(document.getElementById("tileScale").value > window.innerHeight){
+                document.getElementById("tileScale").value = window.innerHeight;
+            }
+        }
+
+        drawLayer(
+            Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+            Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true
+        );
     } else if (event.metaKey && event.key == '=') {
         // Stop default result of the command
         event.preventDefault();
 
-        // Increase the view scale of the tiles (WIP)
-        console.log("zoom in");
+        // Increase the view scale of the tiles
+        document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) + 1;
+
+        if(document.getElementById("tileScale").value < 1) {
+            document.getElementById("tileScale").value = 1
+        } else if(document.getElementById("tileScale").value == '') {
+            document.getElementById("tileScale").value = 1;
+        }
+
+        if(window.innerWidth > window.innerHeight){
+            if(document.getElementById("tileScale").value > window.innerWidth){
+                document.getElementById("tileScale").value = window.innerWidth;
+            }
+        } else {
+            if(document.getElementById("tileScale").value > window.innerHeight){
+                document.getElementById("tileScale").value = window.innerHeight;
+            }
+        }
+
+        drawLayer(
+            Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+            Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true
+        );
     } else if (event.metaKey && event.key == '-') {
         // Stop default result of the command
         event.preventDefault();
 
-        // Decrease the view scale of the tiles (WIP)
-        console.log("zoom out");
+        // Decrease the view scale of the tiles
+        document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) - 1;
+        
+        if(document.getElementById("tileScale").value < 1) {
+            document.getElementById("tileScale").value = 1
+        } else if(document.getElementById("tileScale").value == '') {
+            document.getElementById("tileScale").value = 1;
+        }
+
+        if(window.innerWidth > window.innerHeight){
+            if(document.getElementById("tileScale").value > window.innerWidth){
+                document.getElementById("tileScale").value = window.innerWidth;
+            }
+        } else {
+            if(document.getElementById("tileScale").value > window.innerHeight){
+                document.getElementById("tileScale").value = window.innerHeight;
+            }
+        }
+
+        drawLayer(
+            Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+            Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true
+        );
     } else if (event.metaKey && event.key == 'z' && event.shiftKey) {
         // Stop default result of the command
         event.preventDefault();
@@ -1169,72 +1323,137 @@ function scrollCoords(event) {
     // If pinch to zoom on trackpad
     if(event.ctrlKey) {
         if (event.deltaY > 0) {
-            console.log("zoom out");
+            // Decrease the view scale of the tiles
+            document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) - 1;
+            
+            if(document.getElementById("tileScale").value < 1) {
+                document.getElementById("tileScale").value = 1
+            } else if(document.getElementById("tileScale").value == '') {
+                document.getElementById("tileScale").value = 1;
+            }
+
+            if(window.innerWidth > window.innerHeight){
+                if(document.getElementById("tileScale").value > window.innerWidth){
+                    document.getElementById("tileScale").value = window.innerWidth;
+                }
+            } else {
+                if(document.getElementById("tileScale").value > window.innerHeight){
+                    document.getElementById("tileScale").value = window.innerHeight;
+                }
+            }
+
+            drawLayer(
+                Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+                Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true,"zoom out"
+            );
         } else {
-            console.log("zoom in");
+            // Increase the view scale of the tiles
+            document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) + 1;
+            
+            if(document.getElementById("tileScale").value < 1) {
+                document.getElementById("tileScale").value = 1
+            } else if(document.getElementById("tileScale").value == '') {
+                document.getElementById("tileScale").value = 1;
+            }
+
+            if(window.innerWidth > window.innerHeight){
+                if(document.getElementById("tileScale").value > window.innerWidth){
+                    document.getElementById("tileScale").value = window.innerWidth;
+                }
+            } else {
+                if(document.getElementById("tileScale").value > window.innerHeight){
+                    document.getElementById("tileScale").value = window.innerHeight;
+                }
+            }
+
+            drawLayer(
+                Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+                Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true,"zoom in"
+            );
         }
     } else if (!event.ctrlKey && event.deltaY && !Number.isInteger(event.deltaY)) {
         // Detect if mouse wheel is used
         // Zoom in with mouse scroll if deltaY is greater than 0 otherwise zoom out
         if (event.deltaY > 0) {
-            console.log("zoom out");
+            // Decrease the view scale of the tiles
+            document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) - 1;
+            
+            if(document.getElementById("tileScale").value < 1) {
+                document.getElementById("tileScale").value = 1
+            } else if(document.getElementById("tileScale").value == '') {
+                document.getElementById("tileScale").value = 1;
+            }
+
+            if(window.innerWidth > window.innerHeight){
+                if(document.getElementById("tileScale").value > window.innerWidth){
+                    document.getElementById("tileScale").value = window.innerWidth;
+                }
+            } else {
+                if(document.getElementById("tileScale").value > window.innerHeight){
+                    document.getElementById("tileScale").value = window.innerHeight;
+                }
+            }
+
+            drawLayer(
+                Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+                Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true,
+            );
         } else {
-            console.log("zoom in");
+            // Increase the view scale of the tiles
+            document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) + 1;
+            
+            if(document.getElementById("tileScale").value < 1) {
+                document.getElementById("tileScale").value = 1
+            } else if(document.getElementById("tileScale").value == '') {
+                document.getElementById("tileScale").value = 1;
+            }
+
+            if(window.innerWidth > window.innerHeight){
+                if(document.getElementById("tileScale").value > window.innerWidth){
+                    document.getElementById("tileScale").value = window.innerWidth;
+                }
+            } else {
+                if(document.getElementById("tileScale").value > window.innerHeight){
+                    document.getElementById("tileScale").value = window.innerHeight;
+                }
+            }
+
+            drawLayer(
+                Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+                Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true,
+            );
         }
     } else {
         // If touchpad is used on canvas then scroll tilemap
         if (event.srcElement == canvas) {
-            document.getElementById("scroll-container").scrollLeft -= event.deltaX;
-            document.getElementById("scroll-container").scrollTop -= event.deltaY;
+            document.getElementById("scrollx-container").scrollLeft -= event.deltaX;
+            document.getElementById("scrolly-container").scrollTop -= event.deltaY;
         }
     }
 
     // Update canvas
     drawLayer(
-        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+        Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+        Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+        Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true
     );
 }
 
 // Function for resetting everything
 function resetTiles() {
-    // If user confirms to everything being reset
-    if (confirm("Hold up! Are you sure you want to reset?\nAll progress will be lost unless saved as a .cstiles file.") == true) {
-        // Reset TILE_TYPES to just id:1 tile
-        TILE_TYPES = [
-            { id: 1, colour: '#ffffff' },
-        ]
+    document.getElementById("reset").style.backgroundColor = "#ffa500";
+    document.getElementById("reset").style.fontWeight = "bold";
 
-        // Set mapData to empty array
-        mapData = [];
+    document.querySelectorAll(".toolsLayout .button").forEach(button => {
+        button.style.backgroundColor = "";
+        button.style.fontWeight = "";
+    });
 
-        // Create tilemap for the size of the canvas
-        for (let i = 0; i < Math.ceil(c.height/64); i++) {
-            mapData[i] = [];
-            for (let i2 = 0; i2 < Math.ceil(c.width/64); i2++) {
-                mapData[i][i2] = 0;
-            }
-        }
-
-        // Save tilemap to storage
-        saveTilemap();
-
-        // Reset tile options
-        tileColour.value = TILE_TYPES[TILE_TYPES.length-1].colour;
-        document.getElementById('outlineCheck').checked = false;
-        tileOutline.classList.add('disabled');
-        tileOutline.setAttribute('disabled', '');
-        tileOpacity.value = 100;
-        tileShape.value = "square";
-
-        // Update canvas
-        drawLayer(
-            Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-            Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-            Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
-        );
-    }
+    showDialogBox("reset");
 }
 
 // Function for deleting duplicate tile types
@@ -1288,9 +1507,9 @@ function importFile(event) {
 
         // Update canvas
         drawLayer(
-            Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-            Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-            Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+            Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+            Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
         );
     }, false);
 
@@ -1323,8 +1542,8 @@ function exportTilemap(type,x,y,w,h) {
         y *= 1;
 
         // Set width and height to tile size
-        w *= 64;
-        h *= 64;
+        w *= tileScale;
+        h *= tileScale;
 
         if (type == undefined) {
             // If there is no type input clear the canvas
@@ -1402,9 +1621,9 @@ function exportTilemap(type,x,y,w,h) {
 
             // Update canvas
             drawLayer(
-                Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
             );
         }
     }
@@ -1432,9 +1651,9 @@ c.addEventListener('contextmenu', function(event) {
 
                     // Update canvas
                     drawLayer(
-                        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                        Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                        Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                        Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                     );
                 }
             } else if (tool == "eraser") {
@@ -1448,9 +1667,9 @@ c.addEventListener('contextmenu', function(event) {
 
                     // Update canvas
                     drawLayer(
-                        Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-                        Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-                        Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+                        Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                        Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                        Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
                     );
                 }
             } else if (tool == "select") {
@@ -1598,9 +1817,9 @@ if (haveEvents) {
 
 // Update canvas
 drawLayer(
-    Math.ceil(canvas.width/64)*(document.getElementById("scroll-container").scrollLeft/document.getElementById("scroll-container").clientWidth),
-    Math.ceil(canvas.height/64)*(document.getElementById("scroll-container").scrollTop/document.getElementById("scroll-container").clientHeight),
-    Math.ceil(canvas.width/64),Math.ceil(canvas.height/64),true,true
+    Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+    Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+    Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
 );
 
 // Set date variable to the current date
