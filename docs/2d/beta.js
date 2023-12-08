@@ -44,9 +44,9 @@ if (sessionStorage.tilemap) {
     } else {
         // Create tilemap with max width and height possible in window size
         mapData = [];
-        for (let i = 0; i < Math.ceil(c.height/tileScale); i++) {
+        for (let i = 0; i < Math.ceil(c.height/tileScale.value); i++) {
             mapData[i] = [];
-            for (let i2 = 0; i2 < Math.ceil(c.width/tileScale); i2++) {
+            for (let i2 = 0; i2 < Math.ceil(c.width/tileScale.value); i2++) {
                 mapData[i][i2] = 0;
             }
         }
@@ -114,7 +114,8 @@ const filew = document.getElementById('filew');
 const fileh = document.getElementById('fileh');
 const downloadButton = document.getElementById("downloadButton");
 
-const tileScale = JSON.parse(document.getElementById("tileScale").value);
+const tileScale = document.getElementById("tileScale");
+const gridToggle = document.getElementById("gridToggle");
 
 // Dialog box for pop-up info
 const dialogBox = document.getElementById("dialog");
@@ -141,9 +142,9 @@ function showDialogBox(content) {
             mapData = [];
 
             // Create tilemap for the size of the canvas
-            for (let i = 0; i < Math.ceil(c.height/tileScale); i++) {
+            for (let i = 0; i < Math.ceil(c.height/tileScale.value); i++) {
                 mapData[i] = [];
-                for (let i2 = 0; i2 < Math.ceil(c.width/tileScale); i2++) {
+                for (let i2 = 0; i2 < Math.ceil(c.width/tileScale.value); i2++) {
                     mapData[i][i2] = 0;
                 }
             }
@@ -161,9 +162,9 @@ function showDialogBox(content) {
 
             // Update canvas
             drawLayer(
-                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
             );
 
             document.getElementById("reset").style.backgroundColor = "";
@@ -309,7 +310,7 @@ function drawTile(x,y,lx,ly,scale,showSelect) {
                     ctx.beginPath();
                     ctx.moveTo((Math.ceil(x*scale))+scale, (Math.ceil(y*scale)));
                     ctx.lineTo((Math.ceil(x*scale))+scale, (Math.ceil(y*scale))+scale);
-                    ctx.lineTo((Math.ceil(x*scale))+32, (Math.ceil(y*scale))+scale);
+                    ctx.lineTo((Math.ceil(x*scale))+tileScale.value/2, (Math.ceil(y*scale))+scale);
                     ctx.closePath();
                     ctx.fill();
                 } else if (TILE_TYPES[i].shape == "curve") {
@@ -359,7 +360,7 @@ function drawTile(x,y,lx,ly,scale,showSelect) {
 
 // Same as drawTile function but for drawing a grid tile
 function drawGridTile(x,y,scale) {
-    // Multiply the x and y by tileScale because each tile is tileScalextileScale
+    // Multiply the x and y by tileScale because each tile is tileScale*tileScale
     x *= scale;
     y *= scale;
 
@@ -404,16 +405,16 @@ function getMousePosition(event) {
     var scaleY = c.height / bounds.height;
 
     // Get mouse position divided by tileScale for the tile size and use Math.floor to round the numbers
-    var x = Math.floor((event.clientX - bounds.left) * scaleX / JSON.parse(tileScale));
-    var y = Math.floor((event.clientY - bounds.top) * scaleY / JSON.parse(tileScale));
+    var x = Math.floor((event.clientX - bounds.left) * scaleX / JSON.parse(tileScale.value));
+    var y = Math.floor((event.clientY - bounds.top) * scaleY / JSON.parse(tileScale.value));
 
     // Fix for when x is read as -1 instaed of 0
-    if (x == -1) {
+    if (x < 0) {
         x = 0;
     }
 
     // Fix for when y is read as -1 instaed of 0
-    if (y == -1) {
+    if (y < 0) {
         y = 0;
     }
 
@@ -444,9 +445,11 @@ function downCoords(event) {
     // Get mouse x,y
     var { x, y } = getMousePosition(event);
 
+    console.log(x,y)
+
     // Set oldX and oldY to current position on tilemap
-    oldX = Math.ceil(x*tileScale)+32;
-    oldY = Math.ceil(y*tileScale)+32;
+    oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+    oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
 
     // Set cursor to select if there are no tiles there (will likely be removed after infinite update)
     if (mapData[y] == undefined && mapData[y][x] == undefined) {
@@ -466,9 +469,9 @@ function downCoords(event) {
 
                     // Update canvas
                     drawLayer(
-                        Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                        Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                        Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(tileScale),true,true
+                        Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                        Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                        Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                     );
                 }
             } else if (tool == "eraser") {
@@ -481,9 +484,9 @@ function downCoords(event) {
 
                     // Update canvas
                     drawLayer(
-                        Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                        Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                        Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(tileScale),true,true
+                        Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                        Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                        Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                     );
                 }
             } else if (tool == "select") {
@@ -506,9 +509,9 @@ function downCoords(event) {
 
                 // Update canvas
                 drawLayer(
-                    Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                    Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                    Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                    Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                    Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                    Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                 );
             }
         }
@@ -523,8 +526,8 @@ function getPixelsOnLine(startX, startY, endX, endY){
 
     // Set x and y value to tile position value
     const getPixel = (x,y) => {
-        x = Math.floor(x / JSON.parse(tileScale));
-        y = Math.floor(y / JSON.parse(tileScale));
+        x = Math.floor(x / JSON.parse(tileScale.value));
+        y = Math.floor(y / JSON.parse(tileScale.value));
         return { x, y };
     }
 
@@ -631,29 +634,29 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != 0) {
                                     mapData[y][x] = 0;
-                                    oldX = Math.ceil(x*tileScale)+32;
-                                    oldY = Math.ceil(y*tileScale)+32;
+                                    oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                    oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                 }
                             } else {
                                 // Use the oldX and oldY to get the pixels on the line and fill in the gaps
-                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale.value)+tileScale.value/2,Math.ceil(y*tileScale.value)+tileScale.value/2);
                                 deletePixels(pixels);
 
                                 // Set tiles in pixels variable to blank tiles
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != 0) {
                                         mapData[pixels[i].y][pixels[i].x] = 0;
-                                        oldX = Math.ceil(x*tileScale)+32;
-                                        oldY = Math.ceil(y*tileScale)+32;
+                                        oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                        oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                     }
                                 }
                             }
     
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                                Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                             );
                         } else {
                             // Set oldX and oldY to null if mapData[y][x] is already 0
@@ -675,29 +678,29 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                    oldX = Math.ceil(x*tileScale)+32;
-                                    oldY = Math.ceil(y*tileScale)+32;
+                                    oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                    oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                 }
                             } else {
                                 // Use the oldX and oldY to get the pixels on the line and fill in the gaps
-                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale.value)+tileScale.value/2,Math.ceil(y*tileScale.value)+tileScale.value/2);
                                 deletePixels(pixels);
 
                                 // Set tiles in pixels variable to latest tile type
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                         mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                        oldX = Math.ceil(x*tileScale)+32;
-                                        oldY = Math.ceil(y*tileScale)+32;
+                                        oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                        oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                     }
                                 }
                             }
     
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                                Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                             );
                         } else {
                             // Set oldX and oldY to null if mapData[y][x] is already the latest tile type
@@ -726,29 +729,29 @@ function moveCoords(event) {
                         if (oldX == null && oldY == null) {
                             if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                 mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                oldX = Math.ceil(x*tileScale)+32;
-                                oldY = Math.ceil(y*tileScale)+32;
+                                oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                             }
                         } else {
                             // Use the oldX and oldY variables to get the pixels on the line and fill in the gaps
-                            var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
+                            var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale.value)+tileScale.value/2,Math.ceil(y*tileScale.value)+tileScale.value/2);
                             deletePixels(pixels);
 
                             // Set tiles to latest tile type
                             for (let i = 0; i < pixels.length; i++) {
                                 if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                     mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                    oldX = Math.ceil(x*tileScale)+32;
-                                    oldY = Math.ceil(y*tileScale)+32;
+                                    oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                    oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                 }
                             }
                             }
 
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                                Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                             );
                         } else {
                             // Set oldX and oldY variables to null if mapData[y][x] is already the latest tile type
@@ -770,29 +773,29 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != 0) {
                                     mapData[y][x] = 0;
-                                    oldX = Math.ceil(x*tileScale)+32;
-                                    oldY = Math.ceil(y*tileScale)+32;
+                                    oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                    oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                 }
                             } else {
                                 // Use the oldX and oldY to get the pixels on the line and fill in the gaps
-                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale.value)+tileScale.value/2,Math.ceil(y*tileScale.value)+tileScale.value/2);
                                 deletePixels(pixels);
 
                                 // Set tiles to blank
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != 0) {
                                         mapData[pixels[i].y][pixels[i].x] = 0;
-                                        oldX = Math.ceil(x*tileScale)+32;
-                                        oldY = Math.ceil(y*tileScale)+32;
+                                        oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                        oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                     }
                                 }
                             }
 
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                                Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                             );
                         } else {
                             // Set oldX and oldY to null if mapData[y][x] is already blank
@@ -828,9 +831,9 @@ function moveCoords(event) {
 
                         // Update canvas
                         drawLayer(
-                            Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                            Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                            Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                            Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                            Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                         );
                     }
                 }
@@ -878,29 +881,29 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != 0) {
                                     mapData[y][x] = 0;
-                                    oldX = Math.ceil(x*tileScale)+32;
-                                    oldY = Math.ceil(y*tileScale)+32;
+                                    oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                    oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                 }
                             } else {
                                 // Use the oldX and oldY to get the pixels on the line and fill in the gaps
-                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale.value)+tileScale.value/2,Math.ceil(y*tileScale.value)+tileScale.value/2);
                                 deletePixels(pixels);
 
                                 // Set tiles in pixels variable to blank tiles
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != 0) {
                                         mapData[pixels[i].y][pixels[i].x] = 0;
-                                        oldX = Math.ceil(x*tileScale)+32;
-                                        oldY = Math.ceil(y*tileScale)+32;
+                                        oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                        oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                     }
                                 }
                             }
     
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                                Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                             );
                         } else {
                             // Set oldX and oldY to null if mapData[y][x] is already 0
@@ -922,29 +925,29 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                     mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                    oldX = Math.ceil(x*tileScale)+32;
-                                    oldY = Math.ceil(y*tileScale)+32;
+                                    oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                    oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                 }
                             } else {
                                 // Use the oldX and oldY to get the pixels on the line and fill in the gaps
-                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale.value)+tileScale.value/2,Math.ceil(y*tileScale.value)+tileScale.value/2);
                                 deletePixels(pixels);
 
                                 // Set tiles in pixels variable to latest tile type
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                         mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                        oldX = Math.ceil(x*tileScale)+32;
-                                        oldY = Math.ceil(y*tileScale)+32;
+                                        oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                        oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                     }
                                 }
                             }
     
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                                Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                             );
                         } else {
                             // Set oldX and oldY to null if mapData[y][x] is already the latest tile type
@@ -973,29 +976,29 @@ function moveCoords(event) {
                         if (oldX == null && oldY == null) {
                             if ( mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                 mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                oldX = Math.ceil(x*tileScale)+32;
-                                oldY = Math.ceil(y*tileScale)+32;
+                                oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                             }
                         } else {
                             // Use the oldX and oldY variables to get the pixels on the line and fill in the gaps
-                            var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
+                            var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale.value)+tileScale.value/2,Math.ceil(y*tileScale.value)+tileScale.value/2);
                             deletePixels(pixels);
 
                             // Set tiles to latest tile type
                             for (let i = 0; i < pixels.length; i++) {
                                 if ( mapData[pixels[i].y][pixels[i].x] != TILE_TYPES[TILE_TYPES.length-1].id) {
                                     mapData[pixels[i].y][pixels[i].x] = TILE_TYPES[TILE_TYPES.length-1].id;
-                                    oldX = Math.ceil(x*tileScale)+32;
-                                    oldY = Math.ceil(y*tileScale)+32;
+                                    oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                    oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                 }
                             }
                             }
 
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                                Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                             );
                         } else {
                             // Set oldX and oldY variables to null if mapData[y][x] is already the latest tile type
@@ -1017,29 +1020,29 @@ function moveCoords(event) {
                             if (oldX == null && oldY == null) {
                                 if ( mapData[y][x] != 0) {
                                     mapData[y][x] = 0;
-                                    oldX = Math.ceil(x*tileScale)+32;
-                                    oldY = Math.ceil(y*tileScale)+32;
+                                    oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                    oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                 }
                             } else {
                                 // Use the oldX and oldY to get the pixels on the line and fill in the gaps
-                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale)+32,Math.ceil(y*tileScale)+32);
+                                var pixels = getPixelsOnLine(oldX,oldY,Math.ceil(x*tileScale.value)+tileScale.value/2,Math.ceil(y*tileScale.value)+tileScale.value/2);
                                 deletePixels(pixels);
 
                                 // Set tiles to blank
                                 for (let i = 0; i < pixels.length; i++) {
                                     if ( mapData[pixels[i].y][pixels[i].x] != 0) {
                                         mapData[pixels[i].y][pixels[i].x] = 0;
-                                        oldX = Math.ceil(x*tileScale)+32;
-                                        oldY = Math.ceil(y*tileScale)+32;
+                                        oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+                                        oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
                                     }
                                 }
                             }
 
                             // Update canvas
                             drawLayer(
-                                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                                Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                                Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                             );
                         } else {
                             // Set oldX and oldY to null if mapData[y][x] is already blank
@@ -1075,9 +1078,9 @@ function moveCoords(event) {
 
                         // Update canvas
                         drawLayer(
-                            Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                            Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                            Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                            Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                            Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                         );
                     }
                 }
@@ -1196,112 +1199,114 @@ function keydown(event) {
         event.preventDefault();
 
         // Increase the view scale of the tiles
-        document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) + 10;
+        tileScale.value = tileScale.value + 10;
 
-        if(document.getElementById("tileScale").value < 1) {
-            document.getElementById("tileScale").value = 1
-        } else if(document.getElementById("tileScale").value == '') {
-            document.getElementById("tileScale").value = 1;
+        if(JSON.parse(tileScale.value) < 1) {
+            tileScale.value = 1
+        } else if(tileScale.value == '') {
+            tileScale.value = 1;
         }
 
         if(window.innerWidth > window.innerHeight){
-            if(document.getElementById("tileScale").value > window.innerWidth){
-                document.getElementById("tileScale").value = window.innerWidth;
+            if(JSON.parse(tileScale.value) > window.innerWidth){
+                tileScale.value = window.innerWidth;
             }
         } else {
-            if(document.getElementById("tileScale").value > window.innerHeight){
-                document.getElementById("tileScale").value = window.innerHeight;
+            if(JSON.parse(tileScale.value) > window.innerHeight){
+                tileScale.value = window.innerHeight;
             }
         }
 
         drawLayer(
-            Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
-            Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
-            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true
+            Math.ceil(canvas.width/tileScale.value)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+            Math.ceil(canvas.height/tileScale.value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+            Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
         );
+
+        console.log(gridToggle.checked);
     } else if (event.metaKey && event.key == '-' && event.shiftKey) {
         // Stop default result of the command
         event.preventDefault();
 
         // Decrease the view scale of the tiles
-        document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) - 10;
+        tileScale.value = tileScale.value - 10;
         
-        if(document.getElementById("tileScale").value < 1) {
-            document.getElementById("tileScale").value = 1
-        } else if(document.getElementById("tileScale").value == '') {
-            document.getElementById("tileScale").value = 1;
+        if(JSON.parse(tileScale.value) < 1) {
+            tileScale.value = 1
+        } else if(tileScale.value == '') {
+            tileScale.value = 1;
         }
 
         if(window.innerWidth > window.innerHeight){
-            if(document.getElementById("tileScale").value > window.innerWidth){
-                document.getElementById("tileScale").value = window.innerWidth;
+            if(JSON.parse(tileScale.value) > window.innerWidth){
+                tileScale.value = window.innerWidth;
             }
         } else {
-            if(document.getElementById("tileScale").value > window.innerHeight){
-                document.getElementById("tileScale").value = window.innerHeight;
+            if(JSON.parse(tileScale.value) > window.innerHeight){
+                tileScale.value = window.innerHeight;
             }
         }
 
         drawLayer(
-            Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
-            Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
-            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true
+            Math.ceil(canvas.width/tileScale.value)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+            Math.ceil(canvas.height/tileScale.value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+            Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
         );
     } else if (event.metaKey && event.key == '=') {
         // Stop default result of the command
         event.preventDefault();
 
         // Increase the view scale of the tiles
-        document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) + 1;
+        tileScale.value = tileScale.value + 1;
 
-        if(document.getElementById("tileScale").value < 1) {
-            document.getElementById("tileScale").value = 1
-        } else if(document.getElementById("tileScale").value == '') {
-            document.getElementById("tileScale").value = 1;
+        if(JSON.parse(tileScale.value) < 1) {
+            tileScale.value = 1
+        } else if(tileScale.value == '') {
+            tileScale.value = 1;
         }
 
         if(window.innerWidth > window.innerHeight){
-            if(document.getElementById("tileScale").value > window.innerWidth){
-                document.getElementById("tileScale").value = window.innerWidth;
+            if(JSON.parse(tileScale.value) > window.innerWidth){
+                tileScale.value = window.innerWidth;
             }
         } else {
-            if(document.getElementById("tileScale").value > window.innerHeight){
-                document.getElementById("tileScale").value = window.innerHeight;
+            if(JSON.parse(tileScale.value) > window.innerHeight){
+                tileScale.value = window.innerHeight;
             }
         }
 
         drawLayer(
-            Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
-            Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
-            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true
+            Math.ceil(canvas.width/tileScale.value)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+            Math.ceil(canvas.height/tileScale.value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+            Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
         );
     } else if (event.metaKey && event.key == '-') {
         // Stop default result of the command
         event.preventDefault();
 
         // Decrease the view scale of the tiles
-        document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) - 1;
+        tileScale.value = tileScale.value - 1;
         
-        if(document.getElementById("tileScale").value < 1) {
-            document.getElementById("tileScale").value = 1
-        } else if(document.getElementById("tileScale").value == '') {
-            document.getElementById("tileScale").value = 1;
+        if(JSON.parse(tileScale.value) < 1) {
+            tileScale.value = 1
+        } else if(tileScale.value == '') {
+            tileScale.value = 1;
         }
 
         if(window.innerWidth > window.innerHeight){
-            if(document.getElementById("tileScale").value > window.innerWidth){
-                document.getElementById("tileScale").value = window.innerWidth;
+            if(JSON.parse(tileScale.value) > window.innerWidth){
+                tileScale.value = window.innerWidth;
             }
         } else {
-            if(document.getElementById("tileScale").value > window.innerHeight){
-                document.getElementById("tileScale").value = window.innerHeight;
+            if(JSON.parse(tileScale.value) > window.innerHeight){
+                tileScale.value = window.innerHeight;
             }
         }
 
         drawLayer(
-            Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
-            Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
-            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true
+            Math.ceil(canvas.width/tileScale.value)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+            Math.ceil(canvas.height/tileScale.value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+            Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
         );
     } else if (event.metaKey && event.key == 'z' && event.shiftKey) {
         // Stop default result of the command
@@ -1324,53 +1329,55 @@ function scrollCoords(event) {
     if(event.ctrlKey) {
         if (event.deltaY > 0) {
             // Decrease the view scale of the tiles
-            document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) - 1;
+            tileScale.value -=1;
             
-            if(document.getElementById("tileScale").value < 1) {
-                document.getElementById("tileScale").value = 1
-            } else if(document.getElementById("tileScale").value == '') {
-                document.getElementById("tileScale").value = 1;
+            if(JSON.parse(tileScale.value) < 1) {
+                tileScale.value = 1
+            } else if(tileScale.value == '') {
+                tileScale.value = 1;
             }
 
             if(window.innerWidth > window.innerHeight){
-                if(document.getElementById("tileScale").value > window.innerWidth){
-                    document.getElementById("tileScale").value = window.innerWidth;
+                if(JSON.parse(tileScale.value) > window.innerWidth){
+                    tileScale.value = window.innerWidth;
                 }
             } else {
-                if(document.getElementById("tileScale").value > window.innerHeight){
-                    document.getElementById("tileScale").value = window.innerHeight;
+                if(JSON.parse(tileScale.value) > window.innerHeight){
+                    tileScale.value = window.innerHeight;
                 }
             }
 
+            console.log(gridToggle.checked,document.getElementById("gridToggle").checked);
             drawLayer(
-                Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
-                Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
-                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true,"zoom out"
+                Math.ceil(canvas.width/tileScale.value)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+                Math.ceil(canvas.height/tileScale.value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true,"zoom out"
             );
         } else {
+            console.log(gridToggle.checked,document.getElementById("gridToggle").checked);
             // Increase the view scale of the tiles
-            document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) + 1;
+            tileScale.value += 1;
             
-            if(document.getElementById("tileScale").value < 1) {
-                document.getElementById("tileScale").value = 1
-            } else if(document.getElementById("tileScale").value == '') {
-                document.getElementById("tileScale").value = 1;
+            if(JSON.parse(tileScale.value) < 1) {
+                tileScale.value = 1
+            } else if(tileScale.value == '') {
+                tileScale.value = 1;
             }
 
             if(window.innerWidth > window.innerHeight){
-                if(document.getElementById("tileScale").value > window.innerWidth){
-                    document.getElementById("tileScale").value = window.innerWidth;
+                if(JSON.parse(tileScale.value) > window.innerWidth){
+                    tileScale.value = window.innerWidth;
                 }
             } else {
-                if(document.getElementById("tileScale").value > window.innerHeight){
-                    document.getElementById("tileScale").value = window.innerHeight;
+                if(JSON.parse(tileScale.value) > window.innerHeight){
+                    tileScale.value = window.innerHeight;
                 }
             }
 
             drawLayer(
-                Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
-                Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
-                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true,"zoom in"
+                Math.ceil(canvas.width/tileScale.value)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+                Math.ceil(canvas.height/tileScale.value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true,"zoom in"
             );
         }
     } else if (!event.ctrlKey && event.deltaY && !Number.isInteger(event.deltaY)) {
@@ -1378,53 +1385,53 @@ function scrollCoords(event) {
         // Zoom in with mouse scroll if deltaY is greater than 0 otherwise zoom out
         if (event.deltaY > 0) {
             // Decrease the view scale of the tiles
-            document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) - 1;
+            tileScale.value = tileScale.value - 1;
             
-            if(document.getElementById("tileScale").value < 1) {
-                document.getElementById("tileScale").value = 1
-            } else if(document.getElementById("tileScale").value == '') {
-                document.getElementById("tileScale").value = 1;
+            if(JSON.parse(tileScale.value) < 1) {
+                tileScale.value = 1
+            } else if(tileScale.value == '') {
+                tileScale.value = 1;
             }
 
             if(window.innerWidth > window.innerHeight){
-                if(document.getElementById("tileScale").value > window.innerWidth){
-                    document.getElementById("tileScale").value = window.innerWidth;
+                if(JSON.parse(tileScale.value) > window.innerWidth){
+                    tileScale.value = window.innerWidth;
                 }
             } else {
-                if(document.getElementById("tileScale").value > window.innerHeight){
-                    document.getElementById("tileScale").value = window.innerHeight;
+                if(JSON.parse(tileScale.value) > window.innerHeight){
+                    tileScale.value = window.innerHeight;
                 }
             }
 
             drawLayer(
-                Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
-                Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
-                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true,
+                Math.ceil(canvas.width/tileScale.value)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+                Math.ceil(canvas.height/tileScale.value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true,
             );
         } else {
             // Increase the view scale of the tiles
-            document.getElementById("tileScale").value = JSON.parse(document.getElementById("tileScale").value) + 1;
+            tileScale.value = tileScale.value + 1;
             
-            if(document.getElementById("tileScale").value < 1) {
-                document.getElementById("tileScale").value = 1
-            } else if(document.getElementById("tileScale").value == '') {
-                document.getElementById("tileScale").value = 1;
+            if(JSON.parse(tileScale.value) < 1) {
+                tileScale.value = 1
+            } else if(tileScale.value == '') {
+                tileScale.value = 1;
             }
 
             if(window.innerWidth > window.innerHeight){
-                if(document.getElementById("tileScale").value > window.innerWidth){
-                    document.getElementById("tileScale").value = window.innerWidth;
+                if(JSON.parse(tileScale.value) > window.innerWidth){
+                    tileScale.value = window.innerWidth;
                 }
             } else {
-                if(document.getElementById("tileScale").value > window.innerHeight){
-                    document.getElementById("tileScale").value = window.innerHeight;
+                if(JSON.parse(tileScale.value) > window.innerHeight){
+                    tileScale.value = window.innerHeight;
                 }
             }
 
             drawLayer(
-                Math.ceil(canvas.width/tileScale)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
-                Math.ceil(canvas.height/tileScale)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
-                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true,
+                Math.ceil(canvas.width/tileScale.value)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
+                Math.ceil(canvas.height/tileScale.value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
+                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true,
             );
         }
     } else {
@@ -1437,9 +1444,9 @@ function scrollCoords(event) {
 
     // Update canvas
     drawLayer(
-        Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-        Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-        Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),JSON.parse(document.getElementById("tileScale").value),true,true
+        Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+        Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+        Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
     );
 }
 
@@ -1507,9 +1514,9 @@ function importFile(event) {
 
         // Update canvas
         drawLayer(
-            Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-            Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-            Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+            Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+            Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+            Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
         );
     }, false);
 
@@ -1542,8 +1549,8 @@ function exportTilemap(type,x,y,w,h) {
         y *= 1;
 
         // Set width and height to tile size
-        w *= tileScale;
-        h *= tileScale;
+        w *= JSON.parse(tileScale.value);
+        h *= JSON.parse(tileScale.value);
 
         if (type == undefined) {
             // If there is no type input clear the canvas
@@ -1621,9 +1628,9 @@ function exportTilemap(type,x,y,w,h) {
 
             // Update canvas
             drawLayer(
-                Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
             );
         }
     }
@@ -1651,9 +1658,9 @@ c.addEventListener('contextmenu', function(event) {
 
                     // Update canvas
                     drawLayer(
-                        Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                        Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                        Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                        Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                        Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                        Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                     );
                 }
             } else if (tool == "eraser") {
@@ -1667,9 +1674,9 @@ c.addEventListener('contextmenu', function(event) {
 
                     // Update canvas
                     drawLayer(
-                        Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                        Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                        Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+                        Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                        Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                        Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
                     );
                 }
             } else if (tool == "select") {
@@ -1817,9 +1824,9 @@ if (haveEvents) {
 
 // Update canvas
 drawLayer(
-    Math.ceil(canvas.width/tileScale)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-    Math.ceil(canvas.height/tileScale)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-    Math.ceil(canvas.width/tileScale),Math.ceil(canvas.height/tileScale),tileScale,true,true
+    Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+    Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+    Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
 );
 
 // Set date variable to the current date
