@@ -44,9 +44,9 @@ if (sessionStorage.tilemap) {
     } else {
         // Create tilemap with max width and height possible in window size
         mapData = [];
-        for (let i = 0; i < Math.ceil(c.height/tileScale.value); i++) {
+        for (let i = 0; i < Math.ceil(c.height/document.getElementById('tileScale').value); i++) {
             mapData[i] = [];
-            for (let i2 = 0; i2 < Math.ceil(c.width/tileScale.value); i2++) {
+            for (let i2 = 0; i2 < Math.ceil(c.width/document.getElementById('tileScale').value); i2++) {
                 mapData[i][i2] = 0;
             }
         }
