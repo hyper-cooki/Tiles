@@ -14,7 +14,7 @@ var ctx = c.getContext("2d");
 // Set size of canvas
 c.height = window.innerHeight;
 c.width = window.innerWidth;
-c.style.opacity = "100%";
+c.style.opacity = "1";
 
 // Give canvas "canvas" id
 c.setAttribute("id", "canvas");
@@ -123,7 +123,7 @@ const dialogBox = document.getElementById("dialog");
 // Use the same dialog box but change the content inside
 function showDialogBox(content) {
     if (content == "about") {
-        dialogBox.innerHTML='<form><h2>Tiles 2D</h2><br><h1>By <a href="https://cooki-studios.github.io" style="font-weight: bold;">Cooki Studios</a></h1><br><button autofocus formmethod="dialog" onkeypress="if(event.key=\""Enter\""){this.click()}>Close</button></form>'
+        dialogBox.innerHTML='<form><h2>Tiles 2D</h2><br><h1>By <a href="https://cookistudios.com" style="font-weight: bold;">Cooki Studios</a></h1><br><button autofocus formmethod="dialog" onkeypress="if(event.key=\""Enter\""){this.click()}>Close</button></form>'
         dialogBox.showModal();
     } else if (content == "reset") {
         dialogBox.innerHTML='<form><h2>Hold up!<br>Are you sure you want to reset?</h2><br><h1>All progress will be lost unless saved as a .cstiles file.</h1><br><button style="background-color: #ffa500; border-color: whitesmoke;" autofocus formmethod="dialog" value="cancel" onkeypress="if(event.key=\'Enter\'){this.click()}">Cancel</button><button style="margin-left: 2rem;" formmethod="dialog" value="confirm" onkeypress="if(event.key=\'Enter\'){this.click()}">Yes</button></form>'
@@ -426,38 +426,120 @@ function getMousePosition(event) {
 var oldX;
 var oldY;
 
+const uiElements = [document.getElementsByClassName("header")[0],document.getElementsByClassName("left-side")[0],document.getElementsByClassName("right-side")[0],document.getElementById("scrollx-container"),document.getElementById("scrolly-container"),document.getElementsByClassName("footer")[0]];
+
 // Function for drawing tiles when the left mouse button is pressed down
 function downCoords(event) {
-    // Middle click
-    console.log(event.which == 2 || event.button == 4);
+    if (event.which == 3 || event.button == 2) {
+        // Set right click variable to true
+        rightMouseDown = true;
 
-    mouseDown = true;
+        // Capture mouse positions for getCoelescedEvents() function
+        canvas.setPointerCapture(1);
 
-    // Capture mouse positions for getCoelescedEvents() function
-    canvas.setPointerCapture(1);
+        // Make UI transparent and ignore pointer events
+        for (let i = 0; i < uiElements.length; i++) {
+            uiElements[i].style.pointerEvents = "none";
+            uiElements[i].style.opacity = "0.5";
+            uiElements[i].style.zIndex = 2;
+        }
+        
+        // Get mouse x,y
+        var { x, y } = getMousePosition(event);
 
-    // Make UI transparent and ignore pointer events
-    document.getElementsByClassName("layout")[0].style.pointerEvents = "none";
-    document.getElementsByClassName("layout")[0].style.opacity = "50%";
-    document.getElementsByClassName("layout")[0].style.zIndex = 2;
-    document.getElementsByClassName("layout")[0].style.position = "fixed";
-    
-    // Get mouse x,y
-    var { x, y } = getMousePosition(event);
+        // Set oldX and oldY to current position on tilemap
+        oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+        oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
 
-    console.log(x,y)
+        // Set cursor to select if there are no tiles there (will likely be removed after infinite update)
+        if (mapData[y] == undefined && mapData[y][x] == undefined) {
+            c.style.cursor = "url(img/cursors/Select-32.png), auto";
+        }
 
-    // Set oldX and oldY to current position on tilemap
-    oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
-    oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
+        if (mapData[y] != undefined && mapData[y][x] != undefined) {
+            if (tool == "eraser") {
+                // Set cursor to paintbrushed pressed down
+                c.style.cursor = "url(img/cursors/PaintDown-32.png), auto";
 
-    // Set cursor to select if there are no tiles there (will likely be removed after infinite update)
-    if (mapData[y] == undefined && mapData[y][x] == undefined) {
-        c.style.cursor = "url(img/cursors/Select-32.png), auto";
-    }
+                // Set tile at mouse pos to newest tile id
+                if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
+                    mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
 
-    // If the mouse is dow- wait wait wait... didn't that get set to true at the beginning of the function??? - Don't worry past me, this function needs to be used for middle mouse click :)
-    if (mouseDown) {
+                    // Update canvas
+                    drawLayer(
+                        Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                        Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                        Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
+                    );
+                }
+            } else if (tool == "pen") {
+                // Set cursor to eraser pressed down
+                c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
+
+                if (mapData[y][x] != 0) {
+                    // Set tile at cursor position to a blank tile
+                    mapData[y][x] = 0;
+
+                    // Update canvas
+                    drawLayer(
+                        Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                        Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                        Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
+                    );
+                }
+            } else if (tool == "select") {
+                // Set the cursor select
+                c.style.cursor = "url(img/cursors/Select-32.png), auto";
+
+                // Set first two elements in selectRange to x and y and remove extra values
+                selectRange[0] = x;
+                selectRange[1] = y;
+                selectRange.length = 2;
+
+                // Set selected area in the export section
+                filex.value = x;
+                filey.value = y;
+                filew.value = 1;
+                fileh.value = 1;
+
+                // Change download button text to say "Download Selected"
+                downloadButton.innerText = "Download Selected";
+
+                // Update canvas
+                drawLayer(
+                    Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
+                    Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
+                    Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
+                );
+            }
+        }
+    } else if (event.which == 2 || event.button == 4) {
+        console.log("middle click");
+    } else {
+        mouseDown = true;
+
+        // Capture mouse positions for getCoelescedEvents() function
+        canvas.setPointerCapture(1);
+
+        // Make UI transparent and ignore pointer events
+        for (let i = 0; i < uiElements.length; i++) {
+            uiElements[i].style.pointerEvents = "none";
+            uiElements[i].style.opacity = "0.5";
+            uiElements[i].style.zIndex = 2;
+        }
+        
+        // Get mouse x,y
+        var { x, y } = getMousePosition(event);
+
+        // Set oldX and oldY to current position on tilemap
+        oldX = Math.ceil(x*tileScale.value)+tileScale.value/2;
+        oldY = Math.ceil(y*tileScale.value)+tileScale.value/2;
+
+        // Set cursor to select if there are no tiles there (will likely be removed after infinite update)
+        if (mapData[y] == undefined && mapData[y][x] == undefined) {
+            c.style.cursor = "url(img/cursors/Select-32.png), auto";
+        }
+
         if (mapData[y] != undefined && mapData[y][x] != undefined) {
             if (tool == "pen") {
                 // Set cursor to paintbrushed pressed down
@@ -517,6 +599,7 @@ function downCoords(event) {
         }
     }
 }
+
 
 // Function for getting the pixels on a line from startX, startY to endX, endY
 // Used for filling in tiles with getCoalescedEvents() to draw tiles even when the mouse is moving too fast to register
@@ -605,7 +688,7 @@ function deletePixels(pixels) {
 // Function for when cursor is moving
 function moveCoords(event) {
     // If the getCoalescedEvents() function exists (for example not on Safari)
-    if (event.getCoalescedEvents) {
+        if (event.getCoalescedEvents) {
         // Set variables x and y to mouse position on tilemap
         var { x, y } = getMousePosition(event);
 
@@ -1107,11 +1190,12 @@ function upCoords(event) {
     // Stop capturing mouse position
     canvas.releasePointerCapture(1);
 
-    // Reset UI visibility/interactivity
-    document.getElementsByClassName("layout")[0].style.pointerEvents = "auto";
-    document.getElementsByClassName("layout")[0].style.position = "";
-    document.getElementsByClassName("layout")[0].style.opacity = "100%";
-    document.getElementsByClassName("layout")[0].style.zIndex = "";
+    // Make UI transparent and ignore pointer events
+    for (let i = 0; i < uiElements.length; i++) {
+        uiElements[i].style.pointerEvents = "auto";
+        uiElements[i].style.opacity = "1";
+        uiElements[i].style.zIndex = "";
+    }
 
     // Set left click and right click variables to false
     mouseDown = false;
@@ -1222,8 +1306,6 @@ function keydown(event) {
             Math.ceil(canvas.height/tileScale.value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
             Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
         );
-
-        console.log(gridToggle.checked);
     } else if (event.metaKey && event.key == '-' && event.shiftKey) {
         // Stop default result of the command
         event.preventDefault();
@@ -1314,7 +1396,7 @@ function keydown(event) {
 
         // Redo the last action (WIP)
         console.log("redo");
-    } else if (event.metaKey && event.key == 'z') {
+    } else if (event.metaKey && event.key == 'z' || event.ctrlKey && event.key == 'y') {
         // Stop default result of the command
         event.preventDefault();
 
@@ -1347,14 +1429,12 @@ function scrollCoords(event) {
                 }
             }
 
-            console.log(gridToggle.checked,document.getElementById("gridToggle").checked);
             drawLayer(
                 Math.ceil(canvas.width/tileScale.value)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),
                 Math.ceil(canvas.height/tileScale.value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),
                 Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true,"zoom out"
             );
         } else {
-            console.log(gridToggle.checked,document.getElementById("gridToggle").checked);
             // Increase the view scale of the tiles
             tileScale.value += 1;
             
@@ -1410,7 +1490,7 @@ function scrollCoords(event) {
             );
         } else {
             // Increase the view scale of the tiles
-            tileScale.value = tileScale.value + 1;
+            tileScale.value += 1;
             
             if(JSON.parse(tileScale.value) < 1) {
                 tileScale.value = 1
@@ -1635,57 +1715,6 @@ function exportTilemap(type,x,y,w,h) {
         }
     }
 }
-
-// Function for when right click is pressed
-c.addEventListener('contextmenu', function(event) {
-    // Set right click variable to true
-    rightMouseDown = true;
-
-    // Get position of mouse cursor
-    var { x, y } = getMousePosition(event);
-
-    // If there is a tile under the cursor
-    if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
-        if (mapData[y] !== undefined && mapData[y][x] !== undefined) {
-            if (tool == "pen") {
-                // Set cursor to eraser pressed down
-                c.style.cursor = "url(img/cursors/EraserDown-32.png), auto";
-
-                // If tile at cursor position is not already a blank tile
-                if (mapData[y][x] != 0) {
-                    // Set tile to blank tile
-                    mapData[y][x] = 0;
-
-                    // Update canvas
-                    drawLayer(
-                        Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                        Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                        Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
-                    );
-                }
-            } else if (tool == "eraser") {
-                // Set cursor to paintbrush pressed down
-                c.style.cursor = "url(img/cursors/PaintDown-32.png), auto";
-
-                // If tile at cursor is on already the latest tile type
-                if (mapData[y][x] != TILE_TYPES[TILE_TYPES.length-1].id) {
-                    // Set tile at cusor to latest tile types
-                    mapData[y][x] = TILE_TYPES[TILE_TYPES.length-1].id;
-
-                    // Update canvas
-                    drawLayer(
-                        Math.ceil(canvas.width/tileScale.value)*(document.getElementById("scrollx-container").scrollLeft/document.getElementById("scrollx-container").clientWidth),
-                        Math.ceil(canvas.height/tileScale.value)*(document.getElementById("scrolly-container").scrollTop/document.getElementById("scrolly-container").clientHeight),
-                        Math.ceil(canvas.width/tileScale.value),Math.ceil(canvas.height/tileScale.value),JSON.parse(tileScale.value),gridToggle.checked,true
-                    );
-                }
-            } else if (tool == "select") {
-                // Set cursor to select
-                c.style.cursor = "url(img/cursors/Select-32.png), auto";
-            }
-        }
-    }
-});
 
 // When the mouse is down, trigger downCoords()
 c.addEventListener('pointerdown', downCoords);

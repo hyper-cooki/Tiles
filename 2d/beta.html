@@ -13,20 +13,10 @@
         <link rel="preload" as="image" href="img/cursors/Select-64.png" fetchpriority="high">
         <link rel="preload" as="image" href="img/cursors/Paint-64.png" fetchpriority="high">
         <link rel="preload" as="image" href="img/cursors/Eraser-64.png" fetchpriority="high">
-        <link rel="preload" as="image" href="img/cursors/Fill-64.png" fetchpriority="high">
+        <link rel="preload" as="image" href="img/cursors/FillIcon-64.png" fetchpriority="high">
         <link rel="preload" as="image" href="img/cursors/Eyedropper-64.png" fetchpriority="high">
         <link rel="preload" as="image" href="img/cursors/Reset-64.png" fetchpriority="high">
-        <link rel="preload" as="image" href="img/cursors/Select-32.png"/>
-        <link rel="preload" as="image" href="img/cursors/Paint-32.png"/>
-        <link rel="preload" as="image" href="img/cursors/PaintDown-32.png"/>
-        <link rel="preload" as="image" href="img/cursors/Eraser-32.png"/>
-        <link rel="preload" as="image" href="img/cursors/EraserDown-32.png"/>
-        <link rel="preload" as="image" href="img/cursors/Fill-32.png"/>
-        <link rel="preload" as="image" href="img/cursors/FillDown-32.png"/>
-        <link rel="preload" as="image" href="img/cursors/Eyedropper-32.png"/>
-        <link rel="preload" as="image" href="img/cursors/EyedropperDown-32.png"/>
-        <link rel="preload" as="image" href="img/cursors/Reset-32.png"/>
-        <script src="https://gliffy.github.io/canvas2svg/canvas2svg.js"></script>
+        <script src="https://gliffy.github.io/canvas2svg/canvas2svg.min.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
         <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
         <link rel="stylesheet" href="beta.css">
@@ -57,7 +47,7 @@
                 <div id="nav-info" class="marginLeft">Loading...</div>
             </section>
         </div>
-        <div class="leftSide">
+        <div class="left-side">
             <section class="toolsLayout">
                 <h1>Tools</h1>
                 <div id="select tool" class="tool button" onclick="setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select'); sessionStorage.setItem('tool', 'select');" onkeypress="if(event.key=='Enter'){setTool('select'); tool = 'select'; localStorage.setItem('tool', 'select'); sessionStorage.setItem('tool', 'select');}" tabindex=0><img src="img/cursors/Select-64.png" width="32px"><br>Select</div>
@@ -68,7 +58,7 @@
                 <div id="reset" class="tool button" onclick="resetTiles()" onkeypress="if(event.key='Enter'){resetTiles()}" tabindex=0><img src="img/cursors/Reset-64.png" width="32px"><br><b>R</b>eset</div>
             </section>
         </div>
-        <div class="body" style="z-index: -1;" tabindex="0">
+        <div class="body" style="z-index: -1;">
             <div id="scrollx-container" class="scroll-container" onscroll="scrollCoords(event)" tabindex="0">
                 <div id="scrollx">
                 </div>
@@ -78,7 +68,7 @@
                 </div>
             </div>
         </div>
-        <div class="rightSide">
+        <div class="right-side">
             <label style="pointer-events: all; background-color: #33333390; filter: drop-shadow(0 0 0.1rem black); position: absolute; top:58.5vh; right: 27rem; width: max-content; padding-left: 0.5rem; border-radius: 1rem;">Grid: <input style="width: max-content" id="gridToggle" type="checkbox" checked onchange="drawLayer(Math.ceil(canvas.width/document.getElementById('tileScale').value)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),Math.ceil(canvas.height/document.getElementById('tileScale').value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),Math.ceil(canvas.width/document.getElementById('tileScale').value),Math.ceil(canvas.height/document.getElementById('tileScale').value),JSON.parse(document.getElementById('tileScale').value),this.checked,true);;"></label>
             <label style="pointer-events: all; background-color: #33333390; filter: drop-shadow(0 0 0.1rem black); position: absolute; top:58.5vh; right: 17.9rem; width: max-content; padding-left: 0.5rem; border-radius: 1rem;">Scale (px): <input style="width: 3rem" type="number" id="tileScale" value="64" onblur="if(value<1) {value=1} else if(value=='') {value=1}; if(window.innerWidth>window.innerHeight){if(value>window.innerWidth){value=window.innerWidth}}else{if(value>window.innerHeight){value=window.innerHeight}}" oninput="if(value<1) {value=1} else if(value=='') value=1; drawLayer(Math.ceil(canvas.width/document.getElementById('tileScale').value)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),Math.ceil(canvas.height/document.getElementById('tileScale').value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),Math.ceil(canvas.width/document.getElementById('tileScale').value),Math.ceil(canvas.height/document.getElementById('tileScale').value),this.value,gridToggle.checked,true);"></label>
             <section class="headerLayout">
