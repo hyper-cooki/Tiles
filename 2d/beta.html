@@ -20,6 +20,15 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
         <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
         <link rel="stylesheet" href="beta.css">
+        <!-- Google tag (gtag.js) -->
+          <script async src="https://www.googletagmanager.com/gtag/js?id=G-MLC5DPBF5B"></script>
+          <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+          
+            gtag('config', 'G-MLC5DPBF5B');
+          </script>
     </head>
     <body onmouseup="upCoords(event);" onresize="c.height = window.innerHeight; c.width = window.innerWidth; drawLayer(Math.ceil(canvas.width/document.getElementById('tileScale').value)*(document.getElementById('scrollx-container').scrollLeft/document.getElementById('scrollx-container').clientWidth),Math.ceil(canvas.height/document.getElementById('tileScale').value)*(document.getElementById('scrolly-container').scrollTop/document.getElementById('scrolly-container').clientHeight),Math.ceil(canvas.width/document.getElementById('tileScale').value),Math.ceil(canvas.height/document.getElementById('tileScale').value),JSON.parse(document.getElementById('tileScale').value),gridToggle.checked,true);" oncontextmenu="return false" onkeypress="keypress(event)" onkeydown="keydown(event)">
         <dialog id="dialog">
