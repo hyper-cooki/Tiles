@@ -23,53 +23,58 @@ html, body {
     margin: 0;
     cursor: url(img/cursors/Paint-32.png), pointer;
     z-index: 2;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-.montserrat-title {
-    font-family: "Montserrat", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: normal;
+#scroll-container {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    z-index: 3;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
 }
 
-.montserrat-ui {
-    font-family: "Montserrat", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
+#scrollX-container {
+    width: 100%;
+    height: 16px;
+    margin: 0;
+    overflow: scroll;
+    z-index: 3;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    pointer-events: all;
 }
 
-.inter-title {
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
+#scrollX {
+    width: 200%;
+    height: 16px;
+    margin: 0;
+    overflow: hidden;
 }
 
-.inter-ui {
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
+#scrollY-container {
+    width: 16px;
+    height: 100%;
+    margin: 0;
+    overflow: scroll;
+    z-index: 3;
+    position: absolute;
+    top: 0;
+    right: 0;
+    pointer-events: all;
 }
 
-.rubik-title {
-    font-family: "Rubik", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: normal;
-}
-
-.sometype-mono-title {
-    font-family: "Sometype Mono", monospace;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: normal;
-}
-
-.sometype-mono-ui {
-    font-family: "Sometype Mono", monospace;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
+#scrollY {
+    width: 16px;
+    height: 200%;
+    margin: 0;
+    overflow: hidden;
+    position: absolute;
 }
